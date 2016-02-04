@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="en">
+<meta charset="utf-8">
+<title>Parallel coordinates</title>
+
+<!-- SlickGrid -->
+<link rel="stylesheet" href="css/slickgrid/slick.grid.css" type="text/css"/>
+<link rel="stylesheet" href="css/slickgrid/jquery-ui-1.8.16.custom.css" type="text/css"/>
+<link rel="stylesheet" href="css/slickgrid/examples.css" type="text/css"/>
+<link rel="stylesheet" href="css/slickgrid/slick.pager.css" type="text/css"/>
+<link rel="stylesheet" type="text/css" href="css/d3.parcoords.css">
+<link rel="stylesheet" type="text/css" href="css/style.css">
+<script type="text/javascript" src="js/slickgrid/jquery-1.7.min.js"></script>
+<script type="text/javascript" src="js/slickgrid/jquery.event.drag-2.0.min.js"></script>
+<script type="text/javascript" src="js/slickgrid/slick.core.js"></script>
+<script type="text/javascript" src="js/slickgrid/slick.grid.js"></script>
+<script type="text/javascript" src="js/slickgrid/slick.pager.js"></script>
+<script type="text/javascript" src="js/slickgrid/slick.dataview.js"></script>
+<!-- End SlickGrid -->
+<script type="text/javascript" src="js/d3.min.js"></script>
+<script type="text/javascript" src="js/d3.parcoords.js"></script>
+<script type="text/javascript" src="js/divgrid.js"></script>
+
+<style>
+body, html {
+  margin: 0;
+  height: 100%;
+  width: 100%;
+  overflow: hidden;
+  font-size: 12px;
+}
+
+body.dark {
+  background: #090909;
+  color: #ccc;
+}
+
+#grid, #pager {
+  position: fixed;
+  width: 100%;
+}
+#grid {
+  margin-top: 20px;
+  bottom: 0;
+  height: 200px;
+}
+#pager {
+  margin-top: 20px;
+  bottom: 206px;
+  height: 20px;
+}
+</style>
+<body >
+<div id="paarcords_div" class="parcoords" style="height:220px;">  
+</div>
+<div id="grid"></div>
+<div id="pager"></div>
+<script id="brushing">
+
+
+  var dimensions = [
+    'country',
+    'year',
+    'value'
+  ];
+  var types = {
+    'country' : "string",
+    'year': "number",
+    'value': "number"
+  };
+  
+  var darkGreyColor  = "#25383C";
+  var greyColor = "#808080";
+  var turquoiseColor = "#43C6DB";
+  var fluorGreenColor = "#7FE817";
+  var yellowColor = "#FFFF00";
+  var restColor = "#FFA500";
+
+  var firstColor = "#114B5F";
+  var secondColor = "#028090";
+  var thirdColor = "#456990";
+  var fourthColor = "#AEFCBB";
+  
+  d3.select("#dark-theme")
+    .on("click", function() {
+      d3.select("body").attr("class", "dark");
+    });
+
+  d3.select("#light-theme")
+    .on("click", function() {
+      d3.select("body").attr("class", null);
+    });   
+
+  // load csv file and create the chart
+  d3.tsv('data/sandbag/CITL_v19.csv', function(data) {
+    console.log("reading ETS data file...");
+    // slickgrid needs each data element to have an id
+    data.forEach(function(d,i) {
+    d.id = d.id || i; 
+  });
+
+    console.log("done!");
+  
+  
+  var parcoords = d3.parcoords()("#paarcords_div")    
+    .data(data)
+    .alpha(0.2)
+    .composite("darker")
+    .color( 
+      function(row) {
+        var yearValue = row["year"];
+        if (yearValue <= 2006) {
+          return firstColor;
+        }else if (yearValue > 2006 && yearValue <= 2008) {
+          return secondColor;
+        }else if (yearValue > 2008 && yearValue <= 2010) {
+          return thirdColor;
+        }else if (yearValue > 2010) {
+          return fourthColor;
+        }else{
+          //console.log("restColor", row["year"]);
+          return "#F4B890";
+       }
+      }
+    ) 
+    .mode("queue") // progressive rendering
+    .rate(200)
+    .height(d3.max([document.documentElement.clientHeight-240, 220]))
+    .margin({
+      top: 36,
+      left: 0,
+      right: 0,
+      bottom: 16
+    })
+    .dimensions(dimensions)
+    .types(types)       
+    .render()
+    .reorderable() 
+    .brushMode("1D-axes");
+  
+  
+  window.onresize = function() {
+      parcoords.width(document.body.clientWidth);
+      parcoords.height(document.body.clientHeight - 240);
+      parcoords.resize();
+      parcoords.render();
+  }
+  // setting up grid
+  var column_keys = d3.keys(data[0]);
+  var columns = column_keys.map(function(key,i) {
+    return {
+      id: key,
+      name: key,
+      field: key,
+      sortable: true
+    }
+  });
+  var options = {
+    enableCellNavigation: true,
+    enableColumnReorder: false,
+    multiColumnSort: false
+  };
+  var dataView = new Slick.Data.DataView();
+  var grid = new Slick.Grid("#grid", dataView, columns, options);
+  var pager = new Slick.Controls.Pager(dataView, grid, $("#pager"));
+  // wire up model events to drive the grid
+  dataView.onRowCountChanged.subscribe(function (e, args) {
+    grid.updateRowCount();
+    grid.render();
+  });
+  dataView.onRowsChanged.subscribe(function (e, args) {
+    grid.invalidateRows(args.rows);
+    grid.render();
+  });
+  // column sorting
+  var sortcol = column_keys[0];
+  var sortdir = 1;
+  function comparer(a, b) {
+    var x = a[sortcol], y = b[sortcol];
+    return (x == y ? 0 : (x > y ? 1 : -1));
+  }
+  
+  // click header to sort grid column
+  grid.onSort.subscribe(function (e, args) {
+    sortdir = args.sortAsc ? 1 : -1;
+    sortcol = args.sortCol.field;
+    if ($.browser.msie && $.browser.version <= 8) {
+      dataView.fastSort(sortcol, args.sortAsc);
+    } else {
+      dataView.sort(comparer, args.sortAsc);
+    }
+  });
+  // highlight row in chart
+  grid.onMouseEnter.subscribe(function(e,args) {
+    var i = grid.getCellFromEvent(e).row;
+    var d = parcoords.brushed() || data;
+    parcoords.highlight([d[i]]);
+  });
+  grid.onMouseLeave.subscribe(function(e,args) {
+    parcoords.unhighlight();
+  });
+  // fill grid with data
+  gridUpdate(data);
+  // update grid on brush
+  parcoords.on("brush", function(d) {
+    gridUpdate(d);
+  });
+  function gridUpdate(data) {
+    dataView.beginUpdate();
+    dataView.setItems(data);
+    dataView.endUpdate();
+  };
+
+});
+</script>
+</body>
+</html>
