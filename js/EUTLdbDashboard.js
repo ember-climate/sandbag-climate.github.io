@@ -20,10 +20,7 @@ $('#bar_chart_button').click(changeToBarChart);
 
 
 function onLoad(){
-	console.log("onload");
-	$(document).ready(function(){
-	   $('.combobox').combobox()
-	});
+	
 }
 
 function changeToMultiLineChart(){
