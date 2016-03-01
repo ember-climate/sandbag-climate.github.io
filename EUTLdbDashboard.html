@@ -109,12 +109,14 @@
         </nav>
 
         <div id="page-wrapper">
+            <!-- 
             <div class="row">
                 <div class="col-lg-12">
                     <h1 class="page-header">Dashboard</h1>
                 </div>
-                <!-- /.col-lg-12 -->
+                /.col-lg-12 
             </div>
+            -->
             <!-- /.row -->
             <div class="row">
                 <div class="col-xs-4">
@@ -133,39 +135,45 @@
             </div>
             <!-- /.row -->
             <div class="row">
-                <div class="col-lg-12">
+                <div class="col-md-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <i class="fa fa-bar-chart-o fa-fw"></i> Verified Emissions per period
                             <div class="pull-right">
                                 <div class="btn-group">
-                                    <button type="button" class="btn btn-default btn-xs dropdown-toggle" data-toggle="dropdown">
-                                        Change chart
+                                    <button id="filter_line_chart_dropdown" type="button" class="btn btn-default btn-xs dropdown-toggle" >
+                                        Filter chart
                                         <span class="caret"></span>
                                     </button>
-                                    <ul class="dropdown-menu pull-right" role="menu">
-                                        <li><a id="multi_line_chart_button" href="#">Multi line chart</a>
-                                        </li>
-                                        <!--
-                                        <li><a id="bar_chart_button" href="#">Bar chart</a>
-                                        </li>
-                                        
-                                        <li class="divider"></li>
-                                        <li><a href="#">Separated link</a>
-                                        </li>
-                                        -->
-                                    </ul>
+                                    <div class="list-group dropdown-menu pull-right" data-toggle="items"  >
+                                        <div class="checkbox">
+                                          <label><input onclick="filterDataForLineChart()" id="offsets_checkbox" type="checkbox" checked="checked">Offsets</label>
+                                        </div>
+                                        <div class="checkbox">
+                                          <label><input onclick="filterDataForLineChart()" id="free_allocation_checkbox" type="checkbox" checked="checked">Free Allocation</label>
+                                        </div>
+                                        <div class="checkbox">
+                                          <label><input onclick="filterDataForLineChart()" id="verified_emissions_checkbox" type="checkbox" checked="checked">Verified Emissions</label>
+                                        </div>
+                                        <div class="checkbox">
+                                          <label><input onclick="filterDataForLineChart()" id="surplus_free_allowances_checkbox" type="checkbox" checked="checked">Surplus Free Allowance</label>
+                                        </div>
+                                        <div class="checkbox">
+                                          <label><input onclick="filterDataForLineChart()" id="surplus_with_offsets_checkbox" type="checkbox" checked="checked">Surplus with Offsets</label>
+                                        </div>
+                                    </div> 
                                 </div>
                             </div>
                         </div>
                         <!-- /.panel-heading -->
-                        <div class="panel-body">
-                            <div id="line_chart"></div>
+                        <div id="line_chart" class="panel-body" style="height:350px">
+                            
                         </div>
                         <!-- /.panel-body -->
                     </div>                    
                 </div>
-                
+                <div class="col-md-4">
+                                   
                 </div>
                 <!-- /.col-lg-4 -->
             </div>
@@ -189,6 +197,7 @@
     <script src="./js/EUTLdbREST.js"></script>
 
     <script src="./js/EUTLdbDashboard.js"></script>
+    
 
 </body>
 

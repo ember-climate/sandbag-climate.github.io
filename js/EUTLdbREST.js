@@ -1,6 +1,6 @@
 console.log("REST!");
 
-function getCountries(serverURL, onLoadEnd){
+function getCountries(serverURL, onLoadEnd) {
 
 	var query = {
 	    "statements" : [ ]
@@ -8,7 +8,7 @@ function getCountries(serverURL, onLoadEnd){
 
 	var statementSt = "MATCH (c:COUNTRY) RETURN c.name";
 
-	query.statements.push({"statement":statementSt});
+	query.statements.push({"statement": statementSt});
 
 	var xhr = new XMLHttpRequest();    
 	xhr.onloadend = onLoadEnd;
@@ -65,9 +65,11 @@ function getSurplusForAllPeriods(serverURL, countryName, sectorName, onLoadEnd )
 
 	var statementSt = "MATCH (c:COUNTRY{name:'" + countryName + 
 						"'})<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR{name:'" +
-					   sectorName + "'}), (i)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD), (i)-[fa:FREE_ALLOCATION]->(p:PERIOD) " +
-					   "RETURN sum(ve.value) AS Verified_Emissions, sum(fa.value) AS Free_Allocation, sum(fa.value) - sum(ve.value)" +
-					   " AS Surplus_Deficit, p.name ORDER BY p.name";
+					   sectorName + "'}), (i)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD), (i)-[fa:FREE_ALLOCATION]->(p:PERIOD), " +
+                        "(i)-[off:OFFSETS]->(p:PERIOD) " +
+					   "RETURN sum(ve.value) AS Verified_Emissions, sum(fa.value) AS Free_Allocation, sum(off.value) AS Offsets, " +
+                       "sum(fa.value) - sum(ve.value) AS Surplus_Free_Allowances, " +
+                       "sum(fa.value) + sum(off.value) - sum(ve.value) AS Surplus_With_Offsets, p.name ORDER BY p.name";
 
 	console.log(statementSt);
 

@@ -3,11 +3,11 @@ var server_url = "http://52.49.23.223:7474/db/data/transaction/commit"
 var countries = [];
 var sectors = [];
 var periods = []; 
+var lineChartDataBackup;
 var lineChartData;
 var lineChart;
 var sectorsLoaded = false;
 var countriesLoaded = false;
-var currentChartMode = "line";
 
 var line_chart_created = false;
 
@@ -15,24 +15,40 @@ getCountries(server_url, onGetCountries);
 getSectors(server_url, onGetSectors);
 getPeriods(server_url, onGetPeriods);
 
-$('#multi_line_chart_button').click(changeToMultiLineChart);
-$('#bar_chart_button').click(changeToBarChart);
+window.onresize = function () {
+    // As of 1.1.0 the second parameter here allows you to draw
+    // without reprocessing data.  This saves a lot on performance
+    // when you know the data won't have changed.
+    lineChart.draw(0, true);
+};
+
+//Handler for clicks outside of the dropdown menu to filter line surpluses chart
+$('body').on('click', function (e) {
+    
+    if (!$('#filter_line_chart_dropdown').is(e.target) 
+        && $('#filter_line_chart_dropdown').has(e.target).length === 0 
+        && $('.open').has(e.target).length === 0
+    ) {
+        $('#filter_line_chart_dropdown').parent().removeClass('open');
+    }
+});
+
+$('#filter_line_chart_dropdown').on('click', function (event) {
+    $(this).parent().toggleClass('open');
+});
 
 
 function onLoad(){
 	
 }
 
-function changeToMultiLineChart(){
-	console.log("changeToMultiLineChart");
-	createLineChart(lineChartData, "line");
-}
 
-function changeToBarChart(){
-	console.log("changeToBarChart")
-	createLineChart(lineChartData, "area");
-}
 
+function filterDataForLineChart(){
+    //alert("I need to filter data!");
+    lineChartData = lineChartDataBackup.filter(filterArrayBasedOnCheckboxesSelected);
+    createLineChart(lineChartData);
+}
 
 
 
@@ -124,66 +140,56 @@ function onGetSurplusForAllPeriods(){
   var resultsJSON = JSON.parse(this.responseText);
   var results = resultsJSON.results;
   var errors = resultsJSON.errors;
+    console.log("errors", errors);
   var tempData = results[0].data;
 
   var dataArray = [];
 
 
   for (var i = 0; i < tempData.length; i++) {
-  	var rows = tempData[i].row;
-  	//dataArray.push({"emissions":rows[0], "free_allocation":rows[1], "surplus_deficit":rows[2], "period":rows[3]});  
-  	dataArray.push({"tonescarbon":rows[0], "type":"Verified_Emissions", "period":rows[3]});
-  	dataArray.push({"tonescarbon":rows[1], "type":"Free_Allocation", "period":rows[3]});
-  	dataArray.push({"tonescarbon":rows[2], "type":"Surplus_Deficit", "period":rows[3]});
+  	var rows = tempData[i].row; 
+  	dataArray.push({"tonescarbon":rows[0], "type":"Verified_Emissions", "period":rows[5]});
+  	dataArray.push({"tonescarbon":rows[1], "type":"Free_Allocation", "period":rows[5]});
+    dataArray.push({"tonescarbon":rows[2], "type":"Offsets", "period":rows[5]});
+  	dataArray.push({"tonescarbon":rows[3], "type":"Surplus_Free_Allowances", "period":rows[5]});
+    dataArray.push({"tonescarbon":rows[4], "type":"Surplus_With_Offsets", "period":rows[5]});
+      
   }; 
+    
+  lineChartDataBackup = dataArray.slice(0);
 
-  createLineChart(dataArray, "line");
+  filterDataForLineChart();
 
   //console.log(dataArray);
      
 }
 
-function createLineChart(data, mode){
+function createLineChart(data){
    lineChartData = data; 
 
    if(!line_chart_created){
-   	  var svg = dimple.newSvg("#line_chart", 800, 400);
+   	  var svg = dimple.newSvg("#line_chart", "100%", "100%");
 
    	  lineChart = new dimple.chart(svg, lineChartData);
-   	  lineChart.setBounds(60, 30, 700, 300);
+   	         
+      // Fix the margins
+      lineChart.setMargins("60px", "60px", "20px", "20px");
 
 	  var x = lineChart.addCategoryAxis("x", "period");
 	  x.addOrderRule("period");
 	  lineChart.addMeasureAxis("y", "tonescarbon");
 	  var series
-	  if(mode == "area"){
-	  	series = lineChart.addSeries("type", dimple.plot.bar);
-	  }else if(mode == "line"){
-	  	series = lineChart.addSeries("type", dimple.plot.line);
-	  	series.lineMarkers = true;
-	  	series.interpolation = "cardinal";
-	  }	  
+	  
+      series = lineChart.addSeries("type", dimple.plot.line);
+	  series.lineMarkers = true;
+	  series.interpolation = "cardinal";	  
       
-      lineChart.addLegend(60, 10, 500, 20, "right");
+      lineChart.addLegend(20, 10, "95%", 300, "left");
       
 	  //var freeAllocationSeries = lineChart.addSeries("free_allocation", dimple.plot.line);
 
    	  line_chart_created = true;
    }else{
-
-   	if(currentChartMode == "line" && mode == "area"){
-   		lineChart.series.forEach(function(series){
-		    series.shapes.remove();
-		});
-		series = lineChart.addSeries("type", dimple.plot.area);
-		series.lineMarkers = true;
-   	}else if(currentChartMode == "area" && mode == "line"){
-   		series = lineChart.addSeries("type", dimple.plot.line);
-	  	series.lineMarkers = true;
-	  	series.interpolation = "cardinal";
-   	}
-
-   	currentChartMode = mode;
 
    	lineChart.data = lineChartData;
    }
@@ -209,5 +215,37 @@ function onComboBoxChange(){
 
 }
 
+
+//array filtering functions
+function filterArrayBasedOnCheckboxesSelected(value) {
+    var includeVerifiedEmissions = $('#verified_emissions_checkbox:checked').length == 1;
+    var includeOffsets = $('#offsets_checkbox:checked').length == 1;
+    var includeFreeAllocation = $('#free_allocation_checkbox:checked').length == 1;
+    var includeSurplusFreeAllowances = $('#surplus_free_allowances_checkbox:checked').length == 1;
+    var includeSurplusWithOffsets = $('#surplus_with_offsets_checkbox:checked').length == 1;
+    
+    
+//    console.log("includeVerifiedEmissions",includeVerifiedEmissions);
+//    console.log("includeOffsets",includeOffsets);
+//    console.log("includeFreeAllocation",includeFreeAllocation);
+//    console.log("includeSurplusFreeAllowances",includeSurplusFreeAllowances);
+//    console.log("includeSurplusWithOffsets",includeSurplusWithOffsets);
+    
+    
+    var tempType =  value.type;
+    if(tempType == "Verified_Emissions"){
+        return includeVerifiedEmissions;
+    }else if(tempType == "Free_Allocation"){
+        return includeFreeAllocation;
+    }else if(tempType == "Offsets"){
+        return includeOffsets;
+    }else if(tempType == "Surplus_With_Offsets"){
+        return includeSurplusWithOffsets;
+    }else if(tempType == "Surplus_Free_Allowances"){
+        return includeSurplusFreeAllowances;
+    }else{        
+        return false;
+    }
+}
 
 
