@@ -9,6 +9,12 @@ var lineChart;
 var sectorsLoaded = false;
 var countriesLoaded = false;
 
+var verified_emissions_loaded = false;
+var free_allocation_loaded = false;
+var offsets_loaded = false;
+var surplus_with_offsets_loaded = false;
+var surplus_free_allowances_loaded = false;
+
 var line_chart_created = false;
 
 getCountries(server_url, onGetCountries);
@@ -148,11 +154,11 @@ function onGetSurplusForAllPeriods(){
 
   for (var i = 0; i < tempData.length; i++) {
   	var rows = tempData[i].row; 
-  	dataArray.push({"tonescarbon":rows[0], "type":"Verified_Emissions", "period":rows[5]});
-  	dataArray.push({"tonescarbon":rows[1], "type":"Free_Allocation", "period":rows[5]});
-    dataArray.push({"tonescarbon":rows[2], "type":"Offsets", "period":rows[5]});
-  	dataArray.push({"tonescarbon":rows[3], "type":"Surplus_Free_Allowances", "period":rows[5]});
-    dataArray.push({"tonescarbon":rows[4], "type":"Surplus_With_Offsets", "period":rows[5]});
+  	dataArray.push({"tCO2e":rows[0], "type":"Verified_Emissions", "period":rows[5]});
+  	dataArray.push({"tCO2e":rows[1], "type":"Free_Allocation", "period":rows[5]});
+    dataArray.push({"tCO2e":rows[2], "type":"Offsets", "period":rows[5]});
+  	dataArray.push({"tCO2e":rows[3], "type":"Surplus_Free_Allowances", "period":rows[5]});
+    dataArray.push({"tCO2e":rows[4], "type":"Surplus_With_Offsets", "period":rows[5]});
       
   }; 
     
@@ -173,11 +179,11 @@ function createLineChart(data){
    	  lineChart = new dimple.chart(svg, lineChartData);
    	         
       // Fix the margins
-      lineChart.setMargins("60px", "60px", "20px", "20px");
+      lineChart.setMargins("60px", "60px", "20px", "40px");
 
 	  var x = lineChart.addCategoryAxis("x", "period");
 	  x.addOrderRule("period");
-	  lineChart.addMeasureAxis("y", "tonescarbon");
+	  lineChart.addMeasureAxis("y", "tCO2e");
 	  var series
 	  
       series = lineChart.addSeries("type", dimple.plot.line);
@@ -210,11 +216,126 @@ function onComboBoxChange(){
 
 	console.log("selectedCountry", selectedCountry);
 	console.log("selectedSector", selectedSector);
+    
+    lineChartDataBackup = [];
+    
+    getVerifiedEmissionsForCountryAndSector(server_url, selectedCountry, selectedSector, onGetVerifiedEmissionsForCountryAndSector);
+    getOffsetsForCountryAndSector(server_url, selectedCountry, selectedSector, onGetOffsetsForCountryAndSector);
+    getFreeAllocationForCountryAndSector(server_url, selectedCountry, selectedSector, onGetFreeAllocationForCountryAndSector);
+    getSurplusFreeAllowancesForCountryAndSector(server_url, selectedCountry, selectedSector, onGetSurplusFreeAllowancesForCountryAndSector);
+    getSurplusWithOffsetsForCountryAndSector(server_url, selectedCountry, selectedSector, onGetSurplusWithOffsetsForCountryAndSector);
 
-	getSurplusForAllPeriods(server_url,selectedCountry, selectedSector, onGetSurplusForAllPeriods);
+	//getSurplusForAllPeriods(server_url,selectedCountry, selectedSector, onGetSurplusForAllPeriods);
 
 }
 
+function onGetVerifiedEmissionsForCountryAndSector(){
+
+  console.log("onGetVerifiedEmissionsForCountryAndSector");    
+  var resultsJSON = JSON.parse(this.responseText);
+  var results = resultsJSON.results;
+  var errors = resultsJSON.errors;
+  //console.log("errors", errors);
+  var tempData = results[0].data;
+
+  //var dataArray = [];
+
+  for (var i = 0; i < tempData.length; i++) {
+  	var rows = tempData[i].row; 
+  	lineChartDataBackup.push({"tCO2e":rows[0], "type":"Verified_Emissions", "period":rows[1]});      
+  };
+    
+  verified_emissions_loaded = true;
+  if(verified_emissions_loaded && free_allocation_loaded && offsets_loaded && 
+     surplus_free_allowances_loaded && surplus_with_offsets_loaded){
+        filterDataForLineChart();   
+  }
+}
+
+function onGetOffsetsForCountryAndSector(){
+
+  console.log("onGetOffsetsForCountryAndSector");    
+  var resultsJSON = JSON.parse(this.responseText);
+  var results = resultsJSON.results;
+  var errors = resultsJSON.errors;
+  //console.log("errors", errors);
+  var tempData = results[0].data;
+
+  for (var i = 0; i < tempData.length; i++) {
+  	var rows = tempData[i].row; 
+  	lineChartDataBackup.push({"tCO2e":rows[0], "type":"Offsets", "period":rows[1]});      
+  }; 
+    
+  offsets_loaded = true;
+  if(verified_emissions_loaded && free_allocation_loaded && offsets_loaded && 
+     surplus_free_allowances_loaded && surplus_with_offsets_loaded){
+        filterDataForLineChart();   
+  }
+}
+
+function onGetFreeAllocationForCountryAndSector(){
+
+  console.log("onGetFreeAllocationForCountryAndSector");    
+  var resultsJSON = JSON.parse(this.responseText);
+  var results = resultsJSON.results;
+  var errors = resultsJSON.errors;
+  //console.log("errors", errors);
+  var tempData = results[0].data;
+
+
+  for (var i = 0; i < tempData.length; i++) {
+  	var rows = tempData[i].row; 
+  	lineChartDataBackup.push({"tCO2e":rows[0], "type":"Free_Allocation", "period":rows[1]});      
+  }; 
+    
+  free_allocation_loaded = true;
+  if(verified_emissions_loaded && free_allocation_loaded && offsets_loaded && 
+     surplus_free_allowances_loaded && surplus_with_offsets_loaded){
+        filterDataForLineChart();   
+  }
+}
+
+function onGetSurplusFreeAllowancesForCountryAndSector(){
+
+  console.log("onGetSurplusFreeAllowancesForCountryAndSector");    
+  var resultsJSON = JSON.parse(this.responseText);
+  var results = resultsJSON.results;
+  var errors = resultsJSON.errors;
+  //console.log("errors", errors);
+  var tempData = results[0].data;
+
+  for (var i = 0; i < tempData.length; i++) {
+  	var rows = tempData[i].row; 
+  	lineChartDataBackup.push({"tCO2e":rows[0], "type":"Surplus_Free_Allowances", "period":rows[1]});      
+  }; 
+    
+  surplus_free_allowances_loaded = true;
+  if(verified_emissions_loaded && free_allocation_loaded && offsets_loaded && 
+     surplus_free_allowances_loaded && surplus_with_offsets_loaded){
+        filterDataForLineChart();   
+  }
+}
+
+function onGetSurplusWithOffsetsForCountryAndSector(){
+
+  console.log("onGetSurplusWithOffsetsForCountryAndSector");    
+  var resultsJSON = JSON.parse(this.responseText);
+  var results = resultsJSON.results;
+  var errors = resultsJSON.errors;
+  //console.log("errors", errors);
+  var tempData = results[0].data;
+
+  for (var i = 0; i < tempData.length; i++) {
+  	var rows = tempData[i].row; 
+  	lineChartDataBackup.push({"tCO2e":rows[0], "type":"Surplus_With_Offsets", "period":rows[1]});      
+  }; 
+    
+  surplus_with_offsets_loaded = true;
+  if(verified_emissions_loaded && free_allocation_loaded && offsets_loaded && 
+     surplus_free_allowances_loaded && surplus_with_offsets_loaded){
+        filterDataForLineChart();   
+  }
+}
 
 //array filtering functions
 function filterArrayBasedOnCheckboxesSelected(value) {
