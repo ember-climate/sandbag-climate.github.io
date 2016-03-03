@@ -191,14 +191,13 @@ function createLineChart(data){
    	  lineChart = new dimple.chart(svg, lineChartData);
    	         
       // Fix the margins
-      lineChart.setMargins("60px", "60px", "20px", "40px");
+      lineChart.setMargins("85px", "60px", "20px", "40px");
 
 	  var x = lineChart.addCategoryAxis("x", "period");
 	  x.addOrderRule("period");
-	  lineChart.addMeasureAxis("y", "tCO2e");
-	  var series
-	  
-      series = lineChart.addSeries("type", dimple.plot.line);
+	  var y = lineChart.addMeasureAxis("y", "tCO2e");
+      y.tickFormat = ',.4r';
+	  var series = lineChart.addSeries("type", dimple.plot.line);
 	  series.lineMarkers = true;
 	  series.interpolation = "cardinal";	  
       
