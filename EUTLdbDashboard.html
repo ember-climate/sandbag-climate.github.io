@@ -19,6 +19,9 @@
 
     <!-- Custom Fonts -->
     <link href="./css/font-awesome.min.css" rel="stylesheet" type="text/css">
+    
+    <!-- Bootstrap select -->
+    <link href="./css/bootstrap-select.css" rel="stylesheet">
 
 
 
@@ -120,15 +123,15 @@
             <!-- /.row -->
             <div class="row">
                 <div class="col-xs-4">
-                    <select id="countries_combobox" onchange="onComboBoxChange()" class="form-control" >
+                    <select class="selectpicker" multiple id="countries_combobox" onchange="onComboBoxChange()" >
                     </select> 
                 </div>
                 <div class="col-xs-4">
-                    <select id="sectors_combobox" onchange="onComboBoxChange()" class=" form-control" >
+                    <select id="sectors_combobox" onchange="onComboBoxChange()" class="selectpicker" multiple >
                     </select>
                 </div>
                 <div class="col-xs-4 " style="display:none">
-                    <select id="periods_combobox" class="form-control" >
+                    <select id="periods_combobox" class="selectpicker" multiple  >
                     </select>
                 </div>   
                 
@@ -154,6 +157,9 @@
                                         </div>
                                         <div class="checkbox">
                                           <label><input onclick="filterDataForLineChart()" id="verified_emissions_checkbox" type="checkbox" checked="checked">Verified Emissions</label>
+                                        </div>
+                                        <div class="checkbox">
+                                          <label><input onclick="filterDataForLineChart()" id="total_suply_checkbox" type="checkbox" checked="checked">Total Suply</label>
                                         </div>
                                         <div class="checkbox">
                                           <label><input onclick="filterDataForLineChart()" id="surplus_free_allowances_checkbox" type="checkbox" checked="checked">Surplus Free Allowance</label>
@@ -193,6 +199,8 @@
     <script src="./js/d3.min.js"></script>
 
     <script src="./js/dimple.v2.1.6.min.js"></script>
+    
+    <script src="./js/bootstrap-select.min.js"></script>
     
     <script src="./js/EUTLdbREST.js"></script>
 

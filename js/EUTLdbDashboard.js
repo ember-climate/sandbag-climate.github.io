@@ -14,6 +14,7 @@ var free_allocation_loaded = false;
 var offsets_loaded = false;
 var surplus_with_offsets_loaded = false;
 var surplus_free_allowances_loaded = false;
+var total_suply_loaded = false;
 
 var line_chart_created = false;
 
@@ -39,13 +40,18 @@ $('body').on('click', function (e) {
     }
 });
 
+$('#countries_combobox').on('changed.bs.select', function(){
+    var selectedValue = $('#countries_combobox').selectpicker('val');
+    //console.log("selectedValue",selectedValue);
+});
+
 $('#filter_line_chart_dropdown').on('click', function (event) {
     $(this).parent().toggleClass('open');
 });
 
 
 function onLoad(){
-	
+	$('.selectpicker').selectpicker();
 }
 
 
@@ -80,6 +86,9 @@ function onGetCountries(){
 	select.appendChild(option);
   };
   //console.log("countries", countries);   
+    
+  $("#countries_combobox").selectpicker('refresh');
+  $("#countries_combobox").selectpicker('val','Austria');
 
   countriesLoaded = true;
   if(sectorsLoaded){
@@ -108,7 +117,10 @@ function onGetSectors(){
 	var select = document.getElementById("sectors_combobox");
 	select.appendChild(option);
   };
-  //console.log("sectors", sectors);   
+  //console.log("sectors", sectors);  
+    
+  $("#sectors_combobox").selectpicker('refresh');
+  $("#sectors_combobox").selectpicker('val','Cement and Lime');
 
   sectorsLoaded = true;
   if(countriesLoaded){
@@ -207,23 +219,45 @@ function onComboBoxChange(){
 	//var selectPeriod = document.getElementById("periods_combobox");
 	//var selectedPeriod = selectPeriod.options[selectPeriod.selectedIndex].text;
 
-	var selectCountry = document.getElementById("countries_combobox");
-	var selectedCountry = selectCountry.options[selectCountry.selectedIndex].text;
-
-	var selectSector = document.getElementById("sectors_combobox");
-	var selectedSector = selectSector.options[selectSector.selectedIndex].text;
-
-
-	console.log("selectedCountry", selectedCountry);
-	console.log("selectedSector", selectedSector);
+	var selectedCountry = $("#countries_combobox").selectpicker('val');
+	
+	var selectedSector = $("#sectors_combobox").selectpicker('val');
+    
+    var selectedSectorSt = "[";
+    var selectedCountrySt = "[";
+    
+    for (var i=0;i<selectedCountry.length;i++){
+        var currentValue = selectedCountry[i];
+        selectedCountrySt += "'" + currentValue + "',";
+    }
+    for (var i=0;i<selectedSector.length;i++){
+        var currentValue = selectedSector[i];
+        selectedSectorSt += "'" + currentValue + "',";
+    }
+    
+    selectedSectorSt = selectedSectorSt.slice(0, selectedSectorSt.length -1);
+    selectedSectorSt += "]";
+    selectedCountrySt = selectedCountrySt.slice(0, selectedCountrySt.length -1);
+    selectedCountrySt += "]";
+    
+    console.log("selectedSectorSt",selectedSectorSt);
+    console.log("selectedCountrySt",selectedCountrySt);
     
     lineChartDataBackup = [];
     
-    getVerifiedEmissionsForCountryAndSector(server_url, selectedCountry, selectedSector, onGetVerifiedEmissionsForCountryAndSector);
-    getOffsetsForCountryAndSector(server_url, selectedCountry, selectedSector, onGetOffsetsForCountryAndSector);
-    getFreeAllocationForCountryAndSector(server_url, selectedCountry, selectedSector, onGetFreeAllocationForCountryAndSector);
-    getSurplusFreeAllowancesForCountryAndSector(server_url, selectedCountry, selectedSector, onGetSurplusFreeAllowancesForCountryAndSector);
-    getSurplusWithOffsetsForCountryAndSector(server_url, selectedCountry, selectedSector, onGetSurplusWithOffsetsForCountryAndSector);
+    total_suply_loaded = false;
+    verified_emissions_loaded = false;
+    offsets_loaded = false;
+    offsets_loaded = false;
+    surplus_free_allowances_loaded = false;
+    surplus_with_offsets_loaded = false;
+    
+    getVerifiedEmissionsForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, onGetVerifiedEmissionsForCountryAndSector);
+    getOffsetsForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, onGetOffsetsForCountryAndSector);
+    getFreeAllocationForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, onGetFreeAllocationForCountryAndSector);
+    getTotalSuplyForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, onGetTotalSuplyForCountryAndSector);
+    getSurplusFreeAllowancesForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, onGetSurplusFreeAllowancesForCountryAndSector);
+    getSurplusWithOffsetsForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, onGetSurplusWithOffsetsForCountryAndSector);    
 
 	//getSurplusForAllPeriods(server_url,selectedCountry, selectedSector, onGetSurplusForAllPeriods);
 
@@ -238,8 +272,6 @@ function onGetVerifiedEmissionsForCountryAndSector(){
   //console.log("errors", errors);
   var tempData = results[0].data;
 
-  //var dataArray = [];
-
   for (var i = 0; i < tempData.length; i++) {
   	var rows = tempData[i].row; 
   	lineChartDataBackup.push({"tCO2e":rows[0], "type":"Verified_Emissions", "period":rows[1]});      
@@ -247,7 +279,28 @@ function onGetVerifiedEmissionsForCountryAndSector(){
     
   verified_emissions_loaded = true;
   if(verified_emissions_loaded && free_allocation_loaded && offsets_loaded && 
-     surplus_free_allowances_loaded && surplus_with_offsets_loaded){
+     surplus_free_allowances_loaded && surplus_with_offsets_loaded && total_suply_loaded){
+        filterDataForLineChart();   
+  }
+}
+
+function onGetTotalSuplyForCountryAndSector(){
+
+  console.log("onGetTotalSuplyForCountryAndSector");    
+  var resultsJSON = JSON.parse(this.responseText);
+  var results = resultsJSON.results;
+  var errors = resultsJSON.errors;
+  //console.log("errors", errors);
+  var tempData = results[0].data;
+
+  for (var i = 0; i < tempData.length; i++) {
+  	var rows = tempData[i].row; 
+  	lineChartDataBackup.push({"tCO2e":rows[0], "type":"Total_Suply", "period":rows[1]});      
+  };
+    
+  total_suply_loaded = true;
+  if(verified_emissions_loaded && free_allocation_loaded && offsets_loaded && 
+     surplus_free_allowances_loaded && surplus_with_offsets_loaded && total_suply_loaded){
         filterDataForLineChart();   
   }
 }
@@ -268,7 +321,7 @@ function onGetOffsetsForCountryAndSector(){
     
   offsets_loaded = true;
   if(verified_emissions_loaded && free_allocation_loaded && offsets_loaded && 
-     surplus_free_allowances_loaded && surplus_with_offsets_loaded){
+     surplus_free_allowances_loaded && surplus_with_offsets_loaded && total_suply_loaded){
         filterDataForLineChart();   
   }
 }
@@ -290,7 +343,7 @@ function onGetFreeAllocationForCountryAndSector(){
     
   free_allocation_loaded = true;
   if(verified_emissions_loaded && free_allocation_loaded && offsets_loaded && 
-     surplus_free_allowances_loaded && surplus_with_offsets_loaded){
+     surplus_free_allowances_loaded && surplus_with_offsets_loaded && total_suply_loaded){
         filterDataForLineChart();   
   }
 }
@@ -311,7 +364,7 @@ function onGetSurplusFreeAllowancesForCountryAndSector(){
     
   surplus_free_allowances_loaded = true;
   if(verified_emissions_loaded && free_allocation_loaded && offsets_loaded && 
-     surplus_free_allowances_loaded && surplus_with_offsets_loaded){
+     surplus_free_allowances_loaded && surplus_with_offsets_loaded && total_suply_loaded){
         filterDataForLineChart();   
   }
 }
@@ -332,7 +385,7 @@ function onGetSurplusWithOffsetsForCountryAndSector(){
     
   surplus_with_offsets_loaded = true;
   if(verified_emissions_loaded && free_allocation_loaded && offsets_loaded && 
-     surplus_free_allowances_loaded && surplus_with_offsets_loaded){
+     surplus_free_allowances_loaded && surplus_with_offsets_loaded && total_suply_loaded){
         filterDataForLineChart();   
   }
 }
@@ -344,6 +397,7 @@ function filterArrayBasedOnCheckboxesSelected(value) {
     var includeFreeAllocation = $('#free_allocation_checkbox:checked').length == 1;
     var includeSurplusFreeAllowances = $('#surplus_free_allowances_checkbox:checked').length == 1;
     var includeSurplusWithOffsets = $('#surplus_with_offsets_checkbox:checked').length == 1;
+    var includeSurplusTotalSuply = $('#total_suply_checkbox:checked').length == 1;
     
     
 //    console.log("includeVerifiedEmissions",includeVerifiedEmissions);
@@ -364,6 +418,8 @@ function filterArrayBasedOnCheckboxesSelected(value) {
         return includeSurplusWithOffsets;
     }else if(tempType == "Surplus_Free_Allowances"){
         return includeSurplusFreeAllowances;
+    }else if(tempType == "Total_Suply"){
+        return includeSurplusTotalSuply;
     }else{        
         return false;
     }

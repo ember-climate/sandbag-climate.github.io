@@ -57,14 +57,14 @@ function getPeriods(serverURL, onLoadEnd){
 
 }
 
-function getVerifiedEmissionsForCountryAndSector(serverURL, countryName, sectorName, onLoadEnd ){
+function getVerifiedEmissionsForCountryAndSector(serverURL, countryNames, sectorNames, onLoadEnd ){
     var query = {
 	    "statements" : [ ]
 	};
 
-	var statementSt = "MATCH (c:COUNTRY{name:'" + countryName + 
-						"'})<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR{name:'" +
-					   sectorName + "'}), (i)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD)" +
+	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)," +
+                        "(i)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD)" +
+                       "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " " +
 					   "RETURN sum(ve.value) AS Verified_Emissions, p.name ORDER BY p.name";
 
 	console.log(statementSt);
@@ -80,14 +80,14 @@ function getVerifiedEmissionsForCountryAndSector(serverURL, countryName, sectorN
 }
 
 
-function getOffsetsForCountryAndSector(serverURL, countryName, sectorName, onLoadEnd ){
+function getOffsetsForCountryAndSector(serverURL, countryNames, sectorNames, onLoadEnd ){
     var query = {
 	    "statements" : [ ]
 	};
 
-	var statementSt = "MATCH (c:COUNTRY{name:'" + countryName + 
-						"'})<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR{name:'" +
-					   sectorName + "'}), (i)-[off:OFFSETS]->(p:PERIOD) " +
+	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)" +
+					   ", (i)-[off:OFFSETS]->(p:PERIOD) " +
+                       "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " " +
 					   "RETURN sum(off.value) AS Offsets, p.name ORDER BY p.name";
 
 	console.log(statementSt);
@@ -103,15 +103,15 @@ function getOffsetsForCountryAndSector(serverURL, countryName, sectorName, onLoa
 }
 
 
-function getFreeAllocationForCountryAndSector(serverURL, countryName, sectorName, onLoadEnd ){
+function getFreeAllocationForCountryAndSector(serverURL, countryNames, sectorNames, onLoadEnd ){
 
 	var query = {
 	    "statements" : [ ]
 	};
 
-	var statementSt = "MATCH (c:COUNTRY{name:'" + countryName + 
-						"'})<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR{name:'" +
-					   sectorName + "'}), (i)-[fa:FREE_ALLOCATION]->(p:PERIOD) " +
+	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)," +
+                        "(i)-[fa:FREE_ALLOCATION]->(p:PERIOD) " +
+                        "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " " +
 					   "RETURN sum(fa.value) AS Free_Allocation, p.name ORDER BY p.name";
 
 	console.log(statementSt);
@@ -126,15 +126,15 @@ function getFreeAllocationForCountryAndSector(serverURL, countryName, sectorName
 	xhr.send(JSON.stringify(query));
 }
 
-function getSurplusFreeAllowancesForCountryAndSector(serverURL, countryName, sectorName, onLoadEnd ){
+function getSurplusFreeAllowancesForCountryAndSector(serverURL, countryNames, sectorNames, onLoadEnd ){
 
 	var query = {
 	    "statements" : [ ]
 	};
 
-	var statementSt = "MATCH (c:COUNTRY{name:'" + countryName + 
-						"'})<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR{name:'" +
-					   sectorName + "'}), (i)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD), (i)-[fa:FREE_ALLOCATION]->(p:PERIOD) " +  
+	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)," +
+                        "(i)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD), (i)-[fa:FREE_ALLOCATION]->(p:PERIOD) " +
+                        "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " " +
 					   "RETURN sum(fa.value) - sum(ve.value) AS Surplus_Free_Allowances, p.name ORDER BY p.name";
 
 	console.log(statementSt);
@@ -149,16 +149,39 @@ function getSurplusFreeAllowancesForCountryAndSector(serverURL, countryName, sec
 	xhr.send(JSON.stringify(query));
 }
 
-function getSurplusWithOffsetsForCountryAndSector(serverURL, countryName, sectorName, onLoadEnd ){
+function getTotalSuplyForCountryAndSector(serverURL, countryNames, sectorNames, onLoadEnd ){
 
 	var query = {
 	    "statements" : [ ]
 	};
 
-	var statementSt = "MATCH (c:COUNTRY{name:'" + countryName + 
-						"'})<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR{name:'" +
-					   sectorName + "'}),  (i)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD), (i)-[fa:FREE_ALLOCATION]->(p:PERIOD), " +
+	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR),"+
+                        "(i)-[off:OFFSETS]->(p:PERIOD), (i)-[fa:FREE_ALLOCATION]->(p:PERIOD) " +  
+                        "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " " +
+					   "RETURN sum(fa.value) + sum(off.value) AS Total_Suply, p.name ORDER BY p.name";
+
+	console.log(statementSt);
+
+	query.statements.push({"statement":statementSt});
+
+	var xhr = new XMLHttpRequest();    
+	xhr.onloadend = onLoadEnd;
+	xhr.open("POST", serverURL, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Accept', 'application/json; charset=UTF-8');
+	xhr.send(JSON.stringify(query));
+}
+
+function getSurplusWithOffsetsForCountryAndSector(serverURL, countryNames, sectorNames, onLoadEnd ){
+
+	var query = {
+	    "statements" : [ ]
+	};
+
+	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)," +
+                        "(i)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD), (i)-[fa:FREE_ALLOCATION]->(p:PERIOD), " +
                         "(i)-[off:OFFSETS]->(p:PERIOD) " +
+                        "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " " +
 					   "RETURN sum(fa.value) + sum(off.value) - sum(ve.value) AS Surplus_With_Offsets, p.name ORDER BY p.name";
 
 	console.log(statementSt);
@@ -173,16 +196,16 @@ function getSurplusWithOffsetsForCountryAndSector(serverURL, countryName, sector
 	xhr.send(JSON.stringify(query));
 }
 
-function getSurplusForAllPeriods(serverURL, countryName, sectorName, onLoadEnd ){
+function getSurplusForAllPeriods(serverURL, countryNames, sectorNames, onLoadEnd ){
 
 	var query = {
 	    "statements" : [ ]
 	};
 
-	var statementSt = "MATCH (c:COUNTRY{name:'" + countryName + 
-						"'})<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR{name:'" +
-					   sectorName + "'}),  (i)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD), (i)-[fa:FREE_ALLOCATION]->(p:PERIOD), " +
+	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)," +
+                        "(i)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD), (i)-[fa:FREE_ALLOCATION]->(p:PERIOD), " +
                         "(i)-[off:OFFSETS]->(p:PERIOD) " +
+                        "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " " +
 					   "RETURN sum(ve.value) AS Verified_Emissions, sum(fa.value) AS Free_Allocation, sum(off.value) AS Offsets, " +
                        "sum(fa.value) - sum(ve.value) AS Surplus_Free_Allowances, " +
                        "sum(fa.value) + sum(off.value) - sum(ve.value) AS Surplus_With_Offsets, p.name ORDER BY p.name";
