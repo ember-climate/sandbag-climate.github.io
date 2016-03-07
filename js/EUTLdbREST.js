@@ -57,6 +57,31 @@ function getPeriods(serverURL, onLoadEnd){
 
 }
 
+function getVerifiedEmissionsForPeriod(serverURL, periodName, onLoadEnd){
+    
+    console.log("hola!");
+    
+    var query = {
+	    "statements" : [ ]
+	};
+
+	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)," +
+                        "(i)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD) " +
+                       "WHERE p.name = '" + periodName + "' " +
+					   "RETURN sum(ve.value) AS Verified_Emissions, c.name, s.name ORDER BY c.name, s.name";
+    
+    console.log("statement!", statementSt);
+
+	query.statements.push({"statement":statementSt});
+
+	var xhr = new XMLHttpRequest();    
+	xhr.onloadend = onLoadEnd;
+	xhr.open("POST", serverURL, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Accept', 'application/json; charset=UTF-8');
+	xhr.send(JSON.stringify(query));
+}
+
 function getVerifiedEmissionsForCountryAndSector(serverURL, countryNames, sectorNames, onLoadEnd ){
     var query = {
 	    "statements" : [ ]
@@ -67,7 +92,7 @@ function getVerifiedEmissionsForCountryAndSector(serverURL, countryNames, sector
                        "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " " +
 					   "RETURN sum(ve.value) AS Verified_Emissions, p.name ORDER BY p.name";
 
-	console.log(statementSt);
+	//console.log(statementSt);
 
 	query.statements.push({"statement":statementSt});
 
@@ -90,7 +115,7 @@ function getOffsetsForCountryAndSector(serverURL, countryNames, sectorNames, onL
                        "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " " +
 					   "RETURN sum(off.value) AS Offsets, p.name ORDER BY p.name";
 
-	console.log(statementSt);
+	//console.log(statementSt);
 
 	query.statements.push({"statement":statementSt});
 

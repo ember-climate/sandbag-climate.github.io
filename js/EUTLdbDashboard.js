@@ -6,6 +6,8 @@ var periods = [];
 var lineChartDataBackup;
 var lineChartData;
 var lineChart;
+var stackedBarChart
+var stackedBarChartData;
 var sectorsLoaded = false;
 var countriesLoaded = false;
 
@@ -17,6 +19,7 @@ var surplus_free_allowances_loaded = false;
 var total_suply_loaded = false;
 
 var line_chart_created = false;
+var stacked_bar_chart_created = false;
 
 getCountries(server_url, onGetCountries);
 getSectors(server_url, onGetSectors);
@@ -128,6 +131,10 @@ function onGetSectors(){
   }     
 }
 
+function onPeriodsComboboxChange(){
+    getVerifiedEmissionsForPeriod(server_url,$("#periods_combobox").selectpicker('val'), onGetVerifiedEmissionsForPeriod);
+}
+
 function onGetPeriods(){
 
   console.log("onGetPeriods");    
@@ -140,6 +147,8 @@ function onGetPeriods(){
   for (var i = 0; i < periodsData.length; i++) {
   	var periodName = periodsData[i].row[0];
   	periods.push(periodName);
+      
+    //console.log("periodName",periodName);
 
   	var option = document.createElement("option");
 	option.value     = periodName;
@@ -148,8 +157,57 @@ function onGetPeriods(){
 	var select = document.getElementById("periods_combobox");
 	select.appendChild(option);
   };
-  //console.log("periods", periods);   
-     
+  //console.log("periods", periods);  
+    
+    $("#periods_combobox").selectpicker('refresh');
+    $("#periods_combobox").selectpicker('val','2012'); 
+    onPeriodsComboboxChange();
+}
+
+function onGetVerifiedEmissionsForPeriod(){
+  console.log("onGetVerifiedEmissionsForPeriod");    
+  var resultsJSON = JSON.parse(this.responseText);
+  var results = resultsJSON.results;
+  var errors = resultsJSON.errors;
+  
+  var tempData = results[0].data;
+    
+  var dataArray = [];
+
+  for (var i = 0; i < tempData.length; i++) {
+  	var rows = tempData[i].row; 
+  	dataArray.push({"Verified Emissions":rows[0], "country":rows[1], "sector":rows[2]});      
+  }; 
+    
+  stackedBarChartData = dataArray;
+
+  createStackedBarChart();
+}
+
+function createStackedBarChart(){
+    
+    if(!stacked_bar_chart_created){
+        var svg = dimple.newSvg("#stacked_bar_chart", "100%", "100%");
+    
+        stackedBarChart = new dimple.chart(svg, stackedBarChartData);
+        // Fix the margins
+        stackedBarChart.setMargins("85px", "60px", "20px", "40px");
+        stackedBarChart.addMeasureAxis("y", "Verified Emissions");
+        stackedBarChart.addCategoryAxis("x", "country");
+        //y.addOrderRule("Date");
+        stackedBarChart.addSeries("sector", dimple.plot.bar);
+        stackedBarChart.addLegend(60, 10, 510, 20, "right");
+        
+        stacked_bar_chart_created = true;
+        
+    }else{
+        stackedBarChart.data = stackedBarChartData;
+    }
+    
+    stackedBarChart.draw();
+        
+    
+    
 }
 
 function onGetSurplusForAllPeriods(){
@@ -181,6 +239,8 @@ function onGetSurplusForAllPeriods(){
   //console.log(dataArray);
      
 }
+
+
 
 function createLineChart(data){
    lineChartData = data; 

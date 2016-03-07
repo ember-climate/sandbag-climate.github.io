@@ -129,11 +129,7 @@
                 <div class="col-xs-4">
                     <select id="sectors_combobox" onchange="onComboBoxChange()" class="selectpicker" multiple >
                     </select>
-                </div>
-                <div class="col-xs-4 " style="display:none">
-                    <select id="periods_combobox" class="selectpicker" multiple  >
-                    </select>
-                </div>   
+                </div>  
                 
             </div>
             <!-- /.row -->
@@ -141,7 +137,7 @@
                 <div class="col-md-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Verified Emissions per period
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Multi line chart
                             <div class="pull-right">
                                 <div class="btn-group">
                                     <button id="filter_line_chart_dropdown" type="button" class="btn btn-default btn-xs dropdown-toggle" >
@@ -149,6 +145,9 @@
                                         <span class="caret"></span>
                                     </button>
                                     <div class="list-group dropdown-menu pull-right" data-toggle="items"  >
+                                        
+                                        <select class="selectpicker" multiple id="countries_combobox" onchange="onComboBoxChange()" >
+                                        </select>
                                         <div class="checkbox">
                                           <label><input onclick="filterDataForLineChart()" id="offsets_checkbox" type="checkbox" checked="checked">Offsets</label>
                                         </div>
@@ -178,11 +177,32 @@
                         <!-- /.panel-body -->
                     </div>                    
                 </div>
-                <div class="col-md-4">
-                                   
-                </div>
-                <!-- /.col-lg-4 -->
+                <!-- /.col-md 12 -->
             </div>
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-xs-4 " >
+                    <select id="periods_combobox" class="selectpicker" onchange="onPeriodsComboboxChange()"  >
+                    </select>
+                </div>                  
+            </div>
+            <!-- /.row -->
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Verified Emissions per period                            
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div id="stacked_bar_chart" class="panel-body" style="height:350px">
+                            
+                        </div>
+                        <!-- /.panel-body -->
+                    </div>                    
+                </div>
+                <!-- /.col-md 12 -->
+            </div>
+            
             <!-- /.row -->
         </div>
         <!-- /#page-wrapper -->
