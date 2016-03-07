@@ -204,7 +204,7 @@ function createStackedBarChart(){
         stackedBarChart.data = stackedBarChartData;
     }
     
-    stackedBarChart.draw();
+    stackedBarChart.draw(1000);
         
     
     
