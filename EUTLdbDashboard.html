@@ -123,11 +123,11 @@
             <!-- /.row -->
             <div class="row">
                 <div class="col-xs-4">
-                    <select class="selectpicker" multiple id="countries_combobox" onchange="onComboBoxChange()" >
+                    <select class="selectpicker" multiple id="countries_combobox" onchange="onComboBoxChange()" data-actions-box="true">
                     </select> 
                 </div>
                 <div class="col-xs-4">
-                    <select id="sectors_combobox" onchange="onComboBoxChange()" class="selectpicker" multiple >
+                    <select id="sectors_combobox" onchange="onComboBoxChange()" class="selectpicker" multiple data-actions-box="true" width="fit">
                     </select>
                 </div>  
                 
@@ -139,6 +139,12 @@
                         <div class="panel-heading">
                             <i class="fa fa-bar-chart-o fa-fw"></i> Multi line chart
                             <div class="pull-right">
+                                <div class="btn-group">
+                                    <button id="export_line_chart_button" type="button" class="btn btn-default btn-xs " 
+                                            onclick="onExportLineChartButtonClick()">
+                                        Export
+                                    </button>                                     
+                                </div>
                                 <div class="btn-group">
                                     <button id="filter_line_chart_dropdown" type="button" class="btn btn-default btn-xs dropdown-toggle" >
                                         Filter chart
@@ -191,7 +197,15 @@
                 <div class="col-md-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Verified Emissions per period                            
+                            <i class="fa fa-bar-chart-o fa-fw"></i> Verified Emissions per period   
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                    <button id="export_verified_emissions_chart_button" type="button" class="btn btn-default btn-xs " 
+                                            onclick="onExportVerifiedEmissionsChartButtonClick()">
+                                        Export
+                                    </button>                                     
+                                </div>
+                            </div>
                         </div>
                         <!-- /.panel-heading -->
                         <div id="stacked_bar_chart" class="panel-body" style="height:350px">

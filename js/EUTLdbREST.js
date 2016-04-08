@@ -25,7 +25,7 @@ function getSectors(serverURL, onLoadEnd){
 	    "statements" : [ ]
 	};
 
-	var statementSt = "MATCH (s:SECTOR) RETURN s.name";
+	var statementSt = "MATCH (s:SECTOR) RETURN s.name ORDER BY s.name ASC";
 
 	query.statements.push({"statement":statementSt});
 
@@ -44,7 +44,7 @@ function getPeriods(serverURL, onLoadEnd){
 	    "statements" : [ ]
 	};
 
-	var statementSt = "MATCH (p:PERIOD) RETURN p.name";
+	var statementSt = "MATCH (p:PERIOD) RETURN p.name ORDER BY p.name ASC";
 
 	query.statements.push({"statement":statementSt});
 
@@ -111,11 +111,11 @@ function getOffsetsForCountryAndSector(serverURL, countryNames, sectorNames, onL
 	};
 
 	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)" +
-					   ", (i)-[off:OFFSETS]->(p:PERIOD) " +
+					   ", (i)-[off:OFFSETS]->(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
                        "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " " +
-					   "RETURN sum(off.value) AS Offsets, p.name ORDER BY p.name";
+					   "RETURN sum(o.amount) AS Offsets, p.name ORDER BY p.name";
 
-	//console.log(statementSt);
+	console.log(statementSt);
 
 	query.statements.push({"statement":statementSt});
 
@@ -128,16 +128,16 @@ function getOffsetsForCountryAndSector(serverURL, countryNames, sectorNames, onL
 }
 
 
-function getFreeAllocationForCountryAndSector(serverURL, countryNames, sectorNames, onLoadEnd ){
+function getAllowancesInAllocationForCountryAndSector(serverURL, countryNames, sectorNames, onLoadEnd ){
 
 	var query = {
 	    "statements" : [ ]
 	};
 
 	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)," +
-                        "(i)-[fa:FREE_ALLOCATION]->(p:PERIOD) " +
+                        "(i)-[fa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +
                         "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " " +
-					   "RETURN sum(fa.value) AS Free_Allocation, p.name ORDER BY p.name";
+					   "RETURN sum(fa.value) AS Allowances_in_Allocation, p.name ORDER BY p.name";
 
 	console.log(statementSt);
 
@@ -158,9 +158,9 @@ function getSurplusFreeAllowancesForCountryAndSector(serverURL, countryNames, se
 	};
 
 	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)," +
-                        "(i)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD), (i)-[fa:FREE_ALLOCATION]->(p:PERIOD) " +
+                        "(i)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD), (i)-[aa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +
                         "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " " +
-					   "RETURN sum(fa.value) - sum(ve.value) AS Surplus_Free_Allowances, p.name ORDER BY p.name";
+					   "RETURN sum(aa.value) - sum(ve.value) AS Surplus_Free_Allowances, p.name ORDER BY p.name";
 
 	console.log(statementSt);
 
@@ -181,9 +181,9 @@ function getTotalSuplyForCountryAndSector(serverURL, countryNames, sectorNames, 
 	};
 
 	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR),"+
-                        "(i)-[off:OFFSETS]->(p:PERIOD), (i)-[fa:FREE_ALLOCATION]->(p:PERIOD) " +  
+                        "(i)-[off:OFFSETS]->(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD), (i)-[aa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +  
                         "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " " +
-					   "RETURN sum(fa.value) + sum(off.value) AS Total_Suply, p.name ORDER BY p.name";
+					   "RETURN sum(aa.value) + sum(o.amount) AS Total_Suply, p.name ORDER BY p.name";
 
 	console.log(statementSt);
 
@@ -204,10 +204,10 @@ function getSurplusWithOffsetsForCountryAndSector(serverURL, countryNames, secto
 	};
 
 	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)," +
-                        "(i)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD), (i)-[fa:FREE_ALLOCATION]->(p:PERIOD), " +
-                        "(i)-[off:OFFSETS]->(p:PERIOD) " +
+                        "(i)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD), (i)-[aa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD), " +
+                        "(i)-[off:OFFSETS]->(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
                         "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " " +
-					   "RETURN sum(fa.value) + sum(off.value) - sum(ve.value) AS Surplus_With_Offsets, p.name ORDER BY p.name";
+					   "RETURN sum(aa.value) + sum(o.amount) - sum(ve.value) AS Surplus_With_Offsets, p.name ORDER BY p.name";
 
 	console.log(statementSt);
 
@@ -228,12 +228,12 @@ function getSurplusForAllPeriods(serverURL, countryNames, sectorNames, onLoadEnd
 	};
 
 	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)," +
-                        "(i)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD), (i)-[fa:FREE_ALLOCATION]->(p:PERIOD), " +
-                        "(i)-[off:OFFSETS]->(p:PERIOD) " +
+                        "(i)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD), (i)-[aa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD), " +
+                        "(i)-[off:OFFSETS]->(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
                         "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " " +
-					   "RETURN sum(ve.value) AS Verified_Emissions, sum(fa.value) AS Free_Allocation, sum(off.value) AS Offsets, " +
-                       "sum(fa.value) - sum(ve.value) AS Surplus_Free_Allowances, " +
-                       "sum(fa.value) + sum(off.value) - sum(ve.value) AS Surplus_With_Offsets, p.name ORDER BY p.name";
+					   "RETURN sum(ve.value) AS Verified_Emissions, sum(aa.value) AS Allowances_in_Allocation, sum(o.amount) AS Offsets, " +
+                       "sum(aa.value) - sum(ve.value) AS Surplus_Free_Allowances, " +
+                       "sum(aa.value) + sum(o.amount) - sum(ve.value) AS Surplus_With_Offsets, p.name ORDER BY p.name";
 
 	console.log(statementSt);
 
