@@ -195,9 +195,16 @@
             <!-- /.row -->
             <div class="row">
                 <div class="col-md-12">
+                    <ul class="nav nav-tabs">
+                      <li role="presentation" class="active"><a data-toggle="tab" onclick="return changeStackedBarChart('verified emissions')">Verified Emissions</a></li>
+                      <li role="presentation"><a data-toggle="tab" onclick="return changeStackedBarChart('allowances in allocation')">Allowances in Allocation</a></li>
+                      <li role="presentation"><a data-toggle="tab" onclick="return changeStackedBarChart('offsets')">Offsets</a></li>
+                      <li role="presentation"><a data-toggle="tab" onclick="return changeStackedBarChart('surrendered units')">Surrendered Units</a></li>
+                    </ul>
                     <div class="panel panel-default">
-                        <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Verified Emissions per period   
+                        <div id="stackedBarChartPerPeriod" class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i> 
+                            <span id="stackedBarChartPerPeriodTitleText">Verified Emissions per period</span> 
                             <div class="pull-right">
                                 <div class="btn-group">
                                     <button id="export_verified_emissions_chart_button" type="button" class="btn btn-default btn-xs " 

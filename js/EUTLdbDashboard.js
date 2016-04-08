@@ -66,6 +66,28 @@ function onLoad(){
 }
 
 
+function changeStackedBarChart(typeSt){
+    if(typeSt == "allowances in allocation"){
+        
+        $('#stackedBarChartPerPeriodTitleText').text("Allowances in Allocation per period");
+        
+    }else if(typeSt == "offsets"){
+        
+        $('#stackedBarChartPerPeriodTitleText').text("Offsets per period");
+        
+    }else if(typeSt == "surrendered units"){
+        
+        $('#stackedBarChartPerPeriodTitleText').text("Surrendered Units per period");
+        
+    }else if(typeSt == "verified emissions"){
+        
+        $('#stackedBarChartPerPeriodTitleText').text("Verified Emissions per period");
+
+    }
+    
+    onPeriodsComboboxChange();
+}
+
 function onExportLineChartButtonClick(){
     //console.log("lineChartData",lineChartData);
     
@@ -84,7 +106,7 @@ function onExportLineChartButtonClick(){
 
 function onExportVerifiedEmissionsChartButtonClick(){
     
-    var dataString = "data:text/tsv;charset=utf-8,Verified Emissions,Country,Sector\n";
+    var dataString = "data:text/tsv;charset=utf-8,Verified Emissions\tCountry\tSector\n";
     
     for(var i=0; i < stackedBarChartData.length; i++){
         var row = stackedBarChartData[i];
@@ -158,7 +180,7 @@ function onGetSectors(){
   //console.log("sectors", sectors);  
     
   $("#sectors_combobox").selectpicker('refresh');
-  $("#sectors_combobox").selectpicker('val','Cement and Lime');
+  $("#sectors_combobox").selectpicker('val','Combustion of fuels');
 
   sectorsLoaded = true;
   if(countriesLoaded){
@@ -167,7 +189,24 @@ function onGetSectors(){
 }
 
 function onPeriodsComboboxChange(){
-    getVerifiedEmissionsForPeriod(server_url,$("#periods_combobox").selectpicker('val'), onGetVerifiedEmissionsForPeriod);
+    
+    var textSt = $('#stackedBarChartPerPeriodTitleText').text();
+    
+    //console.log("textSt", "'" + textSt + "'");
+    
+    if(textSt == "Allowances in Allocation per period"){
+        getAllowancesInAllocationForPeriod(server_url,$("#periods_combobox").selectpicker('val'), onGetAllowancesInAllocationForPeriod);  
+        console.log("all");
+    }else if(textSt == "Offsets per period"){
+        console.log("off");
+        getOffsetsForPeriod(server_url,$("#periods_combobox").selectpicker('val'), onGetOffsetsForPeriod);  
+    }else if(textSt == "Surrendered Units per period"){
+        getSurrenderedUnitsForPeriod(server_url,$("#periods_combobox").selectpicker('val'), onGetSurrenderedUnitsForPeriod); 
+        console.log("surr");
+    }else if(textSt == "Verified Emissions per period"){        
+        getVerifiedEmissionsForPeriod(server_url,$("#periods_combobox").selectpicker('val'), onGetVerifiedEmissionsForPeriod);      
+    }
+    
 }
 
 function onGetPeriods(){
@@ -199,9 +238,8 @@ function onGetPeriods(){
     onPeriodsComboboxChange();
 }
 
-function onGetVerifiedEmissionsForPeriod(){
-  console.log("onGetVerifiedEmissionsForPeriod");    
-  var resultsJSON = JSON.parse(this.responseText);
+function dataForPeriod(responseText){
+  var resultsJSON = JSON.parse(responseText);
   var results = resultsJSON.results;
   var errors = resultsJSON.errors;
   
@@ -217,7 +255,26 @@ function onGetVerifiedEmissionsForPeriod(){
   stackedBarChartData = dataArray;
 
   createStackedBarChart();
+
 }
+
+function onGetVerifiedEmissionsForPeriod(){
+  console.log("onGetVerifiedEmissionsForPeriod");    
+  dataForPeriod(this.responseText);
+}
+function onGetAllowancesInAllocationForPeriod(){
+  console.log("onGetAllowancesInAllocationForPeriod");    
+  dataForPeriod(this.responseText);
+}
+function onGetOffsetsForPeriod(){
+  console.log("onGetOffsetsForPeriod");    
+  dataForPeriod(this.responseText);
+}
+function onGetSurrenderedUnitsForPeriod(){
+  console.log("onGetSurrenderedUnitsForPeriod");    
+  dataForPeriod(this.responseText);
+}
+
 
 function createStackedBarChart(){
     
