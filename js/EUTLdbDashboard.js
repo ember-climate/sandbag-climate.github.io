@@ -1,5 +1,5 @@
 
-var server_url = "http://localhost:7474/db/data/transaction/commit"
+var server_url = "http://52.50.32.206:7474/db/data/transaction/commit"
 var countries = [];
 var sectors = [];
 var periods = []; 
@@ -27,7 +27,7 @@ var EU_COUNTRIES_ARRAY = ["Austria","Belgium","Bulgaria","Croatia","Cyprus","Cze
 //console.log("hello hello!");
 
 onGetEUCountries();
-getSectors(server_url, onGetSectors);
+getSandbagSectors(server_url, onGetSectors);
 getPeriods(server_url, onGetPeriods);
 
 window.onresize = function () {
@@ -114,7 +114,6 @@ function onExportVerifiedEmissionsChartButtonClick(){
 
 
 function filterDataForLineChart(){
-    alert("I need to filter data!");
     calculateSurplusWithOffsets();
     lineChartData = lineChartDataBackup.filter(filterArrayBasedOnCheckboxesSelected);
     createLineChart(lineChartData);
@@ -208,10 +207,11 @@ function onGetSectors(){
 	var select = document.getElementById("sectors_combobox");
 	select.appendChild(option);
   };
-  //console.log("sectors", sectors);  
+    
+  console.log("lalalalal");  
     
   $("#sectors_combobox").selectpicker('refresh');
-  $("#sectors_combobox").selectpicker('val','Combustion of fuels');
+  $("#sectors_combobox").selectpicker('val','Cement and Lime');     
 
   sectorsLoaded = true;
   if(countriesLoaded){
@@ -396,9 +396,9 @@ function onComboBoxChange(){
         offsets_loaded = false;
         allowances_in_allocation_loaded = false;
 
-        getVerifiedEmissionsForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, onGetVerifiedEmissionsForCountryAndSector);
-        getOffsetsForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, onGetOffsetsForCountryAndSector);
-        getAllowancesInAllocationForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, onGetAllowancesInAllocationForCountryAndSector);
+        getVerifiedEmissionsForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, true, onGetVerifiedEmissionsForCountryAndSector);
+        getOffsetsForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, true, onGetOffsetsForCountryAndSector);
+        getAllowancesInAllocationForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, true, onGetAllowancesInAllocationForCountryAndSector);
         
     }
     

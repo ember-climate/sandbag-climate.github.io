@@ -38,6 +38,23 @@ function getSectors(serverURL, onLoadEnd){
 
 }
 
+function getSandbagSectors(serverURL, onLoadEnd){
+    var query = {
+	    "statements" : [ ]
+	};
+
+	var statementSt = "MATCH (s:SANDBAG_SECTOR) RETURN s.name ORDER BY s.name ASC";
+
+	query.statements.push({"statement":statementSt});
+
+	var xhr = new XMLHttpRequest();    
+	xhr.onloadend = onLoadEnd;
+	xhr.open("POST", serverURL, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Accept', 'application/json; charset=UTF-8');
+	xhr.send(JSON.stringify(query));
+}
+
 function getPeriods(serverURL, onLoadEnd){
 
 	var query = {
@@ -149,15 +166,26 @@ function getSurrenderedUnitsForPeriod(serverURL, periodName, onLoadEnd){
 	xhr.send(JSON.stringify(query));
 }
 
-function getVerifiedEmissionsForCountryAndSector(serverURL, countryNames, sectorNames, onLoadEnd ){
+function getVerifiedEmissionsForCountryAndSector(serverURL, countryNames, sectorNames, isSandbagSector, onLoadEnd ){
     var query = {
 	    "statements" : [ ]
 	};
-
-	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)," +
+    
+    var statementSt;
+    
+    if(isSandbagSector){
+        statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
+                        "(i)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD)" +
+                       "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " " +
+					   "RETURN sum(ve.value) AS Verified_Emissions, p.name ORDER BY p.name";
+    }else{
+        statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)," +
                         "(i)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD)" +
                        "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " " +
 					   "RETURN sum(ve.value) AS Verified_Emissions, p.name ORDER BY p.name";
+    }
+
+	
 
 	//console.log(statementSt);
 
@@ -172,15 +200,25 @@ function getVerifiedEmissionsForCountryAndSector(serverURL, countryNames, sector
 }
 
 
-function getOffsetsForCountryAndSector(serverURL, countryNames, sectorNames, onLoadEnd ){
+function getOffsetsForCountryAndSector(serverURL, countryNames, sectorNames, isSandbagSector, onLoadEnd ){
     var query = {
 	    "statements" : [ ]
 	};
 
-	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)" +
+	var statementSt;
+    
+    if(isSandbagSector){
+        statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)" +
+					   ", (i)-[off:OFFSETS]->(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
+                       "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " " +
+					   "RETURN sum(o.amount) AS Offsets, p.name ORDER BY p.name";
+    }else{
+        statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)" +
 					   ", (i)-[off:OFFSETS]->(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
                        "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " " +
 					   "RETURN sum(o.amount) AS Offsets, p.name ORDER BY p.name";
+    }
+    
 
 	console.log(statementSt);
 
@@ -195,16 +233,27 @@ function getOffsetsForCountryAndSector(serverURL, countryNames, sectorNames, onL
 }
 
 
-function getAllowancesInAllocationForCountryAndSector(serverURL, countryNames, sectorNames, onLoadEnd ){
+function getAllowancesInAllocationForCountryAndSector(serverURL, countryNames, sectorNames, isSandbagSector, onLoadEnd ){
 
 	var query = {
 	    "statements" : [ ]
 	};
 
-	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)," +
+	var statementSt;
+    
+    if(isSandbagSector){
+        statementSt= "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
+                        "(i)-[fa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +
+                        "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " " +
+					   "RETURN sum(fa.value) AS Allowances_in_Allocation, p.name ORDER BY p.name";
+    }else{
+        statementSt= "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)," +
                         "(i)-[fa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +
                         "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " " +
 					   "RETURN sum(fa.value) AS Allowances_in_Allocation, p.name ORDER BY p.name";
+    }
+    
+    
 
 	console.log(statementSt);
 
