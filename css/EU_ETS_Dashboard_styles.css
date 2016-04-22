@@ -1,0 +1,12 @@
+/* Absolute Center Spinner */
+.loading {
+    position: absolute;
+    display: block;
+    top: 50%;
+    left: 50%;
+}
+
+.grey_background {
+    background-color: rgba(0,0,0,0.1);
+}
+

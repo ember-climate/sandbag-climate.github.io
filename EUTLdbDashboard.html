@@ -22,6 +22,9 @@
     
     <!-- Bootstrap select -->
     <link href="./css/bootstrap-select.css" rel="stylesheet">
+    
+    <!-- EU ETS dashboard -->
+    <link href="./css/EU_ETS_Dashboard_styles.css" rel="stylesheet">
 
 
 
@@ -40,28 +43,14 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a class="navbar-brand" href="index.html">EUTL data browser v0.1</a>
+                <a class="navbar-brand" href="#">EU ETS dashboard v0.1</a>
             </div>
             <!-- /.navbar-header -->
 
             <ul class="nav navbar-top-links navbar-right">
-                
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                        <i class="fa fa-user fa-fw"></i>  <i class="fa fa-caret-down"></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-user">
-                        <li><a href="#"><i class="fa fa-user fa-fw"></i> User Profile</a>
-                        </li>
-                        <li><a href="#"><i class="fa fa-gear fa-fw"></i> Settings</a>
-                        </li>
-                        <li class="divider"></li>
-                        <li><a href="login.html"><i class="fa fa-sign-out fa-fw"></i> Logout</a>
-                        </li>
-                    </ul>
-                    <!-- /.dropdown-user -->
-                </li>
-                <!-- /.dropdown -->
+                <a href="http://www.sandbag.org.uk">
+                    <img src="images/sandbag_logo_small.png"/>
+                </a>     
             </ul>
             <!-- /.navbar-top-links -->
 
@@ -187,7 +176,9 @@
                         </div>
                         <!-- /.panel-heading -->
                         <div id="line_chart" class="panel-body" style="height:350px">
-                            
+                            <div id="spinner_div" class="loading" style="display:none">
+                                <i class="fa fa-refresh fa-spin fa-3x fa-fw margin-bottom"></i>
+                            </div>     
                         </div>
                         <!-- /.panel-body -->
                     </div>                    
@@ -206,7 +197,7 @@
                 <div class="col-md-12">
                     <ul class="nav nav-tabs">
                       <li role="presentation" class="active"><a data-toggle="tab" onclick="return changeStackedBarChart('verified emissions')">Verified Emissions</a></li>
-                      <li role="presentation"><a data-toggle="tab" onclick="return changeStackedBarChart('allowances in allocation')">Allowances in Allocation</a></li>
+                      <li role="presentation"><a data-toggle="tab" onclick="return changeStackedBarChart('free allocation')">Free Allocation</a></li>
                       <li role="presentation"><a data-toggle="tab" onclick="return changeStackedBarChart('offsets')">Offsets</a></li>
                     </ul>
                     <div class="panel panel-default">

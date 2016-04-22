@@ -97,7 +97,7 @@ function getVerifiedEmissionsForPeriod(serverURL, periodName, onLoadEnd){
 	xhr.send(JSON.stringify(query));
 }
 
-function getAllowancesInAllocationForPeriod(serverURL, periodName, onLoadEnd){
+function getFreeAllocationForPeriod(serverURL, periodName, onLoadEnd){
         
     var query = {
 	    "statements" : [ ]
@@ -106,7 +106,7 @@ function getAllowancesInAllocationForPeriod(serverURL, periodName, onLoadEnd){
 	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)," +
                         "(i)-[aa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +
                        "WHERE p.name = '" + periodName + "' " +
-					   "RETURN sum(aa.value) AS Allowances_in_Allocation, c.name, s.name ORDER BY c.name, s.name";
+					   "RETURN sum(aa.value) AS Free_Allocation, c.name, s.name ORDER BY c.name, s.name";
     
     console.log("statement!", statementSt);
 
@@ -233,7 +233,7 @@ function getOffsetsForCountryAndSector(serverURL, countryNames, sectorNames, isS
 }
 
 
-function getAllowancesInAllocationForCountryAndSector(serverURL, countryNames, sectorNames, isSandbagSector, onLoadEnd ){
+function getFreeAllocationForCountryAndSector(serverURL, countryNames, sectorNames, isSandbagSector, onLoadEnd ){
 
 	var query = {
 	    "statements" : [ ]
@@ -245,12 +245,12 @@ function getAllowancesInAllocationForCountryAndSector(serverURL, countryNames, s
         statementSt= "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
                         "(i)-[fa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +
                         "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " " +
-					   "RETURN sum(fa.value) AS Allowances_in_Allocation, p.name ORDER BY p.name";
+					   "RETURN sum(fa.value) AS Free_Allocation, p.name ORDER BY p.name";
     }else{
         statementSt= "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)," +
                         "(i)-[fa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +
                         "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " " +
-					   "RETURN sum(fa.value) AS Allowances_in_Allocation, p.name ORDER BY p.name";
+					   "RETURN sum(fa.value) AS Free_Allocation, p.name ORDER BY p.name";
     }
     
     
