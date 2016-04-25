@@ -57,6 +57,24 @@ $('#filter_line_chart_dropdown').on('click', function (event) {
     $(this).parent().toggleClass('open');
 });
 
+$('.nav li a').click(function (e) {
+    e.preventDefault();
+    if(e.currentTarget.getAttribute("id") == "multi_line_chart_button"){
+        $('#multi_line_chart_row').show();
+        $('#countries_sectors_row').show();
+        $('#periods_combo_box_row').hide();
+        $('#stacked_bar_chart_row').hide();
+        lineChart.draw(1000);
+    }else if(e.currentTarget.getAttribute("id") == "stacked_bar_chart_button"){
+        $('#multi_line_chart_row').hide();
+        $('#countries_sectors_row').hide();
+        $('#periods_combo_box_row').show();
+        $('#stacked_bar_chart_row').show();
+        stackedBarChart.draw(1000);
+    }
+    
+});
+
 
 function onLoad(){
 	$('.selectpicker').selectpicker();
@@ -66,6 +84,7 @@ function onLoad(){
 function disableLineChartPanelAndDropDowns(){
     $("#line_chart").addClass("grey_background");
     $("#spinner_div").show();
+    
 }
 
 function changeStackedBarChart(typeSt){
@@ -312,12 +331,12 @@ function createStackedBarChart(){
     
         stackedBarChart = new dimple.chart(svg, stackedBarChartData);
         // Fix the margins
-        stackedBarChart.setMargins("85px", "60px", "20px", "40px");
+        stackedBarChart.setMargins("85px", "20px", "20px", "50px");
         stackedBarChart.addMeasureAxis("y", "Verified Emissions");
         stackedBarChart.addCategoryAxis("x", "country");
         //y.addOrderRule("Date");
         stackedBarChart.addSeries("sector", dimple.plot.bar);
-        stackedBarChart.addLegend(60, 10, 510, 20, "right");
+        //stackedBarChart.addLegend(60, 10, 510, 20, "right");
         
         stacked_bar_chart_created = true;
         

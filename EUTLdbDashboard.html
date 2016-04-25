@@ -74,22 +74,22 @@
                             <a href="#"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
                         </li>
                         -->
-                        <!--
+                        
                         <li>
                             <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Charts<span class="fa arrow"></span></a>
                             <ul class="nav nav-second-level">
                                 
                                 <li>
-                                    <a href="flot.html">Flot Charts</a>
+                                    <a id="multi_line_chart_button" href="#">Multi line chart</a>
                                 </li>
                                 <li>
-                                    <a href="morris.html">Morris.js Charts</a>
+                                    <a id="stacked_bar_chart_button" href="#">Stacked bar chart</a>
                                 </li>
                                 
                             </ul>
                             
                         </li>
-                        -->
+                        
                         <li>
                             <a href="https://github.com/sandbag-climate/eutldb"><i class="fa fa-table fa-fw"></i>Github repo</a>
                         </li>
@@ -116,7 +116,7 @@
             </div>
             -->
             <!-- /.row -->
-            <div class="row">
+            <div class="row" id="countries_sectors_row">
                 <div class="col-xs-4">
                     <select class="selectpicker" multiple id="countries_combobox" onchange="onComboBoxChange()" data-actions-box="true">
                     </select> 
@@ -128,7 +128,7 @@
                 
             </div>
             <!-- /.row -->
-            <div class="row">
+            <div class="row" id="multi_line_chart_row">
                 <div class="col-md-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
@@ -186,14 +186,14 @@
                 <!-- /.col-md 12 -->
             </div>
             <!-- /.row -->
-            <div class="row">
+            <div id="periods_combo_box_row" class="row" style="display: none">
                 <div class="col-xs-4 " >
                     <select id="periods_combobox" class="selectpicker" onchange="onPeriodsComboboxChange()"  >
                     </select>
                 </div>                  
             </div>
             <!-- /.row -->
-            <div class="row">
+            <div id="stacked_bar_chart_row" class="row" style="display: none">
                 <div class="col-md-12">
                     <ul class="nav nav-tabs">
                       <li role="presentation" class="active"><a data-toggle="tab" onclick="return changeStackedBarChart('verified emissions')">Verified Emissions</a></li>
