@@ -272,16 +272,20 @@ function onGetPeriods(){
 
   for (var i = 0; i < periodsData.length; i++) {
   	var periodName = periodsData[i].row[0];
-  	periods.push(periodName);
+    //console.log("periodName'", periodName, "'");
+    if(periodName != "2008to2020"){
+        periods.push(periodName);
       
-    console.log("periodName",periodName);
+        console.log("periodName",periodName);
 
-  	var option = document.createElement("option");
-	option.value     = periodName;
-	option.innerHTML = periodName;
+        var option = document.createElement("option");
+        option.value     = periodName;
+        option.innerHTML = periodName;
 
-	var select = document.getElementById("periods_combobox");
-	select.appendChild(option);
+        var select = document.getElementById("periods_combobox");
+        select.appendChild(option);
+    }
+  	
   };
   //console.log("periods", periods);  
     
