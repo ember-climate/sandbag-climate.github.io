@@ -80,10 +80,10 @@ function getVerifiedEmissionsForPeriod(serverURL, periodName, onLoadEnd){
 	    "statements" : [ ]
 	};
 
-	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)," +
+	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
                         "(i)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD) " +
                        "WHERE p.name = '" + periodName + "' " +
-					   "RETURN sum(ve.value) AS Verified_Emissions, c.name, s.name ORDER BY c.name, s.name";
+					   "RETURN sum(ve.value) AS Verified_Emissions, c.name, ss.name ORDER BY c.name, ss.name";
     
     console.log("statement!", statementSt);
 
@@ -103,10 +103,10 @@ function getFreeAllocationForPeriod(serverURL, periodName, onLoadEnd){
 	    "statements" : [ ]
 	};
 
-	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)," +
+	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
                         "(i)-[aa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +
                        "WHERE p.name = '" + periodName + "' " +
-					   "RETURN sum(aa.value) AS Free_Allocation, c.name, s.name ORDER BY c.name, s.name";
+					   "RETURN sum(aa.value) AS Free_Allocation, c.name, s.name ORDER BY c.name, ss.name";
     
     console.log("statement!", statementSt);
 
@@ -126,10 +126,10 @@ function getOffsetsForPeriod(serverURL, periodName, onLoadEnd){
 	    "statements" : [ ]
 	};
 
-	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)," +
+	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
                         "(i)-[off:OFFSETS]->(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
                        "WHERE p.name = '" + periodName + "' " +
-					   "RETURN sum(o.amount) AS Offsets, c.name, s.name ORDER BY c.name, s.name";
+					   "RETURN sum(o.amount) AS Offsets, c.name, ss.name ORDER BY c.name, ss.name";
     
     console.log("statement!", statementSt);
 
