@@ -210,13 +210,13 @@ function getOffsetsForCountryAndSector(serverURL, countryNames, sectorNames, isS
     if(isSandbagSector){
         statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)" +
 					   ", (i)-[off:OFFSETS]->(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
-                       "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " " +
-					   "RETURN sum(o.amount) AS Offsets, p.name ORDER BY p.name";
+                       "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (o.unit_type = 'ERU' " +
+					   "OR o.unit_type = 'CER') RETURN sum(o.amount) AS Offsets, p.name ORDER BY p.name";
     }else{
         statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)" +
 					   ", (i)-[off:OFFSETS]->(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
-                       "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " " +
-					   "RETURN sum(o.amount) AS Offsets, p.name ORDER BY p.name";
+                       "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " AND (o.unit_type = 'ERU' " +
+					   "OR o.unit_type = 'CER') RETURN sum(o.amount) AS Offsets, p.name ORDER BY p.name";
     }
     
 
