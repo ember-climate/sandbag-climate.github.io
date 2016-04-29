@@ -369,7 +369,7 @@ function createLineChart(data){
 	  var x = lineChart.addCategoryAxis("x", "period");
 	  x.addOrderRule("period");
 	  var y = lineChart.addMeasureAxis("y", "tCO2e");
-      y.tickFormat = ',.4r';
+      y.tickFormat = ',';
 	  var series = lineChart.addSeries("type", dimple.plot.line);
 	  series.lineMarkers = true;
 	  series.interpolation = "cardinal";	  
