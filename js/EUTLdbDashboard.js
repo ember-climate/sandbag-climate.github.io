@@ -26,54 +26,72 @@ var EU_COUNTRIES_ARRAY = ["Austria","Belgium","Bulgaria","Croatia","Cyprus","Cze
 
 //console.log("hello hello!");
 
-onGetEUCountries();
-getSandbagSectors(server_url, onGetSectors);
-getPeriods(server_url, onGetPeriods);
-
-window.onresize = function () {
-    // As of 1.1.0 the second parameter here allows you to draw
-    // without reprocessing data.  This saves a lot on performance
-    // when you know the data won't have changed.
-    lineChart.draw(0, true);
-};
-
-//Handler for clicks outside of the dropdown menu to filter line surpluses chart
-$('body').on('click', function (e) {
+function initMainPage(){
     
-    if (!$('#filter_line_chart_dropdown').is(e.target) 
-        && $('#filter_line_chart_dropdown').has(e.target).length === 0 
-        && $('.open').has(e.target).length === 0
-    ) {
-        $('#filter_line_chart_dropdown').parent().removeClass('open');
-    }
-});
+    //Handler for clicks outside of the dropdown menu to filter line surpluses chart
+    $('body').on('click', function (e) {
 
-$('#countries_combobox').on('changed.bs.select', function(){
-    var selectedValue = $('#countries_combobox').selectpicker('val');
-    //console.log("selectedValue",selectedValue);
-});
+        if (!$('#filter_line_chart_dropdown').is(e.target) 
+            && $('#filter_line_chart_dropdown').has(e.target).length === 0 
+            && $('.open').has(e.target).length === 0
+        ) {
+            $('#filter_line_chart_dropdown').parent().removeClass('open');
+        }
+    });
 
-$('#filter_line_chart_dropdown').on('click', function (event) {
-    $(this).parent().toggleClass('open');
-});
+    $('#countries_combobox').on('changed.bs.select', function(){
+        var selectedValue = $('#countries_combobox').selectpicker('val');
+        //console.log("selectedValue",selectedValue);
+    });
 
-$('.nav li a').click(function (e) {
-    e.preventDefault();
-    if(e.currentTarget.getAttribute("id") == "multi_line_chart_button"){
-        $('#multi_line_chart_row').show();
-        $('#countries_sectors_row').show();
-        $('#periods_combo_box_row').hide();
-        $('#stacked_bar_chart_row').hide();
-        lineChart.draw(1000);
-    }else if(e.currentTarget.getAttribute("id") == "stacked_bar_chart_button"){
-        $('#multi_line_chart_row').hide();
-        $('#countries_sectors_row').hide();
-        $('#periods_combo_box_row').show();
-        $('#stacked_bar_chart_row').show();
-        stackedBarChart.draw(1000);
-    }
+    $('#filter_line_chart_dropdown').on('click', function (event) {
+        $(this).parent().toggleClass('open');
+    });
     
-});
+    
+    window.onresize = function () {
+        // As of 1.1.0 the second parameter here allows you to draw
+        // without reprocessing data.  This saves a lot on performance
+        // when you know the data won't have changed.
+        lineChart.draw(0, true);
+    };
+
+    
+    onGetEUCountries();
+    getSandbagSectors(server_url, onGetSectors);
+    getPeriods(server_url, onGetPeriods);
+}
+
+function initMenus(){
+    $('.nav li a').click(function (e) {
+    
+        if(e.currentTarget.getAttribute("id") == "multi_line_chart_button"){
+            e.preventDefault();
+            $('#multi_line_chart_row').show();
+            $('#countries_sectors_row').show();
+            $('#about_row').hide();
+            $('#periods_combo_box_row').hide();
+            $('#stacked_bar_chart_row').hide();
+            lineChart.draw(1000);
+        }else if(e.currentTarget.getAttribute("id") == "stacked_bar_chart_button"){
+            e.preventDefault();
+            $('#multi_line_chart_row').hide();
+            $('#countries_sectors_row').hide();
+            $('#about_row').hide();
+            $('#periods_combo_box_row').show();
+            $('#stacked_bar_chart_row').show();
+            stackedBarChart.draw(1000);
+        }else if(e.currentTarget.getAttribute("id") == "about_button"){
+            e.preventDefault();
+            $('#multi_line_chart_row').hide();
+            $('#countries_sectors_row').hide();
+            $('#periods_combo_box_row').hide();
+            $('#stacked_bar_chart_row').hide();
+            $('#about_row').show();
+        }
+
+    });
+}
 
 
 function onLoad(){
@@ -84,6 +102,9 @@ function onLoad(){
 function disableLineChartPanelAndDropDowns(){
     $("#line_chart").addClass("grey_background");
     $("#spinner_div").show();
+    
+    $("#sectors_combobox").prop("disabled", true);
+    $("#countries_combobox").prop("disabled", true);
     
 }
 
@@ -441,6 +462,8 @@ function dataForLineChartLoaded(){
     filterDataForLineChart(); 
     $("#line_chart").removeClass("grey_background");
     $("#spinner_div").hide();
+    $("#countries_combobox").prop("disabled", false);
+    $("#sectors_combobox").prop("disabled", false);
 }
 
 function onGetVerifiedEmissionsForCountryAndSector(){

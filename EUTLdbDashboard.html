@@ -84,7 +84,7 @@
                                 </li>
                                 <li>
                                     <a id="stacked_bar_chart_button" href="#">Stacked bar chart</a>
-                                </li>
+                                </li>                                
                                 
                             </ul>
                             
@@ -92,6 +92,9 @@
                         
                         <li>
                             <a href="https://github.com/sandbag-climate/eutldb"><i class="fa fa-table fa-fw"></i>Github repo</a>
+                        </li>
+                        <li>
+                            <a id="about_button" href="EU_ETS_Dashboard_About.html"><i class="fa fa-edit fa-fw"></i>About</a>
                         </li>
                         <!--
                         <li>
@@ -221,11 +224,56 @@
                     </div>                    
                 </div>
                 <!-- /.col-md 12 -->
+            </div>            
+            <!-- /.row -->
+            <div class="row" style="display: none" id="about_row"> 
+                 <div class="col-lg-10">
+                     <h3 class="page-header">About</h3>
+                     <p>
+                            The EU ETS dashboard provides a user-friendly access to emission trading data extracted from the European Union Transaction Log (EUTL) together with other data integrated by Sandbag's team such as NACE codes and a more meaningful sectors aggregation.                        
+                         
+                     </p>
+                     <ul style="list-style-type:square">
+                         <li>The ETS data shown in this tool was extracted from the European Commission’s <a href="http://ec.europa.eu/environment/ets/">EUTL</a> on <strong>May 3rd 2016</strong>. </li>
+                         <li>Aircraft operators data is not included or taken into account in any way for any of the charts made available as part of the interface.</li>
+                         <li>When calculating offset values only those with unit types <i>CER</i> or <i>ERU</i> are used.</li>
+                     </ul>
+                     <h4>Licensing</h4>
+                     <p>
+                         This software is 100% open source and released under <a href="http://www.gnu.org/licenses/agpl-3.0.en.html">AGPLv3</a> license.
+                     </p>
+                     <h4>Developers</h4>
+                     <p>
+                         This tool was developed by the following <a href="http://www.sandbag.org.uk">Sandbag</a> team members:
+                         <ul style="list-style-type:square">
+                             <li><a href="http://www.twitter.com/pablopareja"><strong>Pablo Pareja</strong></a> - Main developer and project leader.</li>
+                         </ul>
+                     </p>
+                 </div>  
             </div>
-            
             <!-- /.row -->
         </div>
         <!-- /#page-wrapper -->
+    
+    <div class="modal fade" id="welcome_modal">
+      <div class="modal-dialog">
+        <div class="modal-content">
+          <div class="modal-header">
+            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
+            <h4 class="modal-title">EU ETS Dashboard</h4>
+          </div>
+          <div class="modal-body">
+              <h3 class="page-header">Welcome!</h3>
+              <p>Welcome to the EU ETS Dashboard, a tool that provides a user-friendly access to emission trading data extracted from the European Union Transaction Log (EUTL) together with other data integrated by Sandbag's team such as NACE codes, a more meaningful sectors aggregation, auction data, etc...  
+              </p>
+              <p>For more information about the tool please check the <strong>About</strong> section.</p>
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+          </div>
+        </div><!-- /.modal-content -->
+      </div><!-- /.modal-dialog -->
+    </div><!-- /.modal -->
 
     </div>
     <!-- /#wrapper -->
@@ -246,6 +294,14 @@
 
     <script src="./js/EUTLdbDashboard.js"></script>
     
+    <script>
+    
+        $('#welcome_modal').modal('show');
+        
+        initMenus();
+        initMainPage();
+    
+    </script>
 
 </body>
 
