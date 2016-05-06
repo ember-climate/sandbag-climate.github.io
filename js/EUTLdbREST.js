@@ -106,7 +106,7 @@ function getFreeAllocationForPeriod(serverURL, periodName, onLoadEnd){
 	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
                         "(i)-[aa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +
                        "WHERE p.name = '" + periodName + "' " +
-					   "RETURN sum(aa.value) AS Free_Allocation, c.name, s.name ORDER BY c.name, ss.name";
+					   "RETURN sum(aa.value) AS Free_Allocation, c.name, ss.name ORDER BY c.name, ss.name";
     
     console.log("statement!", statementSt);
 
