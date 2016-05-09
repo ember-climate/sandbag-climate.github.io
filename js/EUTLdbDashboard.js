@@ -41,7 +41,9 @@ function initMainPage(){
 
     $('#countries_combobox').on('changed.bs.select', function(){
         var selectedValue = $('#countries_combobox').selectpicker('val');
-        //console.log("selectedValue",selectedValue);
+        if(selectedValue == null){
+            
+        }
     });
 
     $('#filter_line_chart_dropdown').on('click', function (event) {
@@ -60,6 +62,10 @@ function initMainPage(){
     onGetEUCountries();
     getSandbagSectors(server_url, onGetSectors);
     getPeriods(server_url, onGetPeriods);
+}
+
+function noValueSelectedForCountriesOrSectors(){
+    
 }
 
 function initMenus(){
@@ -411,16 +417,20 @@ function onComboBoxChange(){
 	//var selectPeriod = document.getElementById("periods_combobox");
 	//var selectedPeriod = selectPeriod.options[selectPeriod.selectedIndex].text;
     
-    disableLineChartPanelAndDropDowns();
+    
 
 	var selectedCountry = $("#countries_combobox").selectpicker('val');
 	
 	var selectedSector = $("#sectors_combobox").selectpicker('val');
     
-    console.log("selectedCountry",selectedCountry);
-    console.log("selectedSector",selectedSector);
+//    console.log("selectedCountry",selectedCountry);
+//    console.log("selectedSector",selectedSector);
+    
     
     if(selectedCountry != null && selectedSector != null){
+        
+        disableLineChartPanelAndDropDowns();
+        
         var selectedSectorSt = "[";
         var selectedCountrySt = "[";
 
