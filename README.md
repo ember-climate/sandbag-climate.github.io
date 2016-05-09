@@ -15,3 +15,11 @@ This software is 100% open source and released under AGPLv3 license.
 This tool was developed by the following Sandbag team members:
 
 * Pablo Pareja - Main developer and project leader.
+
+## Technologies used
+
+### Back-end
+
+* [Neo4j](http://www.neo4j.com) Graph database  - _A highly scalable native graph database that leverages data relationships as first-class entities_
+
+### Front-end
