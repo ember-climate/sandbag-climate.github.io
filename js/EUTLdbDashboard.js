@@ -332,8 +332,14 @@ function dataForPeriod(responseText){
 
   for (var i = 0; i < tempData.length; i++) {
   	var rows = tempData[i].row; 
-  	dataArray.push({"Verified Emissions":rows[0], "country":rows[1], "sector":rows[2]});      
-  }; 
+    var tempArray = [];
+    tempArray["tCO2e"] = rows[0];
+    tempArray["country"] = rows[1];
+    tempArray["sector"] = rows[2];  
+    dataArray.push(tempArray);
+      
+  	//dataArray.push({dataType:rows[0], "country":rows[1], "sector":rows[2]});      
+  };
     
   stackedBarChartData = dataArray;
 
@@ -363,7 +369,7 @@ function createStackedBarChart(){
         stackedBarChart = new dimple.chart(svg, stackedBarChartData);
         // Fix the margins
         stackedBarChart.setMargins("85px", "20px", "20px", "50px");
-        stackedBarChart.addMeasureAxis("y", "Verified Emissions");
+        stackedBarChart.addMeasureAxis("y", "tCO2e");
         stackedBarChart.addCategoryAxis("x", "country");
         //y.addOrderRule("Date");
         stackedBarChart.addSeries("sector", dimple.plot.bar);
@@ -391,7 +397,7 @@ function createLineChart(data){
    	  lineChart = new dimple.chart(svg, lineChartData);
    	         
       // Fix the margins
-      lineChart.setMargins("85px", "60px", "20px", "40px");
+      lineChart.setMargins("95px", "60px", "20px", "40px");
 
 	  var x = lineChart.addCategoryAxis("x", "period");
 	  x.addOrderRule("period");
