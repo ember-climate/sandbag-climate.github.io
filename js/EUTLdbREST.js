@@ -74,6 +74,102 @@ function getPeriods(serverURL, onLoadEnd){
 
 }
 
+function getVerifiedEmissionsForAllPeriods(serverURL, onLoadEnd){
+    var query = {
+	    "statements" : [ ]
+	};
+
+	var statementSt = "MATCH ()-[ve:VERIFIED_EMISSIONS]->(p:PERIOD) " +
+				      "RETURN sum(ve.value) AS Verified_Emissions, p.name AS Period ORDER BY p.name";
+    
+	query.statements.push({"statement":statementSt});
+
+	var xhr = new XMLHttpRequest();    
+	xhr.onloadend = onLoadEnd;
+	xhr.open("POST", serverURL, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Accept', 'application/json; charset=UTF-8');
+	xhr.send(JSON.stringify(query));
+}
+
+function getFreeAllocationForAllPeriods(serverURL, onLoadEnd){
+    var query = {
+	    "statements" : [ ]
+	};
+
+	var statementSt = "MATCH ()-[aa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +
+				      "RETURN sum(aa.value) AS Free_Allocation, p.name AS Period ORDER BY p.name";
+    
+	query.statements.push({"statement":statementSt});
+
+	var xhr = new XMLHttpRequest();    
+	xhr.onloadend = onLoadEnd;
+	xhr.open("POST", serverURL, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Accept', 'application/json; charset=UTF-8');
+	xhr.send(JSON.stringify(query));
+}
+
+function getLegalCapForAllPeriods(serverURL, onLoadEnd){
+    var query = {
+	    "statements" : [ ]
+	};
+
+	var statementSt = "MATCH ()-[lc:LEGAL_CAP]->(p:PERIOD) " +
+                    "RETURN lc.amount AS Legal_Cap, p.name AS Period ORDER BY p.name";
+    
+	query.statements.push({"statement":statementSt});
+
+	var xhr = new XMLHttpRequest();    
+	xhr.onloadend = onLoadEnd;
+	xhr.open("POST", serverURL, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Accept', 'application/json; charset=UTF-8');
+	xhr.send(JSON.stringify(query));
+}
+
+
+function getOffsetsForAllPeriods(serverURL, onLoadEnd){
+    var query = {
+	    "statements" : [ ]
+	};
+
+	var statementSt = "MATCH (o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
+                    "WHERE (o.unit_type = 'ERU' OR o.unit_type = 'CER') " +
+                    "RETURN sum(o.amount) AS Offsets, p.name AS Period ORDER BY p.name";
+    
+    console.log("statement!", statementSt);
+
+	query.statements.push({"statement":statementSt});
+
+	var xhr = new XMLHttpRequest();    
+	xhr.onloadend = onLoadEnd;
+	xhr.open("POST", serverURL, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Accept', 'application/json; charset=UTF-8');
+	xhr.send(JSON.stringify(query));
+}
+
+function getAuctionedForAllPeriods(serverURL, onLoadEnd){
+    var query = {
+	    "statements" : [ ]
+	};
+
+	var statementSt = "MATCH (c:COUNTRY)-[a:AUCTIONED]->(p:PERIOD) "+
+					   "RETURN sum(a.amount) AS Auctioned, p.name AS Period ORDER BY p.name";
+    
+    console.log("statement!", statementSt);
+
+	query.statements.push({"statement":statementSt});
+
+	var xhr = new XMLHttpRequest();    
+	xhr.onloadend = onLoadEnd;
+	xhr.open("POST", serverURL, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Accept', 'application/json; charset=UTF-8');
+	xhr.send(JSON.stringify(query));
+}
+
 function getVerifiedEmissionsForPeriod(serverURL, periodName, onLoadEnd){
     
     var query = {
