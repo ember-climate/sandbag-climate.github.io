@@ -104,7 +104,7 @@ function noValueSelectedForCountriesOrSectors(){
 function initMenus(){
     $('.nav li a').click(function (e) {
     
-        if(e.currentTarget.getAttribute("id") == "multi_line_chart_button"){
+        if(e.currentTarget.getAttribute("id") == "country_sector_chart_button"){
             e.preventDefault();
             $('#multi_line_chart_row').show();
             $('#countries_sectors_row').show();
@@ -293,9 +293,9 @@ function onGetEUCountries(){
   $("#countries_combobox").selectpicker('val','Austria');
 
   countriesLoaded = true;
-//  if(sectorsLoaded){
-//  	onComboBoxChange();
-//  }
+  if(sectorsLoaded){
+  	onComboBoxChange();
+  }
 
 }
 
@@ -320,15 +320,14 @@ function onGetSectors(){
 	select.appendChild(option);
   };
     
-  console.log("lalalalal");  
     
   $("#sectors_combobox").selectpicker('refresh');
   $("#sectors_combobox").selectpicker('val','Cement and Lime');     
 
   sectorsLoaded = true;
-//  if(countriesLoaded){
-//  	onComboBoxChange();
-//  }     
+  if(countriesLoaded){
+  	onComboBoxChange();
+  }     
 }
 
 function onPeriodsComboboxChange(){
@@ -586,7 +585,7 @@ function createEUWideChart(data){
     euWideChartData = data;
     
     if(!eu_wide_chart_created){
-   	  var svg = dimple.newSvg("#line_chart", "100%", "100%");
+   	  var svg = dimple.newSvg("#eu_wide_chart", "100%", "100%");
 
    	  euWideChart = new dimple.chart(svg, euWideChartData);
    	         
@@ -642,13 +641,7 @@ function createLineChart(data){
 	  lineSeries.lineMarkers = true;
 	  lineSeries.interpolation = "cardinal";	
       
-      
-       
-     console.log(lineChart.series);
-       
-	  
-       
-      
+            
       lineChart.addLegend(20, 10, "95%", 300, "left");
       
 
