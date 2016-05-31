@@ -82,7 +82,7 @@ function initMainPage(){
         // As of 1.1.0 the second parameter here allows you to draw
         // without reprocessing data.  This saves a lot on performance
         // when you know the data won't have changed.
-        lineChart.draw(0, true);
+        //lineChart.draw(0, true);
     };
 
     
@@ -174,6 +174,18 @@ function changeStackedBarChart(typeSt){
     }
     
     onPeriodsComboboxChange();
+}
+
+function onExportEUWideButtonClick(){
+    var dataString = "data:text/csv;charset=utf-8,Period,tCO2e,type\n";
+    
+    for(var i=0; i < euWideChartData.length; i++){
+        var row = euWideChartData[i];
+        dataString += row.period + "," + row.tCO2e + "," + row.type + "\n";
+    }
+        
+    var encodedUri = encodeURI(dataString);
+    window.open(encodedUri);
 }
 
 function onExportLineChartButtonClick(){
@@ -788,9 +800,9 @@ function filterEUWideArrayBasedOnCheckboxesSelected(value){
     
     var tempType =  value.type;
         
-    if(tempType == "Verified_Emissions"){
+    if(tempType == "Verified Emissions"){
         return includeVerifiedEmissions;
-    }else if(tempType == "Free_Allocation"){
+    }else if(tempType == "Free Allocation"){
         return includeFreeAllocation;
     }else if(tempType == "Offsets"){
         return includeOffsets;
