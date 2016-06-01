@@ -90,6 +90,9 @@ function initMainPage(){
     getSandbagSectors(server_url, onGetSectors);
     getPeriods(server_url, onGetPeriods);
     
+    $("#eu_wide_chart").addClass("grey_background");
+    $("#eu_wide_spinner_div").show();
+    
     getAuctionedForAllPeriods(server_url, onGetAuctionedForAllPeriods);
     getOffsetsForAllPeriods(server_url, onGetOffsetsForAllPeriods);
     getVerifiedEmissionsForAllPeriods(server_url, onGetVerifiedEmissionsForAllPeriods);
@@ -580,6 +583,9 @@ function createStackedBarChart(){
 
 
 function createEUWideChart(data){
+    
+    $("#eu_wide_chart").removeClass("grey_background");
+    $("#eu_wide_spinner_div").hide();
     
     //alert("createEUWideChart")
     euWideChartData = data;
