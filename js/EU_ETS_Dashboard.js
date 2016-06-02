@@ -10,6 +10,8 @@ var euWideChartDataBackup = [];
 var euWideChart;
 var barSeriesEUWide;
 var lineSeriesEUWide;
+var surplusDataArrayEUWide = [];
+var surplusAccumulatedDataArrayEUWide = [];
 
 var lineChartDataBackup = [];
 var lineChartData = [];
@@ -85,6 +87,12 @@ function initMainPage(){
         //lineChart.draw(0, true);
     };
 
+    
+    //------INITIALIZING SURPLUS DATA ARRAY------
+    for(var i=2005;i<=2015;i++){
+        surplusDataArrayEUWide[i] = 0;
+    }
+    //-------------------------------------------
     
     onGetEUCountries();
     getSandbagSectors(server_url, onGetSectors);
@@ -422,10 +430,17 @@ function onGetFreeAllocationForAllPeriods(){
   for (var i = 0; i < tempData.length; i++) {
   	var rows = tempData[i].row; 
     var tempArray = [];
-    tempArray["tCO2e"] = rows[0];
-    tempArray["period"] = rows[1];
+    var tempPeriod = rows[1];
+    var tempValue = rows[0];
+      
+    tempArray["tCO2e"] = tempValue;
+    tempArray["period"] = tempPeriod;
     tempArray["type"] = "Free Allocation";
-    euWideChartDataBackup.push(tempArray);        
+    euWideChartDataBackup.push(tempArray);     
+      
+    //---updating surplus data array EU wide---
+    surplusDataArrayEUWide[tempPeriod] += tempValue;
+    //-----------------------------------------
   }
     
     free_allocation_eu_wide_loaded = true;
@@ -467,16 +482,23 @@ function onGetVerifiedEmissionsForAllPeriods(){
   var results = resultsJSON.results;
   var errors = resultsJSON.errors;
   var tempData = results[0].data;
-    
-  //console.log("this.responseText", this.responseText);
-    
+        
   for (var i = 0; i < tempData.length; i++) {
+      
   	var rows = tempData[i].row; 
     var tempArray = [];
-    tempArray["tCO2e"] = rows[0];
-    tempArray["period"] = rows[1];
+    var tempPeriod = rows[1];
+    var tempValue = rows[0];
+      
+    tempArray["tCO2e"] = tempValue;
+    tempArray["period"] = tempPeriod;
     tempArray["type"] = "Verified Emissions";
     euWideChartDataBackup.push(tempArray);        
+      
+    //---updating surplus data array EU wide---
+    surplusDataArrayEUWide[tempPeriod] -= tempValue;
+    //-----------------------------------------
+      
   };
     
     
@@ -500,11 +522,18 @@ function onGetAuctionedForAllPeriods(){
     
   for (var i = 0; i < tempData.length; i++) {
   	var rows = tempData[i].row; 
+    var tempPeriod = rows[1];
+    var tempValue = rows[0];
     var tempArray = [];
-    tempArray["tCO2e"] = rows[0];
-    tempArray["period"] = rows[1];
+      
+    tempArray["tCO2e"] = tempValue;
+    tempArray["period"] = tempPeriod;
     tempArray["type"] = "Auctioned"; 
-    euWideChartDataBackup.push(tempArray);        
+    euWideChartDataBackup.push(tempArray);  
+      
+    //---updating surplus data array EU wide---
+    surplusDataArrayEUWide[tempPeriod] += tempValue;
+    //-----------------------------------------
   };
     
     auctioned_eu_wide_loaded = true;
@@ -527,10 +556,17 @@ function onGetOffsetsForAllPeriods(){
   for (var i = 0; i < tempData.length; i++) {
   	var rows = tempData[i].row; 
     var tempArray = [];
-    tempArray["tCO2e"] = rows[0];
-    tempArray["period"] = rows[1];
+    var tempPeriod = rows[1];
+    var tempValue = rows[0];
+      
+    tempArray["tCO2e"] = tempValue;
+    tempArray["period"] = tempPeriod;
     tempArray["type"] = "Offsets";
     euWideChartDataBackup.push(tempArray);
+      
+    //---updating surplus data array EU wide---
+    surplusDataArrayEUWide[tempPeriod] += tempValue;
+    //-----------------------------------------
         
   };
     
@@ -619,7 +655,7 @@ function createEUWideChart(data){
        
    }
     barSeriesEUWide.data = dimple.filterData(data, "type", ["Free Allocation", "Offsets", "Auctioned"]);
-    lineSeriesEUWide.data = dimple.filterData(data, "type", ["Verified Emissions", "Legal Cap"]);
+    lineSeriesEUWide.data = dimple.filterData(data, "type", ["Verified Emissions", "Legal Cap", "Accumulated Balance"]);
    euWideChart.draw(1000);
 }
 
@@ -788,6 +824,26 @@ function onGetFreeAllocationForCountryAndSector(){
   }
 }
 
+function calculateCumulativeSurplusEUWide(){
+    
+    var accumulatedAmount = 0;
+    
+    for(i=2005;i<=2015;i++){
+        accumulatedAmount += surplusDataArrayEUWide[i];
+        surplusAccumulatedDataArrayEUWide[i] = accumulatedAmount;    
+        
+        var tempArray = [];
+        tempArray["tCO2e"] = surplusAccumulatedDataArrayEUWide[i];
+        tempArray["period"] = i;
+        tempArray["type"] = "Accumulated Balance";
+        
+        euWideChartDataBackup.push(tempArray); 
+        
+        
+    }
+        
+}
+
 
 function filterEUWideArrayBasedOnCheckboxesSelected(value){
     var includeVerifiedEmissions = $('#verified_emissions_eu_wide_checkbox:checked').length == 1;
@@ -795,6 +851,7 @@ function filterEUWideArrayBasedOnCheckboxesSelected(value){
     var includeFreeAllocation = $('#free_allocation_eu_wide_checkbox:checked').length == 1;
     var includeAuctioned = $('#auctioned_eu_wide_checkbox:checked').length == 1;
     var includeLegalCap = $('#legal_cap_eu_wide_checkbox:checked').length == 1;
+    var includeAccumulatedBalance = $('#accumulated_balance_eu_wide_checkbox:checked').length == 1;
     
     
     var tempType =  value.type;
@@ -809,6 +866,8 @@ function filterEUWideArrayBasedOnCheckboxesSelected(value){
         return includeAuctioned;
     }else if(tempType == "Legal Cap"){
         return includeLegalCap;
+    }else if(tempType == "Accumulated Balance"){
+        return includeAccumulatedBalance;
     }else{        
         return false;
     }
@@ -836,8 +895,14 @@ function filterArrayBasedOnCheckboxesSelected(value) {
 
 function allEUWideLoaded(){
     
-    return verified_emissions_eu_wide_loaded == true && free_allocation_eu_wide_loaded == true &&
+    var everythingLoaded = verified_emissions_eu_wide_loaded == true && free_allocation_eu_wide_loaded == true &&
         offsets_eu_wide_loaded == true && auctioned_eu_wide_loaded == true && legal_cap_eu_wide_loaded == true;
+    
+    if(everythingLoaded == true){
+        calculateCumulativeSurplusEUWide();
+    }
+    
+    return everythingLoaded;
 }
 
 
