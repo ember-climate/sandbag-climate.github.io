@@ -828,7 +828,7 @@ function calculateCumulativeSurplusEUWide(){
     
     var accumulatedAmount = 0;
     
-    for(i=2005;i<=2015;i++){
+    for(i=2008;i<=2015;i++){
         accumulatedAmount += surplusDataArrayEUWide[i];
         surplusAccumulatedDataArrayEUWide[i] = accumulatedAmount;    
         
@@ -837,8 +837,7 @@ function calculateCumulativeSurplusEUWide(){
         tempArray["period"] = i;
         tempArray["type"] = "Accumulated Balance";
         
-        euWideChartDataBackup.push(tempArray); 
-        
+        euWideChartDataBackup.push(tempArray);         
         
     }
         
