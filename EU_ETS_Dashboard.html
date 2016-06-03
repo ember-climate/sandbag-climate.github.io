@@ -25,6 +25,9 @@
     
     <!-- EU ETS dashboard -->
     <link href="./css/EU_ETS_Dashboard_styles.css" rel="stylesheet">
+    
+    <!-- awesome bootstrap checkbox -->
+    <link href="./css/awesome-bootstrap-checkbox.css" rel="stylesheet">
 
 
 
@@ -139,7 +142,13 @@
                         <div class="panel-heading">
                             <i class="fa fa-bar-chart-o fa-fw"></i> EU wide chart
                             <div class="pull-right">
-                                <div class="btn-group">
+                                <div class="checkbox btn-group">
+                                    <input onclick="includeAviationDataCheckboxClick()" type="checkbox" id="include_aviation_data_eu_wide_checkbox" checked="checked">
+                                    <label for="include_aviation_data_eu_wide_checkbox">
+                                        Include Aviation data
+                                    </label>
+                                </div>  
+                                <div class="btn-group">                                                                      
                                     <button id="export_eu_wide_chart" type="button" class="btn btn-default btn-xs " 
                                             onclick="onExportEUWideButtonClick()">
                                         Export
@@ -152,22 +161,28 @@
                                     </button>
                                     <div class="list-group dropdown-menu pull-right" data-toggle="items"  >     
                                         <div class="checkbox">
-                                          <label><input onclick="filterDataForEUWideChart()" id="offsets_eu_wide_checkbox" type="checkbox" checked="checked">Offsets</label>
+                                            <input onclick="filterDataForEUWideChart()" id="offsets_eu_wide_checkbox" type="checkbox" checked="checked">
+                                          <label for="offsets_eu_wide_checkbox">Offsets</label>
                                         </div>
                                         <div class="checkbox">
-                                          <label><input onclick="filterDataForEUWideChart()" id="free_allocation_eu_wide_checkbox" type="checkbox" checked="checked">Free Allocation</label>
+                                            <input onclick="filterDataForEUWideChart()" id="free_allocation_eu_wide_checkbox" type="checkbox" checked="checked">
+                                          <label for="free_allocation_eu_wide_checkbox">Free Allocation</label>
                                         </div>
                                         <div class="checkbox">
-                                          <label><input onclick="filterDataForEUWideChart()" id="verified_emissions_eu_wide_checkbox" type="checkbox" checked="checked">Verified Emissions</label>
+                                            <input onclick="filterDataForEUWideChart()" id="verified_emissions_eu_wide_checkbox" type="checkbox" checked="checked">
+                                          <label for="verified_emissions_eu_wide_checkbox">Verified Emissions</label>
                                         </div>    
                                         <div class="checkbox">
-                                          <label><input onclick="filterDataForEUWideChart()" id="auctioned_eu_wide_checkbox" type="checkbox" checked="checked">Auctioned</label>
+                                            <input onclick="filterDataForEUWideChart()" id="auctioned_eu_wide_checkbox" type="checkbox" checked="checked">
+                                          <label for="auctioned_eu_wide_checkbox">Auctioned</label>
                                         </div>   
                                         <div class="checkbox">
-                                          <label><input onclick="filterDataForEUWideChart()" id="legal_cap_eu_wide_checkbox" type="checkbox" checked="checked">Legal Cap</label>
+                                            <input onclick="filterDataForEUWideChart()" id="legal_cap_eu_wide_checkbox" type="checkbox" checked="checked">
+                                          <label for="legal_cap_eu_wide_checkbox">Legal Cap</label>
                                         </div>
                                         <div class="checkbox">
-                                          <label><input onclick="filterDataForEUWideChart()" id="accumulated_balance_eu_wide_checkbox" type="checkbox" checked="checked">Accumulated Balance</label>
+                                            <input onclick="filterDataForEUWideChart()" id="accumulated_balance_eu_wide_checkbox" type="checkbox" checked="checked">
+                                          <label for="accumulated_balance_eu_wide_checkbox">Accumulated Balance</label>
                                         </div>
                                     </div> 
                                 </div>
@@ -205,13 +220,16 @@
                                     <div class="list-group dropdown-menu pull-right" data-toggle="items"  >
                                                                                 
                                         <div class="checkbox">
-                                          <label><input onclick="filterDataForLineChart()" id="offsets_checkbox" type="checkbox" checked="checked">Offsets</label>
+                                            <input onclick="filterDataForLineChart()" id="offsets_checkbox" type="checkbox" checked="checked">
+                                          <label for="offsets_checkbox">Offsets</label>
                                         </div>
                                         <div class="checkbox">
-                                          <label><input onclick="filterDataForLineChart()" id="free_allocation_checkbox" type="checkbox" checked="checked">Free Allocation</label>
+                                            <input onclick="filterDataForLineChart()" id="free_allocation_checkbox" type="checkbox" checked="checked">
+                                          <label for="free_allocation_checkbox">Free Allocation</label>
                                         </div>
                                         <div class="checkbox">
-                                          <label><input onclick="filterDataForLineChart()" id="verified_emissions_checkbox" type="checkbox" checked="checked">Verified Emissions</label>
+                                            <input onclick="filterDataForLineChart()" id="verified_emissions_checkbox" type="checkbox" checked="checked">
+                                          <label for="verified_emissions_checkbox">Verified Emissions</label>
                                         </div>
                                         <!--
                                         <div class="checkbox">

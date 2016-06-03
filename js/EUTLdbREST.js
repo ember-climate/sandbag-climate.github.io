@@ -73,13 +73,21 @@ function getPeriods(serverURL, onLoadEnd){
 
 }
 
-function getVerifiedEmissionsForAllPeriods(serverURL, onLoadEnd){
+function getVerifiedEmissionsForAllPeriods(serverURL, includeAviation, onLoadEnd){
     var query = {
 	    "statements" : [ ]
 	};
-
-	var statementSt = "MATCH ()-[ve:VERIFIED_EMISSIONS]->(p:PERIOD) " +
+    
+	var statementSt;
+    
+    if(includeAviation == true){
+        statementSt = "MATCH ()-[ve:VERIFIED_EMISSIONS]->(p:PERIOD) " +
 				      "RETURN sum(ve.value) AS Verified_Emissions, p.name AS Period ORDER BY p.name";
+    }else{
+        statementSt = "MATCH (i:INSTALLATION)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD) " +
+				      "RETURN sum(ve.value) AS Verified_Emissions, p.name AS Period ORDER BY p.name";
+    }    
+    
     
 	query.statements.push({"statement":statementSt});
 
@@ -91,13 +99,20 @@ function getVerifiedEmissionsForAllPeriods(serverURL, onLoadEnd){
 	xhr.send(JSON.stringify(query));
 }
 
-function getFreeAllocationForAllPeriods(serverURL, onLoadEnd){
+function getFreeAllocationForAllPeriods(serverURL, includeAviation, onLoadEnd){
     var query = {
 	    "statements" : [ ]
 	};
 
-	var statementSt = "MATCH ()-[aa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +
+	var statementSt;
+    
+    if(includeAviation == true){
+        statementSt = "MATCH ()-[aa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +
 				      "RETURN sum(aa.value) AS Free_Allocation, p.name AS Period ORDER BY p.name";
+    }else{
+        statementSt = "MATCH (i:INSTALLATION)-[aa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +
+				      "RETURN sum(aa.value) AS Free_Allocation, p.name AS Period ORDER BY p.name";
+    }
     
 	query.statements.push({"statement":statementSt});
 
@@ -109,13 +124,22 @@ function getFreeAllocationForAllPeriods(serverURL, onLoadEnd){
 	xhr.send(JSON.stringify(query));
 }
 
-function getLegalCapForAllPeriods(serverURL, onLoadEnd){
+function getLegalCapForAllPeriods(serverURL, includeAviation, onLoadEnd){
     var query = {
 	    "statements" : [ ]
 	};
 
-	var statementSt = "MATCH ()-[lc:LEGAL_CAP]->(p:PERIOD) " +
+	var statementSt;
+    
+    if(includeAviation == true){
+        statementSt = "MATCH (node)-[lc:LEGAL_CAP]->(p:PERIOD) " +
+                    "WHERE node:COUNTRY OR (node:SANDBAG_SECTOR AND node.name = 'Aviation') " +
+                    "RETURN sum(lc.amount) AS Legal_Cap, p.name AS Period ORDER BY p.name";
+    }else{
+        statementSt = "MATCH (:COUNTRY)-[lc:LEGAL_CAP]->(p:PERIOD) " +
                     "RETURN lc.amount AS Legal_Cap, p.name AS Period ORDER BY p.name";
+    }   
+    
     
 	query.statements.push({"statement":statementSt});
 
@@ -128,14 +152,23 @@ function getLegalCapForAllPeriods(serverURL, onLoadEnd){
 }
 
 
-function getOffsetsForAllPeriods(serverURL, onLoadEnd){
+function getOffsetsForAllPeriods(serverURL, includeAviation, onLoadEnd){
     var query = {
 	    "statements" : [ ]
 	};
 
-	var statementSt = "MATCH (o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
+	var statementSt;
+    
+    if(includeAviation == true){
+        statementSt = "MATCH (o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
                     "WHERE (o.unit_type = 'ERU' OR o.unit_type = 'CER') " +
                     "RETURN sum(o.amount) AS Offsets, p.name AS Period ORDER BY p.name";
+    }else{
+        statementSt = "MATCH (i:INSTALLATION)-[:OFFSETS]-(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
+                    "WHERE (o.unit_type = 'ERU' OR o.unit_type = 'CER') " +
+                    "RETURN sum(o.amount) AS Offsets, p.name AS Period ORDER BY p.name";
+    }  
+    
     
     console.log("statement!", statementSt);
 
