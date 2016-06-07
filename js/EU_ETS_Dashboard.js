@@ -397,7 +397,7 @@ function onGetPeriods(){
     if(periodName != "2008to2020"){
         periods.push(periodName);
       
-        console.log("periodName",periodName);
+        //console.log("periodName",periodName);
 
         var option = document.createElement("option");
         option.value     = periodName;
@@ -470,7 +470,7 @@ function onGetFreeAllocationForAllPeriods(){
     free_allocation_eu_wide_loaded = true;
     
     if(allEUWideLoaded()){
-        createEUWideChart(euWideChartDataBackup);
+        filterDataForEUWideChart();
     }
 }
 
@@ -495,7 +495,7 @@ function onGetLegalCapForAllPeriods(){
     legal_cap_eu_wide_loaded = true;
     
     if(allEUWideLoaded()){
-        createEUWideChart(euWideChartDataBackup);
+        filterDataForEUWideChart();
     }
 }
 
@@ -529,7 +529,7 @@ function onGetVerifiedEmissionsForAllPeriods(){
     verified_emissions_eu_wide_loaded = true;
     
     if(allEUWideLoaded()){
-        createEUWideChart(euWideChartDataBackup);
+        filterDataForEUWideChart();
     }
     
 }
@@ -564,7 +564,7 @@ function onGetAuctionedForAllPeriods(){
     auctioned_eu_wide_loaded = true;
     
     if(allEUWideLoaded()){
-        createEUWideChart(euWideChartDataBackup);
+        filterDataForEUWideChart();
     }
     
 }
@@ -599,7 +599,7 @@ function onGetOffsetsForAllPeriods(){
     offsets_eu_wide_loaded = true;
     
     if(allEUWideLoaded()){
-        createEUWideChart(euWideChartDataBackup);
+        filterDataForEUWideChart();
     }
 }
 
@@ -869,6 +869,7 @@ function calculateCumulativeSurplusEUWide(){
 
 
 function filterEUWideArrayBasedOnCheckboxesSelected(value){
+    console.log("filterEUWideArrayBasedOnCheckboxesSelected");
     var includeVerifiedEmissions = $('#verified_emissions_eu_wide_checkbox:checked').length == 1;
     var includeOffsets = $('#offsets_eu_wide_checkbox:checked').length == 1;
     var includeFreeAllocation = $('#free_allocation_eu_wide_checkbox:checked').length == 1;

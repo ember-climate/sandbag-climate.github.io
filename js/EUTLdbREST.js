@@ -170,7 +170,7 @@ function getOffsetsForAllPeriods(serverURL, includeAviation, onLoadEnd){
     }  
     
     
-    console.log("statement!", statementSt);
+    //console.log("statement!", statementSt);
 
 	query.statements.push({"statement":statementSt});
 
@@ -190,7 +190,7 @@ function getAuctionedForAllPeriods(serverURL, onLoadEnd){
 	var statementSt = "MATCH (c:COUNTRY)-[a:AUCTIONED]->(p:PERIOD) "+
 					   "RETURN sum(a.amount) AS Auctioned, p.name AS Period ORDER BY p.name";
     
-    console.log("statement!", statementSt);
+    //console.log("statement!", statementSt);
 
 	query.statements.push({"statement":statementSt});
 
@@ -213,7 +213,7 @@ function getVerifiedEmissionsForPeriod(serverURL, periodName, onLoadEnd){
                        "WHERE p.name = '" + periodName + "' " +
 					   "RETURN sum(ve.value) AS Verified_Emissions, c.name, ss.name ORDER BY c.name, ss.name";
     
-    console.log("statement!", statementSt);
+    //console.log("statement!", statementSt);
 
 	query.statements.push({"statement":statementSt});
 
@@ -236,7 +236,7 @@ function getFreeAllocationForPeriod(serverURL, periodName, onLoadEnd){
                        "WHERE p.name = '" + periodName + "' " +
 					   "RETURN sum(aa.value) AS Free_Allocation, c.name, ss.name ORDER BY c.name, ss.name";
     
-    console.log("statement!", statementSt);
+    //console.log("statement!", statementSt);
 
 	query.statements.push({"statement":statementSt});
 
@@ -259,7 +259,7 @@ function getOffsetsForPeriod(serverURL, periodName, onLoadEnd){
                        "WHERE p.name = '" + periodName + "' " + " AND (o.unit_type = 'ERU' " +
 					   "OR o.unit_type = 'CER') RETURN sum(o.amount) AS Offsets, c.name, ss.name ORDER BY c.name, ss.name";
     
-    console.log("statement!", statementSt);
+    //console.log("statement!", statementSt);
 
 	query.statements.push({"statement":statementSt});
 
@@ -282,7 +282,7 @@ function getSurrenderedUnitsForPeriod(serverURL, periodName, onLoadEnd){
                        "WHERE p.name = '" + periodName + "' " +
 					   "RETURN sum(su.value) AS Surrendered_Units, c.name, s.name ORDER BY c.name, s.name";
     
-    console.log("statement!", statementSt);
+    //console.log("statement!", statementSt);
 
 	query.statements.push({"statement":statementSt});
 
@@ -348,7 +348,7 @@ function getOffsetsForCountryAndSector(serverURL, countryNames, sectorNames, isS
     }
     
 
-	console.log(statementSt);
+	//console.log(statementSt);
 
 	query.statements.push({"statement":statementSt});
 
@@ -383,7 +383,7 @@ function getFreeAllocationForCountryAndSector(serverURL, countryNames, sectorNam
     
     
 
-	console.log(statementSt);
+	//console.log(statementSt);
 
 	query.statements.push({"statement":statementSt});
 
