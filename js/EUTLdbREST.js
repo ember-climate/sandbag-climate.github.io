@@ -182,6 +182,29 @@ function getOffsetsForAllPeriods(serverURL, includeAviation, onLoadEnd){
 	xhr.send(JSON.stringify(query));
 }
 
+function getOffsetEntitlementsForAllPeriods(serverURL, includeAviation, onLoadEnd){
+    
+    
+    var query = {
+	    "statements" : [ ]
+	};
+
+	if(includeAviation == true){
+        statementSt = "MATCH ()-[r:OFFSET_ENTITLEMENT]->() RETURN sum(toFloat(r.value)) AS Total_Entitlements";
+    }else{
+        statementSt = "MATCH (:INSTALLATION)-[r:OFFSET_ENTITLEMENT]->() RETURN sum(toFloat(r.value)) AS Total_Entitlements";
+    }
+    
+	query.statements.push({"statement":statementSt});
+
+	var xhr = new XMLHttpRequest();    
+	xhr.onloadend = onLoadEnd;
+	xhr.open("POST", serverURL, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Accept', 'application/json; charset=UTF-8');
+	xhr.send(JSON.stringify(query));
+}
+
 function getAuctionedForAllPeriods(serverURL, onLoadEnd){
     var query = {
 	    "statements" : [ ]

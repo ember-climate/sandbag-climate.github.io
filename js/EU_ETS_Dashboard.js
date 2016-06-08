@@ -17,6 +17,9 @@ var lineChartDataBackup = [];
 var lineChartData = [];
 var lineChart;
 
+var totalOffsetEntitlements = 0;
+var totalOffsetsSoFar = 0;
+
 var barSeries;
 var lineSeries;
 var stackedBarChart
@@ -29,6 +32,7 @@ var free_allocation_eu_wide_loaded = false;
 var offsets_eu_wide_loaded = false;
 var auctioned_eu_wide_loaded = false;
 var legal_cap_eu_wide_loaded = false;
+var offset_entitlements_eu_wide_loaded = false;
 
 var verified_emissions_loaded = false;
 var free_allocation_loaded = false;
@@ -125,6 +129,7 @@ function loadEUWideData(includeAviation){
     getVerifiedEmissionsForAllPeriods(server_url, includeAviation, onGetVerifiedEmissionsForAllPeriods);
     getFreeAllocationForAllPeriods(server_url, includeAviation, onGetFreeAllocationForAllPeriods)
     getLegalCapForAllPeriods(server_url, includeAviation, onGetLegalCapForAllPeriods);
+    getOffsetEntitlementsForAllPeriods(server_url, includeAviation, onGetOffsetEntitlementsForAllPeriods);
 }
 
 function noValueSelectedForCountriesOrSectors(){
@@ -474,6 +479,24 @@ function onGetFreeAllocationForAllPeriods(){
     }
 }
 
+function onGetOffsetEntitlementsForAllPeriods(){
+  console.log("onGetOffsetEntitlementsForAllPeriods");    
+  //console.log("this.responseText", this.responseText);
+  var resultsJSON = JSON.parse(this.responseText);
+  var results = resultsJSON.results;
+  var errors = resultsJSON.errors;
+  var tempData = results[0].data;
+
+  totalOffsetEntitlements = tempData[0].row[0];
+     
+  offset_entitlements_eu_wide_loaded = true;
+    
+    if(allEUWideLoaded()){
+        filterDataForEUWideChart();
+    }
+        
+}
+
 function onGetLegalCapForAllPeriods(){
   console.log("onGetLegalCapForAllPeriods");    
   //console.log("this.responseText", this.responseText);
@@ -584,6 +607,10 @@ function onGetOffsetsForAllPeriods(){
     var tempArray = [];
     var tempPeriod = rows[1];
     var tempValue = rows[0];
+    
+    if(tempPeriod >= 2008){
+        totalOffsetsSoFar += tempValue;
+    }      
       
     tempArray["tCO2e"] = tempValue;
     tempArray["period"] = tempPeriod;
@@ -680,7 +707,7 @@ function createEUWideChart(data){
    	euWideChart.data = euWideChartData;
        
    }
-    barSeriesEUWide.data = dimple.filterData(data, "type", ["Free Allocation", "Offsets", "Auctioned"]);
+    barSeriesEUWide.data = dimple.filterData(data, "type", ["Free Allocation", "Offsets", "Auctioned", "Remaining Credit Entitlements"]);
     lineSeriesEUWide.data = dimple.filterData(data, "type", ["Verified Emissions", "Legal Cap", "Accumulated Balance"]);
    euWideChart.draw(1000);
 }
@@ -777,7 +804,6 @@ function onComboBoxChange(){
 }
 
 function dataForLineChartLoaded(){
-    //calculateSurplusWithOffsets();
     filterDataForLineChart(); 
     $("#line_chart").removeClass("grey_background");
     $("#spinner_div").hide();
@@ -867,15 +893,31 @@ function calculateCumulativeSurplusEUWide(){
         
 }
 
+function calculateRemainingCreditEntitlement(){
+    
+    var annualValue = (totalOffsetEntitlements - totalOffsetsSoFar)/5; //2016 - 2020
+    
+    for(i=2016;i<=2020;i++){  
+        
+        var tempArray = [];
+        tempArray["tCO2e"] = annualValue;
+        tempArray["period"] = i;
+        tempArray["type"] = "Remaining Credit Entitlements";
+        
+        euWideChartDataBackup.push(tempArray);                 
+    }    
+}
+
 
 function filterEUWideArrayBasedOnCheckboxesSelected(value){
-    console.log("filterEUWideArrayBasedOnCheckboxesSelected");
+    //console.log("filterEUWideArrayBasedOnCheckboxesSelected");
     var includeVerifiedEmissions = $('#verified_emissions_eu_wide_checkbox:checked').length == 1;
     var includeOffsets = $('#offsets_eu_wide_checkbox:checked').length == 1;
     var includeFreeAllocation = $('#free_allocation_eu_wide_checkbox:checked').length == 1;
     var includeAuctioned = $('#auctioned_eu_wide_checkbox:checked').length == 1;
     var includeLegalCap = $('#legal_cap_eu_wide_checkbox:checked').length == 1;
     var includeAccumulatedBalance = $('#accumulated_balance_eu_wide_checkbox:checked').length == 1;    
+    var includeRemainingCreditEntitlements = $('#remaining_credit_entitlements_eu_wide_checkbox:checked').length == 1;
     
     var tempType =  value.type;
         
@@ -891,6 +933,8 @@ function filterEUWideArrayBasedOnCheckboxesSelected(value){
         return includeLegalCap;
     }else if(tempType == "Accumulated Balance"){
         return includeAccumulatedBalance;
+    }else if(tempType == "Remaining Credit Entitlements"){
+        return includeRemainingCreditEntitlements;
     }else{        
         return false;
     }
@@ -918,10 +962,12 @@ function filterArrayBasedOnCheckboxesSelected(value) {
 function allEUWideLoaded(){    
     
     var everythingLoaded = verified_emissions_eu_wide_loaded == true && free_allocation_eu_wide_loaded == true &&
-        offsets_eu_wide_loaded == true && auctioned_eu_wide_loaded == true && legal_cap_eu_wide_loaded == true;
+        offsets_eu_wide_loaded == true && auctioned_eu_wide_loaded == true && legal_cap_eu_wide_loaded == true &&
+        offset_entitlements_eu_wide_loaded == true;
     
     if(everythingLoaded == true){
         calculateCumulativeSurplusEUWide();
+        calculateRemainingCreditEntitlement();
     }
     
     //console.log("everythingLoaded", everythingLoaded);
