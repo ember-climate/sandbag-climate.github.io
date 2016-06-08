@@ -133,7 +133,13 @@
                     <select id="sectors_combobox" onchange="onComboBoxChange()" class="selectpicker" multiple data-actions-box="true" width="fit">
                     </select>
                 </div>  
-                
+                <div class="col-xs-4">
+                    <select id="power_flag_combobox" onchange="onComboBoxChange()" class="selectpicker" width="fit">
+                        <option>Include Power installations</option>
+                        <option>Exclude Power installations</option>
+                        <option>Show only Power installations</option>
+                    </select>
+                </div>
             </div>
             <!-- /.row -->
             <div class="row" id="eu_wide_chart_row">
@@ -183,6 +189,10 @@
                                         <div class="checkbox">
                                             <input onclick="filterDataForEUWideChart()" id="accumulated_balance_eu_wide_checkbox" type="checkbox" checked="checked">
                                           <label for="accumulated_balance_eu_wide_checkbox">Accumulated Balance</label>
+                                        </div>
+                                        <div class="checkbox">
+                                            <input onclick="filterDataForEUWideChart()" id="remaining_credit_entitlements_eu_wide_checkbox" type="checkbox" checked="checked">
+                                            <label for="remaining_credit_entitlements_eu_wide_checkbox">Remaining Credit Entitlements</label>
                                         </div>
                                     </div> 
                                 </div>
