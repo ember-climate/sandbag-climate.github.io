@@ -317,6 +317,35 @@ function getSurrenderedUnitsForPeriod(serverURL, periodName, onLoadEnd){
 	xhr.send(JSON.stringify(query));
 }
 
+function getInstallationsForCountryAndSector(serverURL, countryNames, sectorNames, isSandbagSector, onLoadEnd){
+    var query = {
+	    "statements" : [ ]
+	};
+    
+    var statementSt;
+    
+    if(isSandbagSector){
+        statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)" +                    
+                       "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.latitude <> '0' AND node.latitude <> '' AND node.longitude <> '0' AND node.longitude <> '' " +
+					   "RETURN node.id, node.name, node.latitude, node.longitude";
+    }else{
+        statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)" +
+                       "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.latitude <> '0' AND node.latitude <> '' AND node.longitude <> '0' AND node.longitude <> '' " +
+					   "RETURN node.id, node.name, node.latitude, node.longitude";
+    }	
+
+	console.log(statementSt);
+
+	query.statements.push({"statement":statementSt});
+
+	var xhr = new XMLHttpRequest();    
+	xhr.onloadend = onLoadEnd;
+	xhr.open("POST", serverURL, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Accept', 'application/json; charset=UTF-8');
+	xhr.send(JSON.stringify(query));
+}
+
 function getVerifiedEmissionsForCountryAndSector(serverURL, countryNames, sectorNames, isSandbagSector, onLoadEnd ){
     var query = {
 	    "statements" : [ ]
