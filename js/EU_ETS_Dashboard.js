@@ -1,5 +1,5 @@
-//var server_url = "http://52.50.32.206:7474/db/data/transaction/commit";
-var server_url = "http://localhost:7474/db/data/transaction/commit";
+var server_url = "http://52.208.154.95:7474/db/data/transaction/commit";
+//var server_url = "http://localhost:7474/db/data/transaction/commit";
 var countries = [];
 var sectors = [];
 var periods = [];
@@ -251,9 +251,9 @@ function onExportLineChartButtonClick() {
 function onMapButtonClick(){
     
     $('#map_modal').modal('show');
-    
+        
     if(!installations_map){
-        installations_map = L.map('map_div').setView([51.505, -0.09], 13);
+        installations_map = L.map('map_div').setView([47.540043, 7.603260], 3);
     
         L.tileLayer('https://api.tiles.mapbox.com/v4/{id}/{z}/{x}/{y}.png?access_token={accessToken}', {
             attribution: 'Map data &copy; <a href="http://openstreetmap.org">OpenStreetMap</a> contributors, <a href="http://creativecommons.org/licenses/by-sa/2.0/">CC-BY-SA</a>, Imagery © <a href="http://mapbox.com">Mapbox</a>',
@@ -921,6 +921,9 @@ function onGetInstallationsForCountryAndSector(){
     
     
     installations_map.addLayer(markers);
+    
+    installations_map.setZoom(3);
+    console.log("ashoasldf");
     
     installations_loaded = true;
 
