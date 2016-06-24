@@ -50,6 +50,7 @@ var EU_COUNTRIES_ARRAY = ["Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus",
 ];
 
 var installations_map;
+var marker_popups_ids = [];
 
 
 function initMainPage() {
@@ -452,7 +453,7 @@ function onGetPeriods() {
     for (var i = 0; i < periodsData.length; i++) {
         var periodName = periodsData[i].row[0];
         //console.log("periodName'", periodName, "'");
-        if (periodName != "2008to2020") {
+        if (periodName != "2008to2020" && periodName >= 2008 && periodName <= 2015) {
             periods.push(periodName);
 
             //console.log("periodName",periodName);
@@ -843,6 +844,7 @@ function onComboBoxChange() {
     if (selectedCountry != null && selectedSector != null) {
         
         installations_loaded = false;
+        marker_popups_ids = [];
 
         disableLineChartPanelAndDropDowns();
 
@@ -909,13 +911,20 @@ function onGetInstallationsForCountryAndSector(){
         var installationName = rows[1];
         var latitude = rows[2];
         var longitude = rows[3];
+        var sector = rows[4];
+        var city = rows[5];
+        var address = rows[6];
         
         var locationArray = [latitude, longitude];
         
+        marker_popups_ids.push(installationId);
+        
         var marker = L.marker(locationArray);        
-        marker.bindPopup("Name: " + installationName + "<br>ID: " + installationId);
-        markers.addLayer(marker); 
-        console.log("i", i);
+        marker.bindPopup("<div id=\"" + installationId + "\"><strong>Name:</strong> " + installationName + "<br><strong>ID:</strong> " + installationId + "<br><strong>Address:</strong> " + address + "<br><strong>City:</strong> " + city + "<br><strong>Sector:</strong> " + sector + "</div>");
+        marker.on("click", onMarkerClick);
+        marker.installationId = installationId;
+        markers.addLayer(marker);         
+        //console.log("i", i);
         
     };
     
@@ -923,10 +932,14 @@ function onGetInstallationsForCountryAndSector(){
     installations_map.addLayer(markers);
     
     installations_map.setZoom(3);
-    console.log("ashoasldf");
     
     installations_loaded = true;
 
+}
+
+function onMarkerClick(){
+    console.log(this);
+    console.log("this.installationIdSt",this.installationId);
 }
 
 function onGetVerifiedEmissionsForCountryAndSector() {
