@@ -327,11 +327,11 @@ function getInstallationsForCountryAndSector(serverURL, countryNames, sectorName
     if(isSandbagSector){
         statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)" +                    
                        "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.latitude <> '0' AND node.latitude <> '' AND node.longitude <> '0' AND node.longitude <> '' " +
-					   "RETURN node.id, node.name, node.latitude, node.longitude";
+					   "RETURN node.id, node.name, node.latitude, node.longitude, ss.name, node.city, node.address";
     }else{
         statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)" +
                        "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.latitude <> '0' AND node.latitude <> '' AND node.longitude <> '0' AND node.longitude <> '' " +
-					   "RETURN node.id, node.name, node.latitude, node.longitude";
+					   "RETURN node.id, node.name, node.latitude, node.longitude, s.name, node.city, node.address";
     }	
 
 	console.log(statementSt);
