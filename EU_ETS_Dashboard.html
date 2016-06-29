@@ -7,7 +7,8 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="">
-    <meta name="author" content="">
+    <meta name="author" content="Pablo Pareja Tobes">
+    <meta http-equiv="expires" content="0">
 
     <title>EU ETS Dashboard</title>
 
@@ -272,7 +273,7 @@
                         </div>
                         <!-- /.panel-heading -->
                         <div id="line_chart" class="panel-body" style="height:350px">
-                            <div id="spinner_div" class="loading" style="display:none">
+                            <div id="spinner_div_country_sector" class="loading" style="display:none">
                                 <i class="fa fa-refresh fa-spin fa-3x fa-fw margin-bottom"></i>
                             </div>     
                         </div>
@@ -376,7 +377,10 @@
           <div class="modal-body">
             <div id="map_div">
             </div>
-          </div>          
+            <div id="spinner_div_installations_map" class="loading" style="display:none">
+                <i class="fa fa-refresh fa-spin fa-3x fa-fw margin-bottom"></i>
+            </div>   
+          </div>           
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
