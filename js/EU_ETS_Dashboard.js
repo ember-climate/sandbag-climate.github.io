@@ -7,6 +7,7 @@ var periods = [];
 var euWideChartData = [];
 var euWideChartDataBackup = [];
 var euWideChart;
+var euWideChartLegend;
 var barSeriesEUWide;
 var lineSeriesEUWide;
 var surplusDataArrayEUWide = [];
@@ -54,6 +55,8 @@ var marker_popups_ids = [];
 
 
 function initMainPage() {
+    
+    console.log("init main page...");
 
     //Handler for clicks outside of the dropdown menu to filter multi line chart
     $('body').on('click', function(e) {
@@ -191,7 +194,7 @@ function onLoad() {
 
 function disableLineChartPanelAndDropDowns() {
     $("#line_chart").addClass("grey_background");
-    $("#spinner_div").show();
+    $("#spinner_div_country_sector").show();
 
     $("#sectors_combobox").prop("disabled", true);
     $("#countries_combobox").prop("disabled", true);
@@ -290,6 +293,9 @@ function onMapButtonClick(){
             selectedCountrySt += "]";
 
             getInstallationsForCountryAndSector(server_url,selectedCountrySt,selectedSectorSt, true, onGetInstallationsForCountryAndSector);
+            
+            $("#map_div").addClass("grey_background");
+            $("#spinner_div_installations_map").show();
 
         }
     
@@ -777,8 +783,8 @@ function createEUWideChart(data) {
         lineSeriesEUWide.lineMarkers = true;
         lineSeriesEUWide.interpolation = "cardinal";
 
-        euWideChart.addLegend(20, 10, "95%", 300, "left");
-
+        euWideChartLegend = euWideChart.addLegend(20, 10, "95%", 300, "left");
+        
         eu_wide_chart_created = true;
     } else {
 
@@ -788,6 +794,8 @@ function createEUWideChart(data) {
     barSeriesEUWide.data = dimple.filterData(data, "type", ["Free Allocation", "Offsets", "Auctioned", "Remaining Credit Entitlements"]);
     lineSeriesEUWide.data = dimple.filterData(data, "type", ["Verified Emissions", "Legal Cap", "Accumulated Balance"]);
     euWideChart.draw(1000);
+    
+    console.log(euWideChartLegend.shapes);
 }
 
 function createLineChart(data) {
@@ -887,7 +895,7 @@ function onComboBoxChange() {
 function dataForLineChartLoaded() {
     filterDataForLineChart();
     $("#line_chart").removeClass("grey_background");
-    $("#spinner_div").hide();
+    $("#spinner_div_country_sector").hide();
     $("#countries_combobox").prop("disabled", false);
     $("#sectors_combobox").prop("disabled", false);
     lineChart.draw(1000);
@@ -934,6 +942,10 @@ function onGetInstallationsForCountryAndSector(){
     installations_map.setZoom(3);
     
     installations_loaded = true;
+    
+    $("#map_div").removeClass("grey_background");
+    $("#spinner_div_installations_map").hide();
+    
 
 }
 
