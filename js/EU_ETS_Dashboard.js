@@ -149,8 +149,12 @@ function loadCountrySectorChart() {
 
 function initMenus() {
     $('.nav li a').click(function(e) {
+        
+        var tempId = e.currentTarget.getAttribute("id");
+        
+        console.log("tempId",tempId);
 
-        if (e.currentTarget.getAttribute("id") == "country_sector_chart_button") {
+        if (tempId == "country_sector_chart_button") {
             e.preventDefault();
             $('#multi_line_chart_row').show();
             $('#countries_sectors_row').show();
@@ -159,7 +163,7 @@ function initMenus() {
             $('#stacked_bar_chart_row').hide();
             $('#eu_wide_chart_row').hide();
             loadCountrySectorChart();
-        } else if (e.currentTarget.getAttribute("id") == "stacked_bar_chart_button") {
+        } else if (tempId == "stacked_bar_chart_button") {
             e.preventDefault();
             $('#multi_line_chart_row').hide();
             $('#countries_sectors_row').hide();
@@ -168,7 +172,7 @@ function initMenus() {
             $('#periods_combo_box_row').show();
             $('#stacked_bar_chart_row').show();
             stackedBarChart.draw(1000);
-        } else if (e.currentTarget.getAttribute("id") == "about_button") {
+        } else if (tempId == "about_button") {
             e.preventDefault();
             $('#multi_line_chart_row').hide();
             $('#countries_sectors_row').hide();
@@ -176,7 +180,7 @@ function initMenus() {
             $('#stacked_bar_chart_row').hide();
             $('#eu_wide_chart_row').hide();
             $('#about_row').show();
-        } else if (e.currentTarget.getAttribute("id") == "eu_wide_chart_button") {
+        } else if (tempId == "eu_wide_chart_button") {
             e.preventDefault();
             $('#multi_line_chart_row').hide();
             $('#countries_sectors_row').hide();
@@ -810,7 +814,6 @@ function createEUWideChart(data) {
     $("#eu_wide_chart").removeClass("grey_background");
     $("#eu_wide_spinner_div").hide();
 
-    //alert("createEUWideChart")
     euWideChartData = data;
 
     if (!eu_wide_chart_created) {
