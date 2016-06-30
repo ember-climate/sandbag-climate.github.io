@@ -152,26 +152,18 @@ function getLegalCapForAllPeriods(serverURL, includeAviation, onLoadEnd){
 }
 
 
-function getOffsetsForAllPeriods(serverURL, includeAviation, onLoadEnd){
+function getOffsetsForAllPeriods(serverURL, onLoadEnd){
     var query = {
 	    "statements" : [ ]
 	};
 
 	var statementSt;
     
-    if(includeAviation == true){
-        statementSt = "MATCH (o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
+    statementSt = "MATCH (o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
                     "WHERE (o.unit_type = 'ERU' OR o.unit_type = 'CER') " +
                     "RETURN sum(o.amount) AS Offsets, p.name AS Period ORDER BY p.name";
-    }else{
-        statementSt = "MATCH (i:INSTALLATION)-[:OFFSETS]-(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
-                    "WHERE (o.unit_type = 'ERU' OR o.unit_type = 'CER') " +
-                    "RETURN sum(o.amount) AS Offsets, p.name AS Period ORDER BY p.name";
-    }  
     
     
-    //console.log("statement!", statementSt);
-
 	query.statements.push({"statement":statementSt});
 
 	var xhr = new XMLHttpRequest();    

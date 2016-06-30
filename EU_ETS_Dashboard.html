@@ -222,13 +222,17 @@
                 <div class="col-md-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> Multi line chart
+                            <i class="fa fa-bar-chart-o fa-fw"></i><label id="country_sector_chart_header_label">Multi line chart</label> 
                             <div class="pull-right">
                                 <div class="btn-group">
+                                    <button id="chart_view_button" type="button" class="btn btn-default btn-xs " 
+                                            onclick="onChartViewButtonClick()" title="Show chart">
+                                        <i class="fa fa-bar-chart-o fa-fw"></i>Chart view
+                                    </button>
                                     <button id="map_button" type="button" class="btn btn-default btn-xs " 
                                             onclick="onMapButtonClick()" title="Show installations map">
-                                        <i class="fa fa-map-marker fa-fw"></i>
-                                    </button>                                     
+                                        <i class="fa fa-map-marker fa-fw"></i>Map view
+                                    </button>                                         
                                 </div>
                                 <div class="btn-group">
                                     <button id="export_line_chart_button" type="button" class="btn btn-default btn-xs " 
@@ -254,31 +258,22 @@
                                         <div class="checkbox">
                                             <input onclick="filterDataForLineChart()" id="verified_emissions_checkbox" type="checkbox" checked="checked">
                                           <label for="verified_emissions_checkbox">Verified Emissions</label>
-                                        </div>
-                                        <!--
-                                        <div class="checkbox">
-                                          <label><input onclick="filterDataForLineChart()" id="total_suply_checkbox" type="checkbox" checked="checked">Total Suply</label>
                                         </div>                                        
-                                        <div class="checkbox">
-                                          <label><input onclick="filterDataForLineChart()" id="surplus_free_allowances_checkbox" type="checkbox" checked="checked">Surplus Free Allowance</label>
-                                        </div>
-                                        
-                                        <div class="checkbox">
-                                          <label><input onclick="filterDataForLineChart()" id="surplus_with_offsets_checkbox" type="checkbox" checked="checked">Surplus with Offsets</label>
-                                        </div>
-                                        -->
                                     </div> 
                                 </div>
                             </div>
                         </div>
                         <!-- /.panel-heading -->
-                        <div id="line_chart" class="panel-body" style="height:350px">
+                        <div class="panel-body">
+                            <div id="line_chart" style="height:350px">                                    
+                            </div>
+                            <div id="map_div"style="display:none">
+                            </div> 
                             <div id="spinner_div_country_sector" class="loading" style="display:none">
                                 <i class="fa fa-refresh fa-spin fa-3x fa-fw margin-bottom"></i>
-                            </div>     
-                        </div>
+                            </div> 
+                        </div>                        
                         <!-- /.panel-body -->
-                    </div>                    
                 </div>
                 <!-- /.col-md 12 -->
             </div>
@@ -311,7 +306,11 @@
                         </div>
                         <!-- /.panel-heading -->
                         <div id="stacked_bar_chart" class="panel-body" style="height:350px">
-                            
+                            <div id="offsets_warning_div" style="display:none">
+                                <p>
+                                    <strong>Warning:</strong> Offsets data for periods 2013 onwards is not available with sectors granularity since the European Commission stopped sharing such information after 2012.
+                                </p>
+                            </div>
                         </div>
                         <!-- /.panel-body -->
                     </div>                    
@@ -367,23 +366,6 @@
       </div><!-- /.modal-dialog -->
     </div><!-- /.modal -->
 
-    <div class="modal" id="map_modal">
-      <div class="modal-dialog">
-        <div class="modal-content">
-          <div class="modal-header">
-            <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h4 class="modal-title">Installations Map</h4>
-          </div>
-          <div class="modal-body">
-            <div id="map_div">
-            </div>
-            <div id="spinner_div_installations_map" class="loading" style="display:none">
-                <i class="fa fa-refresh fa-spin fa-3x fa-fw margin-bottom"></i>
-            </div>   
-          </div>           
-        </div><!-- /.modal-content -->
-      </div><!-- /.modal-dialog -->
-    </div><!-- /.modal -->
     
     </div>
     <!-- /#wrapper -->
