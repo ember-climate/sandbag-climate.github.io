@@ -14,7 +14,27 @@
   background: lightblue;
 }
 
+.navbar {
+    background-color: #ffffff;
+}
+
 #map_div {
     height: 350px;
 }
+
+body {
+    background-color: #f8f8f8;
+}
+
+
+#wrapper {
+    width: 100%;
+}
+
+#page-wrapper {
+    padding: 0 15px;
+    min-height: 568px;
+    background-color: #f8f8f8;
+}
+
 
