@@ -15,8 +15,8 @@
     <!-- Bootstrap Core CSS -->
     <link href="./css/bootstrap.css" rel="stylesheet">
 
-    <!-- Custom CSS -->
-    <link href="./css/sb-admin-2.css" rel="stylesheet">
+    <!-- Custom CSS 
+    <link href="./css/sb-admin-2.css" rel="stylesheet">-->
 
     <!-- Custom Fonts -->
     <link href="./css/font-awesome.min.css" rel="stylesheet" type="text/css">
@@ -45,80 +45,45 @@
 
     <div id="wrapper">
 
-        <!-- Navigation -->
-        <nav class="navbar navbar-default navbar-static-top" role="navigation" style="margin-bottom: 0">
+              
+       
+      <!-- Static navbar -->
+      <nav class="navbar navbar-default">
+          <div class="container-fluid">
+            <!-- Brand and toggle get grouped for better mobile display -->
+            <div class="navbar-header">              
+              <a class="navbar-brand" href="#">EU ETS Dashboard 0.1</a>
+            </div>
+
+            <!-- Collect the nav links, forms, and other content for toggling -->
             <div class="navbar-header">
-                <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                    <span class="sr-only">Toggle navigation</span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                    <span class="icon-bar"></span>
-                </button>
-                <a class="navbar-brand" href="#">EU ETS dashboard v0.1</a>
-            </div>
-            <!-- /.navbar-header -->
-
-            <ul class="nav navbar-top-links navbar-right">
-                <a href="http://www.sandbag.org.uk">
-                    <img src="images/sandbag_logo_small.png"/>
-                </a>     
-            </ul>
-            <!-- /.navbar-top-links -->
-
-            <div class="navbar-default sidebar" role="navigation">
-                <div class="sidebar-nav navbar-collapse">
-                    <ul class="nav" id="side-menu">
-                        <!--
-                        <li class="sidebar-search">
-                            <div class="input-group custom-search-form">
-                                <input type="text" class="form-control" placeholder="Search...">
-                                <span class="input-group-btn">
-                                <button class="btn btn-default" type="button">
-                                    <i class="fa fa-search"></i>
-                                </button>
-                            </span>
-                            </div>
-                             
-                        </li>
-                        
-                        <li>
-                            <a href="#"><i class="fa fa-dashboard fa-fw"></i> Dashboard</a>
-                        </li>
-                        -->
-                        
-                        <li>
-                            <a href="#"><i class="fa fa-bar-chart-o fa-fw"></i> Charts<span class="fa arrow"></span></a>
-                            <ul class="nav nav-second-level">
-                                <li>
-                                    <a id="eu_wide_chart_button" href="#">EU wide chart</a>
-                                </li>
-                                <li>
-                                    <a id="country_sector_chart_button" href="#">Country/sector chart</a>
-                                </li>
-                                <li>
-                                    <a id="stacked_bar_chart_button" href="#">Stacked bar chart</a>
-                                </li>                                
-                                
-                            </ul>
-                            
-                        </li>
-                        
-                        <li>
-                            <a href="https://github.com/sandbag-climate/eutldb"><i class="fa fa-table fa-fw"></i>Github repo</a>
-                        </li>
-                        <li>
-                            <a id="about_button" href="EU_ETS_Dashboard_About.html"><i class="fa fa-edit fa-fw"></i>About</a>
-                        </li>
-                        <!--
-                        <li>
-                            <a href="http://52.49.23.223:7474/browser/"><i class="fa fa-edit fa-fw"></i> Neo4j Server</a>
-                        </li>  
-                        -->
-                    </ul>
-                </div>
-                <!-- /.sidebar-collapse -->
-            </div>
-            <!-- /.navbar-static-side -->
+              <ul class="nav navbar-nav">
+                <li class="active">
+                  <a id="eu_wide_chart_button" href="#">EU wide chart</a>
+                </li>
+                <li>
+                    <a id="country_sector_chart_button" href="#">Country/sector chart</a>
+                </li>
+                <li>
+                    <a id="stacked_bar_chart_button" href="#">Stacked bar chart</a>
+                </li>  
+                <li>
+                  <a id="about_button" href="#"><i class="fa fa-edit fa-fw"></i>About</a>
+                </li>
+                <li>
+                  <a id="contact_us_button" href="#">Contact us</a>
+                </li>
+              </ul>  
+              
+            </div><!-- /.navbar-collapse -->
+            <div class="navbar-header navbar-right">
+                
+              <a href="http://www.sandbag.org.uk">
+                <img src="images/sandbag_logo_small.png"/>
+              </a> 
+            </div> 
+            
+          </div><!-- /.container-fluid -->
         </nav>
         
 
@@ -320,7 +285,8 @@
             </div>            
             <!-- /.row -->
             <div id="about_row" class="row" style="display: none" > 
-                 <div class="col-lg-10">
+                 <div class="col-lg-2"></div>
+                 <div class="col-lg-8">
                      <h3 class="page-header">About</h3>
                      <p>
                             The EU ETS dashboard provides a user-friendly access to emission trading data extracted from the European Union Transaction Log (EUTL) together with other data integrated by Sandbag's team such as NACE codes and a more meaningful sectors aggregation.                        
@@ -342,6 +308,50 @@
                          </ul>
                      </p>
                  </div>  
+                <div class="col-lg-2"></div>
+            </div>
+            <!-- /.row -->
+            <div id="contact_us_row" class="row" style="display: none" > 
+                <div class="col-md-12" >
+                    <div id="form_success_div" style="display:none" class="alert alert-success">
+                        <strong><span class="glyphicon glyphicon-send"></span> Success! Message sent. </strong>
+                    </div>	
+                    <div id="form_error_spam_checker_div" class="alert alert-danger" style="display:none">
+                        <span class="glyphicon glyphicon-alert"></span><strong> Error! Please check the input for the Simple Spam Checker.</strong>
+                    </div>
+                 </div>
+                <div class="col-lg-3">
+                </div>
+                
+                 <div class="col-lg-6">
+                     <h3 class="page-header">Contact us</h3>                     
+                     <form id="contact_us_form" role="form" action="http://formspree.io/pablo@sandbag.org.uk" method="POST"
+                           onsubmit="return validateForm()">
+                          <input type="hidden" name="_next" value="" />
+                          <input type="hidden" name="_subject" value="New submission from EU ETS Dashboard!" />
+                          <input type="text" name="_gotcha" style="display:none" />
+
+                          <div class="form-group">
+                            <label for="InputName">Your Name</label>
+                            <input type="text" class="form-control" name="name" id="InputName" placeholder="Enter Name" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="InputEmail">Your Email</label>
+                            <input type="email" class="form-control" id="InputEmail" name="_replyto" placeholder="Enter Email" required>
+                          </div>
+                          <div class="form-group">
+                            <label for="InputMessage">Message</label>
+                            <textarea name="InputMessage" id="InputMessage" class="form-control" rows="5" required></textarea>
+                          </div>
+                          <div class="form-group">
+                            <label for="InputReal">What is 4+3? (Simple Spam Checker)</label>
+                            <input type="text" class="form-control" name="InputReal" id="InputReal" required>
+                          </div>
+                          <input type="submit" value="send" class="btn btn-info pull-right"> 
+                      </form>
+                 </div>
+                <div class="col-lg-3">
+                </div>
             </div>
             <!-- /.row -->
         </div>
@@ -397,7 +407,7 @@
         
         initMenus();
         initMainPage();
-    
+            
     </script>
 
 </body>

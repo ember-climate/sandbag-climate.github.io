@@ -52,13 +52,36 @@ var EU_COUNTRIES_ARRAY = ["Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus",
 
 var installations_map;
 var marker_popups_ids = [];
+var markers;
 
 var countrySectorChartDisplayed = true;
+
+//-----------MAP ICONS----
+var ceramics_icon;
+var aviation_icon;
+var cement_and_lime_icon;
+var chemicals_icon;
+var coke_ovens_icon;
+var combustion_icon;
+var glass_icon;
+var iron_and_steel_icon;
+var metal_ore_roasting_icon;
+var mineral_oil_icon;
+var non_ferrous_metals_icon;
+var other_icon;
+var pulp_and_paper_icon;
+//-------------------------
 
 
 function initMainPage() {
     
     console.log("init main page...");
+    
+    //Navbar buttons active state handler
+    $(".nav a").on("click", function(){
+       $(".nav").find(".active").removeClass("active");
+       $(this).parent().addClass("active");
+    });
 
     //Handler for clicks outside of the dropdown menu to filter multi line chart
     $('body').on('click', function(e) {
@@ -93,6 +116,8 @@ function initMainPage() {
         //lineChart.draw(0, true);
         onResize();
     };
+    
+    initializeMapIcons();
 
     onGetEUCountries();
     getSandbagSectors(server_url, onGetSectors);
@@ -148,13 +173,13 @@ function loadCountrySectorChart() {
 }
 
 function initMenus() {
+    
     $('.nav li a').click(function(e) {
         
         var tempId = e.currentTarget.getAttribute("id");
         
-        console.log("tempId",tempId);
-
         if (tempId == "country_sector_chart_button") {
+            
             e.preventDefault();
             $('#multi_line_chart_row').show();
             $('#countries_sectors_row').show();
@@ -162,32 +187,58 @@ function initMenus() {
             $('#periods_combo_box_row').hide();
             $('#stacked_bar_chart_row').hide();
             $('#eu_wide_chart_row').hide();
+            $('#contact_us_row').hide();
+            
             loadCountrySectorChart();
-        } else if (tempId == "stacked_bar_chart_button") {
-            e.preventDefault();
-            $('#multi_line_chart_row').hide();
-            $('#countries_sectors_row').hide();
-            $('#about_row').hide();
-            $('#eu_wide_chart_row').hide();
-            $('#periods_combo_box_row').show();
-            $('#stacked_bar_chart_row').show();
-            stackedBarChart.draw(1000);
-        } else if (tempId == "about_button") {
+            
+        }else if(tempId == "contact_us_button"){
+            
             e.preventDefault();
             $('#multi_line_chart_row').hide();
             $('#countries_sectors_row').hide();
             $('#periods_combo_box_row').hide();
             $('#stacked_bar_chart_row').hide();
             $('#eu_wide_chart_row').hide();
-            $('#about_row').show();
-        } else if (tempId == "eu_wide_chart_button") {
+            $('#about_row').hide();
+            $('#contact_us_row').show();
+            
+        } else if (tempId == "stacked_bar_chart_button") {
+            
+            e.preventDefault();
+            $('#multi_line_chart_row').hide();
+            $('#countries_sectors_row').hide();
+            $('#about_row').hide();
+            $('#eu_wide_chart_row').hide();
+            $('#contact_us_row').hide();
+            $('#periods_combo_box_row').show();
+            $('#stacked_bar_chart_row').show();            
+                        
+            onResize();
+            
+        } else if (tempId == "about_button") {
+            
             e.preventDefault();
             $('#multi_line_chart_row').hide();
             $('#countries_sectors_row').hide();
             $('#periods_combo_box_row').hide();
+            $('#stacked_bar_chart_row').hide();
+            $('#contact_us_row').hide();
+            $('#eu_wide_chart_row').hide();
+            $('#about_row').show();
+            
+        } else if (tempId == "eu_wide_chart_button") {
+            
+            e.preventDefault();
+            $('#multi_line_chart_row').hide();
+            $('#countries_sectors_row').hide();
+            $('#periods_combo_box_row').hide();
+            $('#contact_us_row').hide();
             $('#stacked_bar_chart_row').hide();
             $('#about_row').hide();
             $('#eu_wide_chart_row').show();
+            
+            onResize();
+            
         }
 
     });
@@ -314,6 +365,7 @@ function loadDataForMapView(){
         
         var selectedCountry = $("#countries_combobox").selectpicker('val');
         var selectedSector = $("#sectors_combobox").selectpicker('val');
+        var selectedPowerFlag = $("#power_flag_combobox").selectpicker('val');
 
         if (selectedCountry != null && selectedSector != null) {
 
@@ -334,7 +386,7 @@ function loadDataForMapView(){
             selectedCountrySt = selectedCountrySt.slice(0, selectedCountrySt.length - 1);
             selectedCountrySt += "]";
 
-            getInstallationsForCountryAndSector(server_url,selectedCountrySt,selectedSectorSt, true, onGetInstallationsForCountryAndSector);
+            getInstallationsForCountryAndSector(server_url,selectedCountrySt,selectedSectorSt, true, selectedPowerFlag,  onGetInstallationsForCountryAndSector);
             
             $("#map_div").addClass("grey_background");
             $("#spinner_div_installations_map").show();
@@ -424,6 +476,8 @@ function onGetEUCountries() {
         var option = document.createElement("option");
         option.value = countryName;
         option.innerHTML = countryName;
+                
+        option.setAttribute("data-content", "<img src='./images/icons/" + countryName + ".png'></img>    " + countryName);
 
         var select = document.getElementById("countries_combobox");
         select.appendChild(option);
@@ -454,7 +508,9 @@ function onGetSectors() {
 
         var option = document.createElement("option");
         option.value = sectorName;
-        option.innerHTML = sectorName;
+        //option.innerHTML = sectorName;    
+        
+        option.setAttribute("data-content", "<img src='./images/icons/" + sectorName + ".png'></img>    " + sectorName);
 
         var select = document.getElementById("sectors_combobox");
         select.appendChild(option);
@@ -829,8 +885,7 @@ function createEUWideChart(data) {
         var y = euWideChart.addMeasureAxis("y", "tCO2e");
         y.tickFormat = 's';
         y.overrideMin = -100000000;
-        console.log("trying to override y axis");
-
+        
         barSeriesEUWide = euWideChart.addSeries("type", dimple.plot.bar);
 
         lineSeriesEUWide = euWideChart.addSeries("type", dimple.plot.line);
@@ -866,7 +921,7 @@ function createLineChart(data) {
         var x = lineChart.addCategoryAxis("x", "period");
         x.addOrderRule("period");
         var y = lineChart.addMeasureAxis("y", "tCO2e");
-        y.tickFormat = ',';           
+        y.tickFormat = 's';           
 
         barSeries = lineChart.addSeries("type", dimple.plot.bar);
 
@@ -899,6 +954,8 @@ function onComboBoxChange() {
     var selectedCountry = $("#countries_combobox").selectpicker('val');
 
     var selectedSector = $("#sectors_combobox").selectpicker('val');
+    
+    var selectedPowerFlag = $("#power_flag_combobox").selectpicker('val');
 
     //    console.log("selectedCountry",selectedCountry);
     //    console.log("selectedSector",selectedSector);
@@ -943,9 +1000,9 @@ function onComboBoxChange() {
         offsets_loaded = false;
         free_allocation_loaded = false;
         
-        getVerifiedEmissionsForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, true, onGetVerifiedEmissionsForCountryAndSector);
-        getOffsetsForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, true, onGetOffsetsForCountryAndSector);
-        getFreeAllocationForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, true, onGetFreeAllocationForCountryAndSector);
+        getVerifiedEmissionsForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, true, selectedPowerFlag, onGetVerifiedEmissionsForCountryAndSector);
+        getOffsetsForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, true, selectedPowerFlag,  onGetOffsetsForCountryAndSector);
+        getFreeAllocationForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, true, selectedPowerFlag,  onGetFreeAllocationForCountryAndSector);
         
         
     }
@@ -968,9 +1025,15 @@ function onGetInstallationsForCountryAndSector(){
     var errors = resultsJSON.errors;
     //console.log("errors", errors);
     var tempData = results[0].data;
+    
+    //-----remove previous layers----
+    if(markers){
+        installations_map.removeLayer(markers);
+    }    
+    //-------------------------------
 
     //----Creating markers cluster-----
-    var markers = L.markerClusterGroup();
+    markers = L.markerClusterGroup();
     
     for (var i = 0; i < tempData.length; i++) {
         
@@ -987,8 +1050,38 @@ function onGetInstallationsForCountryAndSector(){
         
         marker_popups_ids.push(installationId);
         
-        var marker = L.marker(locationArray);        
+        var marker = L.marker(locationArray); 
+        
         marker.bindPopup("<div id=\"" + installationId + "\"><strong>Name:</strong> " + installationName + "<br><strong>ID:</strong> " + installationId + "<br><strong>Address:</strong> " + address + "<br><strong>City:</strong> " + city + "<br><strong>Sector:</strong> " + sector + "</div>");
+        
+        if(sector == "Cement and Lime"){
+            marker.setIcon(cement_and_lime_icon);
+        }else if(sector == "Aviation"){
+            marker.setIcon(aviation_icon);
+        }else if(sector == "Ceramics"){
+            marker.setIcon(ceramics_icon);
+        }else if(sector == "Chemicals"){
+            marker.setIcon(chemicals_icon);
+        }else if(sector == "Coke ovens"){
+            marker.setIcon(coke_ovens_icon);
+        }else if(sector == "Combustion"){
+            marker.setIcon(combustion_icon);
+        }else if(sector == "Glass"){
+            marker.setIcon(glass_icon);
+        }else if(sector == "Iron and steel"){
+            marker.setIcon(iron_and_steel_icon);
+        }else if(sector == "Metal ore roasting"){
+            marker.setIcon(metal_ore_roasting_icon);
+        }else if(sector == "Mineral oil"){
+            marker.setIcon(mineral_oil_icon);
+        }else if(sector == "Non ferrous metals"){
+            marker.setIcon(non_ferrous_metals_icon);
+        }else if(sector == "Other"){
+            marker.setIcon(other_icon);
+        }else if(sector == "Pulp and paper"){
+            marker.setIcon(pulp_and_paper_icon);
+        }
+        
         marker.on("click", onMarkerClick);
         marker.installationId = installationId;
         markers.addLayer(marker);         
@@ -1188,3 +1281,117 @@ function allEUWideLoaded() {
 
     return everythingLoaded;
 }
+
+
+function initializeMapIcons(){
+    
+    aviation_icon = L.icon({
+        iconUrl: './images/icons/aviation.png',
+        iconSize:     [40, 40], // size of the icon
+        iconAnchor:   [26, 26], // point of the icon which will correspond to marker's location        
+        popupAnchor:  [26, -52] // point from which the popup should open relative to the iconAnchor
+    });
+    
+    cement_and_lime_icon = L.icon({
+        iconUrl: './images/icons/cement_and_lime.png',
+        iconSize:     [40, 40], // size of the icon
+        iconAnchor:   [24, 24], // point of the icon which will correspond to marker's location        
+        popupAnchor:  [0, -21] // point from which the popup should open relative to the iconAnchor
+    });
+    
+    ceramics_icon = L.icon({
+        iconUrl: './images/icons/ceramics.png',
+        iconSize:     [40, 40], // size of the icon
+        iconAnchor:   [20, 20], // point of the icon which will correspond to marker's location        
+        popupAnchor:  [0, -21] // point from which the popup should open relative to the iconAnchor
+    });
+    
+    chemicals_icon = L.icon({
+        iconUrl: './images/icons/chemicals.png',
+        iconSize:     [40, 40], // size of the icon
+        iconAnchor:   [20, 20], // point of the icon which will correspond to marker's location        
+        popupAnchor:  [0, -21] // point from which the popup should open relative to the iconAnchor
+    });
+    
+    coke_ovens_icon = L.icon({
+        iconUrl: './images/icons/coke_ovens.png',
+        iconSize:     [40, 40], // size of the icon
+        iconAnchor:   [20, 20], // point of the icon which will correspond to marker's location        
+        popupAnchor:  [0, -21] // point from which the popup should open relative to the iconAnchor
+    });
+    
+    combustion_icon = L.icon({
+        iconUrl: './images/icons/combustion.png',
+        iconSize:     [40, 40], // size of the icon
+        iconAnchor:   [20, 20], // point of the icon which will correspond to marker's location        
+        popupAnchor:  [0, -21] // point from which the popup should open relative to the iconAnchor
+    });
+    
+    glass_icon = L.icon({
+        iconUrl: './images/icons/glass.png',
+        iconSize:     [40, 40], // size of the icon
+        iconAnchor:   [20, 20], // point of the icon which will correspond to marker's location        
+        popupAnchor:  [0, -21] // point from which the popup should open relative to the iconAnchor
+    });
+    
+    iron_and_steel_icon = L.icon({
+        iconUrl: './images/icons/iron_and_steel.png',
+        iconSize:     [40, 40], // size of the icon
+        iconAnchor:   [20, 20], // point of the icon which will correspond to marker's location        
+        popupAnchor:  [0, -21] // point from which the popup should open relative to the iconAnchor
+    });
+    
+    mineral_oil_icon = L.icon({
+        iconUrl: './images/icons/mineral_oil.png',
+        iconSize:     [40, 40], // size of the icon
+        iconAnchor:   [20, 20], // point of the icon which will correspond to marker's location        
+        popupAnchor:  [0, -21] // point from which the popup should open relative to the iconAnchor
+    });
+    
+    non_ferrous_metals_icon = L.icon({
+        iconUrl: './images/icons/non_ferrous_metals.png',
+        iconSize:     [40, 40], // size of the icon
+        iconAnchor:   [20, 20], // point of the icon which will correspond to marker's location        
+        popupAnchor:  [0, -21] // point from which the popup should open relative to the iconAnchor
+    });
+    
+    other_icon = L.icon({
+        iconUrl: './images/icons/other.png',
+        iconSize:     [40, 40], // size of the icon
+        iconAnchor:   [20, 20], // point of the icon which will correspond to marker's location        
+        popupAnchor:  [0, -21] // point from which the popup should open relative to the iconAnchor
+    });
+    
+    pulp_and_paper_icon =  L.icon({
+        iconUrl: './images/icons/pulp_and_paper.png',
+        iconSize:     [40, 40], // size of the icon
+        iconAnchor:   [20, 20], // point of the icon which will correspond to marker's location        
+        popupAnchor:  [0, -21] // point from which the popup should open relative to the iconAnchor
+    });
+    
+    metal_ore_roasting_icon =  L.icon({
+        iconUrl: './images/icons/metal_ore_roasting.png',
+        iconSize:     [40, 40], // size of the icon
+        iconAnchor:   [20, 20], // point of the icon which will correspond to marker's location        
+        popupAnchor:  [0, -21] // point from which the popup should open relative to the iconAnchor
+    });
+    
+    
+  }
+
+function validateForm(){
+    var spamCheckerVal = $('#InputReal').val();
+    
+    console.log("spamCheckerVal",spamCheckerVal);
+    
+    if(spamCheckerVal == '7'){
+        $('#form_success_div').show();
+        return true;
+    }else{
+        $('#form_success_div').hide();
+        $('#form_error_spam_checker_div').show();    
+        return false;
+    }
+    
+}
+ 
