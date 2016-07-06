@@ -23,7 +23,8 @@ var totalOffsetsSoFar = 0;
 var barSeries;
 var lineSeries;
 var stackedBarChart
-var stackedBarChartData;
+var stackedBarChartData = [];
+var stackedBarChartDataBackup = [];
 var sectorsLoaded = false;
 var countriesLoaded = false;
 
@@ -98,6 +99,14 @@ function initMainPage() {
             $('#filter_eu_wide_chart_dropdown').parent().removeClass('open');
         }
     });
+    
+    //Handler for clicks outside of the dropdown menu to filter stacked bar chart
+    $('body').on('click', function(e) {
+
+        if (!$('#filter_stacked_bar_chart_dropdown').is(e.target) && $('#filter_stacked_bar_chart_dropdown').has(e.target).length === 0 && $('.open').has(e.target).length === 0) {
+            $('#filter_stacked_bar_chart_dropdown').parent().removeClass('open');
+        }
+    });
 
 
     $('#filter_line_chart_dropdown').on('click', function(event) {
@@ -105,6 +114,10 @@ function initMainPage() {
     });
 
     $('#filter_eu_wide_chart_dropdown').on('click', function(event) {
+        $(this).parent().toggleClass('open');
+    });
+    
+    $('#filter_stacked_bar_chart_dropdown').on('click', function(event) {
         $(this).parent().toggleClass('open');
     });
 
@@ -402,7 +415,7 @@ function onExportVerifiedEmissionsChartButtonClick() {
     for (var i = 0; i < stackedBarChartData.length; i++) {
         var row = stackedBarChartData[i];
         //console.log("row", row);
-        dataString += row["Verified Emissions"] + "\t" + row.country + "\t" + row.sector + "\n";
+        dataString += row["tCO2e"] + "\t" + row.country + "\t" + row.sector + "\n";
     }
 
     var encodedUri = encodeURI(dataString);
@@ -420,6 +433,11 @@ function filterDataForLineChart() {
 function filterDataForEUWideChart() {
     euWideChartData = euWideChartDataBackup.filter(filterEUWideArrayBasedOnCheckboxesSelected);
     createEUWideChart(euWideChartData);
+}
+
+function filterDataForStackedBarChart() {
+    stackedBarChartData = stackedBarChartDataBackup.filter(filterStackedBarArrayBasedOnCheckboxesSelected);
+    createStackedBarChart(stackedBarChartData);
 }
 
 
@@ -610,9 +628,9 @@ function dataForPeriod(responseText) {
         //dataArray.push({dataType:rows[0], "country":rows[1], "sector":rows[2]});      
     };
 
-    stackedBarChartData = dataArray;
-
-    createStackedBarChart();
+    stackedBarChartDataBackup = dataArray;
+    
+    filterDataForStackedBarChart();
 
 }
 
@@ -838,12 +856,14 @@ function onGetOffsetsForPeriod() {
 }
 
 
-function createStackedBarChart() {
+function createStackedBarChart(data) {
+    
+    stackedBarChartData = data;
 
     if (!stacked_bar_chart_created) {
         var svg = dimple.newSvg("#stacked_bar_chart", "100%", "100%");
 
-        stackedBarChart = new dimple.chart(svg, stackedBarChartData);
+        stackedBarChart = new dimple.chart(svg, data);
         // Fix the margins
         stackedBarChart.setMargins("85px", "20px", "20px", "50px");
         stackedBarChart.addMeasureAxis("y", "tCO2e");
@@ -855,7 +875,7 @@ function createStackedBarChart() {
         stacked_bar_chart_created = true;
 
     } else {
-        stackedBarChart.data = stackedBarChartData;
+        stackedBarChart.data = data;
     }
 
     stackedBarChart.draw(1000);
@@ -1264,6 +1284,53 @@ function filterArrayBasedOnCheckboxesSelected(value) {
     } else {
         return false;
     }
+}
+
+function filterStackedBarArrayBasedOnCheckboxesSelected(value) {
+        
+    var includeAviation = $('#aviation_checkbox:checked').length == 1;
+    var includeCementAndLime = $('#cement_and_lime_checkbox:checked').length == 1;
+    var includeCeramics = $('#ceramics_checkbox:checked').length == 1;
+    var includeChemicals = $('#chemicals_checkbox:checked').length == 1;
+    var includeCokeOvens = $('#coke_ovens_checkbox:checked').length == 1;
+    var includeCombustion = $('#combustion_checkbox:checked').length == 1;
+    var includeGlass = $('#glass_checkbox:checked').length == 1;
+    var includeIronAndSteel = $('#iron_and_steel_checkbox:checked').length == 1;
+    var includeMetalOreRoasting = $('#metal_ore_roasting_checkbox:checked').length == 1;
+    var includeMineralOil = $('#mineral_oil_checkbox:checked').length == 1;
+    var includeNonFerrousMetals = $('#non_ferrous_metals_checkbox:checked').length == 1;
+    var includeOther = $('#other_checkbox:checked').length == 1;
+    var includePulpAndPaper = $('#pulp_and_paper_checkbox:checked').length == 1;
+
+    var tempType = value.sector;
+    
+    if (tempType == "Aviation") {
+        return includeAviation;
+    } else if (tempType == "Cement and Lime") {
+        return includeCementAndLime;
+    } else if (tempType == "Ceramics") {
+        return includeCeramics;
+    } else if (tempType == "Chemicals") {
+        return includeChemicals;
+    } else if (tempType == "Coke ovens") {
+        return includeCokeOvens;
+    } else if (tempType == "Combustion") {
+        return includeCombustion;
+    } else if (tempType == "Glass") {
+        return includeGlass;
+    } else if (tempType == "Iron and steel") {
+        return includeIronAndSteel;
+    } else if (tempType == "Metal ore roasting") {
+        return includeMetalOreRoasting;
+    } else if (tempType == "Mineral oil") {
+        return includeMineralOil;
+    } else if (tempType == "Non ferrous metals") {
+        return includeNonFerrousMetals;
+    } else if (tempType == "Other") {
+        return includeOther;
+    } else if (tempType == "Pulp and paper") {
+        return includePulpAndPaper;
+    } 
 }
 
 function allEUWideLoaded() {
