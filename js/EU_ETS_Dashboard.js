@@ -73,6 +73,11 @@ var other_icon;
 var pulp_and_paper_icon;
 //-------------------------
 
+var formatNumber = d3.format(".4s");
+var formatNumberAddCommas = d3.format(",");
+
+var map_color_scale = d3.scale.linear().domain([1000, 1000000000]).range(['beige', 'red']);
+
 
 function initMainPage() {
     
@@ -1053,7 +1058,19 @@ function onGetInstallationsForCountryAndSector(){
     //-------------------------------
 
     //----Creating markers cluster-----
-    markers = L.markerClusterGroup();
+    markers = L.markerClusterGroup({
+			maxClusterRadius: 120,
+			iconCreateFunction: function (cluster) {
+				var markers = cluster.getAllChildMarkers();
+				var total_emissions = 0;
+				for (var i = 0; i < markers.length; i++) {
+					total_emissions += markers[i].emissions;
+				}                
+                var totalNumber = formatNumber(total_emissions);
+                var tempHTML = '<div class="mapcluster" style="border-radius: 20px; width: 45px; height: 45px; background-color: ' + map_color_scale(total_emissions) + ';"><strong>' + totalNumber + "</strong></div>"; 
+				return L.divIcon({html: tempHTML, className: 'mapcluster', iconSize: L.point(45, 45) });
+			}
+		});
     
     for (var i = 0; i < tempData.length; i++) {
         
@@ -1065,6 +1082,7 @@ function onGetInstallationsForCountryAndSector(){
         var sector = rows[4];
         var city = rows[5];
         var address = rows[6];
+        var emissions2015 = rows[7];
         
         var locationArray = [latitude, longitude];
         
@@ -1072,7 +1090,7 @@ function onGetInstallationsForCountryAndSector(){
         
         var marker = L.marker(locationArray); 
         
-        marker.bindPopup("<div id=\"" + installationId + "\"><strong>Name:</strong> " + installationName + "<br><strong>ID:</strong> " + installationId + "<br><strong>Address:</strong> " + address + "<br><strong>City:</strong> " + city + "<br><strong>Sector:</strong> " + sector + "</div>");
+        marker.bindPopup("<div id=\"" + installationId + "\"><strong>Name:</strong> " + installationName + "<br><strong>ID:</strong> " + installationId + "<br><strong>Address:</strong> " + address + "<br><strong>City:</strong> " + city + "<br><strong>Sector:</strong> " + sector + "<br><strong>Emissions 2015</strong>: " + formatNumberAddCommas(emissions2015) +  "</div>");
         
         if(sector == "Cement and Lime"){
             marker.setIcon(cement_and_lime_icon);
@@ -1104,6 +1122,7 @@ function onGetInstallationsForCountryAndSector(){
         
         marker.on("click", onMarkerClick);
         marker.installationId = installationId;
+        marker.emissions = emissions2015;        
         markers.addLayer(marker);         
         //console.log("i", i);
         
@@ -1123,8 +1142,8 @@ function onGetInstallationsForCountryAndSector(){
 }
 
 function onMarkerClick(){
-    console.log(this);
-    console.log("this.installationIdSt",this.installationId);
+    //console.log(this);
+    //console.log("this.installationIdSt",this.installationId);
 }
 
 function onGetVerifiedEmissionsForCountryAndSector() {

@@ -37,4 +37,10 @@ body {
     background-color: #f8f8f8;
 }
 
+.mapcluster {  
+  text-align: center;
+  font-size: 12px;
+  box-sizing: border-box;
+  padding-top: 10px;
+}
 
