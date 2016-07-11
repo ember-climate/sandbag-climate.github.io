@@ -356,7 +356,7 @@ function getInstallationsForCountryAndSector(serverURL, countryNames, sectorName
 	xhr.send(JSON.stringify(query));
 }
 
-function getVerifiedEmissionsForCountryAndSector(serverURL, countryNames, sectorNames, isSandbagSector, powerFlag, onLoadEnd ){
+function getVerifiedEmissionsForCountryAndSector(serverURL, countryNames, sectorNames, isSandbagSector, powerFlag, initialPeriod, onLoadEnd ){
     var query = {
 	    "statements" : [ ]
 	};
@@ -369,36 +369,36 @@ function getVerifiedEmissionsForCountryAndSector(serverURL, countryNames, sector
             
             statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
                         "(node)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD)" +
-                       "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) " +
+                       "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND toInt(p.name) >= " + initialPeriod + " " +
 					   "RETURN sum(ve.value) AS Verified_Emissions, p.name ORDER BY p.name";
             
         }else if(powerFlag == "Exclude Power installations"){
             
             statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
                         "(node)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD)" +
-                       "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.power_flag <> 'true' " +
-					   "RETURN sum(ve.value) AS Verified_Emissions, p.name ORDER BY p.name";
+                       "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.power_flag <> 'true' AND toInt(p.name) >= " + initialPeriod +
+					   " RETURN sum(ve.value) AS Verified_Emissions, p.name ORDER BY p.name";
             
             
         }else if(powerFlag == "Show only Power installations"){
             
             statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
                         "(node)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD)" +
-                       "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.power_flag = 'true' " +
-					   "RETURN sum(ve.value) AS Verified_Emissions, p.name ORDER BY p.name";
+                       "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND (node.power_flag = 'true') AND toInt(p.name) >= " + initialPeriod + 
+					   " RETURN sum(ve.value) AS Verified_Emissions, p.name ORDER BY p.name";
             
         }
               
     }else{
         statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)," +
                         "(node)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD)" +
-                       "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) " +
-					   "RETURN sum(ve.value) AS Verified_Emissions, p.name ORDER BY p.name";
+                       "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND toInt(p.name) >= " + initialPeriod +
+					   " RETURN sum(ve.value) AS Verified_Emissions, p.name ORDER BY p.name";
     }
 
 	
 
-	//console.log(statementSt);
+	console.log(statementSt);
 
 	query.statements.push({"statement":statementSt});
 
@@ -411,7 +411,7 @@ function getVerifiedEmissionsForCountryAndSector(serverURL, countryNames, sector
 }
 
 
-function getOffsetsForCountryAndSector(serverURL, countryNames, sectorNames, isSandbagSector, powerFlag, onLoadEnd ){
+function getOffsetsForCountryAndSector(serverURL, countryNames, sectorNames, isSandbagSector, powerFlag, initialPeriod, onLoadEnd ){
     var query = {
 	    "statements" : [ ]
 	};
@@ -425,14 +425,14 @@ function getOffsetsForCountryAndSector(serverURL, countryNames, sectorNames, isS
             statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)" +
 					   ", (node)-[off:OFFSETS]->(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
                        "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (o.unit_type = 'ERU' " +
-					   "OR o.unit_type = 'CER') AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) RETURN sum(o.amount) AS Offsets, p.name ORDER BY p.name";
+					   "OR o.unit_type = 'CER') AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND toInt(p.name) >= " + initialPeriod + " RETURN sum(o.amount) AS Offsets, p.name ORDER BY p.name";
             
         }else if(powerFlag == "Exclude Power installations"){
             
             statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)" +
 					   ", (node)-[off:OFFSETS]->(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
                        "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (o.unit_type = 'ERU' " +
-					   "OR o.unit_type = 'CER') AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.power_flag <> 'true'  RETURN sum(o.amount) AS Offsets, p.name ORDER BY p.name";
+					   "OR o.unit_type = 'CER') AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.power_flag <> 'true'  AND toInt(p.name) >= " + initialPeriod + " RETURN sum(o.amount) AS Offsets, p.name ORDER BY p.name";
             
             
         }else if(powerFlag == "Show only Power installations"){
@@ -440,7 +440,7 @@ function getOffsetsForCountryAndSector(serverURL, countryNames, sectorNames, isS
             statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)" +
 					   ", (node)-[off:OFFSETS]->(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
                        "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (o.unit_type = 'ERU' " +
-					   "OR o.unit_type = 'CER') AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.power_flag = 'true'  RETURN sum(o.amount) AS Offsets, p.name ORDER BY p.name";
+					   "OR o.unit_type = 'CER') AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.power_flag = 'true'  AND toInt(p.name) >= " + initialPeriod + " RETURN sum(o.amount) AS Offsets, p.name ORDER BY p.name";
         }
         
         
@@ -448,7 +448,7 @@ function getOffsetsForCountryAndSector(serverURL, countryNames, sectorNames, isS
         statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)" +
 					   ", (node)-[off:OFFSETS]->(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
                        "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " AND (o.unit_type = 'ERU' " +
-					   "OR o.unit_type = 'CER') AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) RETURN sum(o.amount) AS Offsets, p.name ORDER BY p.name";
+					   "OR o.unit_type = 'CER') AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND toInt(p.name) >= " + initialPeriod + " RETURN sum(o.amount) AS Offsets, p.name ORDER BY p.name";
     }
     
 
@@ -465,7 +465,7 @@ function getOffsetsForCountryAndSector(serverURL, countryNames, sectorNames, isS
 }
 
 
-function getFreeAllocationForCountryAndSector(serverURL, countryNames, sectorNames, isSandbagSector, powerFlag, onLoadEnd ){
+function getFreeAllocationForCountryAndSector(serverURL, countryNames, sectorNames, isSandbagSector, powerFlag, initialPeriod, onLoadEnd ){
 
 	var query = {
 	    "statements" : [ ]
@@ -479,22 +479,22 @@ function getFreeAllocationForCountryAndSector(serverURL, countryNames, sectorNam
             
             statementSt= "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
                         "(node)-[fa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +
-                        "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) " +
-					   "RETURN sum(fa.value) AS Free_Allocation, p.name ORDER BY p.name";            
+                        "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND toInt(p.name) >= " + initialPeriod +
+					   " RETURN sum(fa.value) AS Free_Allocation, p.name ORDER BY p.name";            
             
         }else if(powerFlag == "Exclude Power installations"){
             
             statementSt= "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
                         "(node)-[fa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +
-                        "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.power_flag <> 'true' " +
-					   "RETURN sum(fa.value) AS Free_Allocation, p.name ORDER BY p.name";     
+                        "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.power_flag <> 'true' AND toInt(p.name) >= " + initialPeriod +
+					   " RETURN sum(fa.value) AS Free_Allocation, p.name ORDER BY p.name";     
             
         }else if(powerFlag == "Show only Power installations"){
             
             statementSt= "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
                         "(node)-[fa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +
-                        "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.power_flag = 'true' " +
-					   "RETURN sum(fa.value) AS Free_Allocation, p.name ORDER BY p.name"; 
+                        "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.power_flag = 'true' AND toInt(p.name) >= " + initialPeriod +
+					   " RETURN sum(fa.value) AS Free_Allocation, p.name ORDER BY p.name"; 
             
         }
         
@@ -502,8 +502,8 @@ function getFreeAllocationForCountryAndSector(serverURL, countryNames, sectorNam
     }else{
         statementSt= "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)," +
                         "(node)-[fa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +
-                        "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) " +
-					   "RETURN sum(fa.value) AS Free_Allocation, p.name ORDER BY p.name";
+                        "WHERE c.name IN " + countryNames + " AND s.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND toInt(p.name) >= " + initialPeriod + 
+					   " RETURN sum(fa.value) AS Free_Allocation, p.name ORDER BY p.name";
     }
     
     

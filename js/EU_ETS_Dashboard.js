@@ -10,6 +10,7 @@ var euWideChart;
 var euWideChartLegend;
 var barSeriesEUWide;
 var lineSeriesEUWide;
+var areaSeriesEUWide;
 var surplusDataArrayEUWide = [];
 var surplusAccumulatedDataArrayEUWide = [];
 
@@ -50,6 +51,10 @@ var EU_COUNTRIES_ARRAY = ["Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus",
     "Luxembourg", "Malta", "Netherlands", "Norway", "Poland", "Portugal",
     "Romania", "Slovakia", "Slovenia", "Spain", "Sweden", "United Kingdom"
 ];
+
+var SECTORS_ARRAY = ["Aviation", "Cement and Lime", "Ceramics", "Chemicals", "Coke ovens", "Combustion",
+                    "Glass", "Iron and steel", "Metal ore roasting", "Mineral oil", "Non ferrous metals",
+                    "Other", "Pulp and paper"];
 
 var installations_map;
 var marker_popups_ids = [];
@@ -287,6 +292,7 @@ function disableLineChartPanelAndDropDowns() {
 
     $("#sectors_combobox").prop("disabled", true);
     $("#countries_combobox").prop("disabled", true);
+    $("#power_flag_combobox").prop("disabled", true);
 
 }
 
@@ -366,6 +372,8 @@ function onMapButtonClick(){
 }
 
 function loadDataForMapView(){
+    
+    console.log("loadDataForMapView");
     
     if(!installations_map){
         installations_map = L.map('map_div').setView([47.540043, 7.603260], 3);
@@ -510,7 +518,7 @@ function onGetEUCountries() {
     //
 
     $("#countries_combobox").selectpicker('refresh');
-    $("#countries_combobox").selectpicker('val', 'Austria');
+    $("#countries_combobox").selectpicker('val', EU_COUNTRIES_ARRAY);
 
     countriesLoaded = true;
 
@@ -541,7 +549,7 @@ function onGetSectors() {
 
 
     $("#sectors_combobox").selectpicker('refresh');
-    $("#sectors_combobox").selectpicker('val', 'Cement and Lime');
+    $("#sectors_combobox").selectpicker('val', "Cement and Lime");
 
     sectorsLoaded = true;
 
@@ -609,7 +617,7 @@ function onGetPeriods() {
     //console.log("periods", periods);  
 
     $("#periods_combobox").selectpicker('refresh');
-    $("#periods_combobox").selectpicker('val', '2005');
+    $("#periods_combobox").selectpicker('val', '2008');
     onPeriodsComboboxChange();
 }
 
@@ -903,7 +911,12 @@ function createEUWideChart(data) {
         euWideChart = new dimple.chart(svg, euWideChartData);
 
         // Fix the margins
-        euWideChart.setMargins("95px", "60px", "20px", "40px");
+        if(window.chrome){
+            euWideChart.setMargins("95px", "60px", "20px", "40px");
+        }else{
+            euWideChart.setMargins("95px", "60px", "20px", "80px");
+        }
+        
 
         var x = euWideChart.addCategoryAxis("x", "period");
         x.addOrderRule("period");
@@ -914,7 +927,7 @@ function createEUWideChart(data) {
         barSeriesEUWide = euWideChart.addSeries("type", dimple.plot.bar);
 
         lineSeriesEUWide = euWideChart.addSeries("type", dimple.plot.line);
-
+        
         lineSeriesEUWide.lineMarkers = true;
         lineSeriesEUWide.interpolation = "cardinal";
 
@@ -927,7 +940,7 @@ function createEUWideChart(data) {
 
     }
     barSeriesEUWide.data = dimple.filterData(data, "type", ["Free Allocation", "Offsets", "Auctioned", "Remaining Credit Entitlements"]);
-    lineSeriesEUWide.data = dimple.filterData(data, "type", ["Verified Emissions", "Legal Cap", "Accumulated Balance"]);
+    lineSeriesEUWide.data = dimple.filterData(data, "type", ["Verified Emissions", "Legal Cap", "Accumulated Balance"]);    
     euWideChart.draw(1000);
     
 }
@@ -1025,9 +1038,9 @@ function onComboBoxChange() {
         offsets_loaded = false;
         free_allocation_loaded = false;
         
-        getVerifiedEmissionsForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, true, selectedPowerFlag, onGetVerifiedEmissionsForCountryAndSector);
-        getOffsetsForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, true, selectedPowerFlag,  onGetOffsetsForCountryAndSector);
-        getFreeAllocationForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, true, selectedPowerFlag,  onGetFreeAllocationForCountryAndSector);
+        getVerifiedEmissionsForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, true, selectedPowerFlag, 2008, onGetVerifiedEmissionsForCountryAndSector);
+        getOffsetsForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, true, selectedPowerFlag, 2008,  onGetOffsetsForCountryAndSector);
+        getFreeAllocationForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, true, selectedPowerFlag, 2008,  onGetFreeAllocationForCountryAndSector);
         
         
     }
@@ -1040,6 +1053,7 @@ function dataForLineChartLoaded() {
     $("#spinner_div_country_sector").hide();
     $("#countries_combobox").prop("disabled", false);
     $("#sectors_combobox").prop("disabled", false);
+    $("#power_flag_combobox").prop("disabled", false);
     lineChart.draw(1000);
 }
 
@@ -1153,8 +1167,8 @@ function onGetVerifiedEmissionsForCountryAndSector() {
     var results = resultsJSON.results;
     var errors = resultsJSON.errors;
     //console.log("errors", errors);
+        
     var tempData = results[0].data;
-
     for (var i = 0; i < tempData.length; i++) {
         var rows = tempData[i].row;
         lineChartDataBackup.push({
@@ -1162,12 +1176,14 @@ function onGetVerifiedEmissionsForCountryAndSector() {
             "type": "Verified_Emissions",
             "period": rows[1]
         });
-    };
-
+    };        
+    
+    
     verified_emissions_loaded = true;
     if (verified_emissions_loaded && free_allocation_loaded && offsets_loaded) {
-        dataForLineChartLoaded();
+         dataForLineChartLoaded();
     }
+    
 }
 
 function onGetOffsetsForCountryAndSector() {
