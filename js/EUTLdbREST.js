@@ -213,7 +213,7 @@ function getOffsetsForAllPeriods(serverURL, includeAviation, onLoadEnd){
     } 
     
     
-    console.log(statementSt);
+    //console.log(statementSt);
     
     
 	query.statements.push({"statement":statementSt});
@@ -465,7 +465,7 @@ function getVerifiedEmissionsForCountryAndSector(serverURL, countryNames, sector
 
 	
 
-	console.log(statementSt);
+	//console.log(statementSt);
 
 	query.statements.push({"statement":statementSt});
 

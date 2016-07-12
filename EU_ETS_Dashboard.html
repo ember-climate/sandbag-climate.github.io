@@ -65,7 +65,7 @@
                     <a id="country_sector_chart_button" href="#">Country/sector</a>
                 </li>
                 <li>
-                    <a id="country_sector_chart_button" href="#">Installations</a>
+                    <a id="installations_button" href="#">Installations</a>
                 </li>
                 <li>
                     <a id="stacked_bar_chart_button" href="#">Emissions/Allowances/Offsets</a>
@@ -191,18 +191,8 @@
                 <div class="col-md-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i><label id="country_sector_chart_header_label">Multi line chart</label> 
-                            <div class="pull-right">
-                                <div class="btn-group">
-                                    <button id="chart_view_button" type="button" class="btn btn-default btn-xs " 
-                                            onclick="onChartViewButtonClick()" title="Show chart">
-                                        <i class="fa fa-bar-chart-o fa-fw"></i>Chart view
-                                    </button>
-                                    <button id="map_button" type="button" class="btn btn-default btn-xs " 
-                                            onclick="onMapButtonClick()" title="Show installations map">
-                                        <i class="fa fa-map-marker fa-fw"></i>Map view
-                                    </button>                                         
-                                </div>
+                            <i class="fa fa-bar-chart-o fa-fw"></i><label id="country_sector_chart_header_label">Country/sector chart</label> 
+                            <div class="pull-right">                                
                                 <div class="btn-group">
                                     <button id="export_line_chart_button" type="button" class="btn btn-default btn-xs " 
                                             onclick="onExportLineChartButtonClick()" title="Export data to TSV file">
@@ -236,8 +226,6 @@
                         <div class="panel-body">
                             <div id="line_chart" style="height:400px">                                    
                             </div>
-                            <div id="map_div"style="display:none">
-                            </div> 
                             <div id="spinner_div_country_sector" class="loading" style="display:none">
                                 <i class="fa fa-refresh fa-spin fa-3x fa-fw margin-bottom"></i>
                             </div> 
@@ -248,6 +236,35 @@
                 </div>
             </div>
             <!-- /.row -->
+            <div class="row" id="installations_row" style="display: none">
+                <div class="col-md-12">
+                    <div class="panel panel-default">
+                        <div class="panel-heading">
+                            <i class="fa fa-bar-chart-o fa-fw"></i><label id="country_sector_chart_header_label">Installations Map View</label> 
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                    <button id="export_installations_button" type="button" class="btn btn-default btn-xs " 
+                                            onclick="onExportInstallationsButtonClick()" title="Export installations data to TSV file">
+                                        Export
+                                    </button>                                     
+                                </div>                                
+                            </div>
+                        </div>
+                        <!-- /.panel-heading -->
+                        <div id="installations_panel_body" class="panel-body">
+                            <div id="map_div">
+                            </div> 
+                            <div id="spinner_div_installations" class="loading" style="display:none">
+                                <i class="fa fa-refresh fa-spin fa-3x fa-fw margin-bottom"></i>
+                            </div> 
+                        </div>                        
+                        <!-- /.panel-body -->
+                    </div>
+                    <!-- /.col-md 12 -->
+                </div>
+            </div>
+            <!-- /.row -->
+
             <div id="periods_combo_box_row" class="row" style="display: none">
                 <div class="col-xs-4 " >
                     <select id="periods_combobox" class="selectpicker" onchange="onPeriodsComboboxChange()"  data-size="8">
@@ -279,69 +296,7 @@
                                     <button id="export_verified_emissions_chart_button" type="button" class="btn btn-default btn-xs" onclick="onExportVerifiedEmissionsChartButtonClick()" title="Export data to TSV file">
                                         Export
                                     </button>                                     
-                                </div>
-                                <!--
-                                <div class="btn-group">
-                                    <button id="filter_stacked_bar_chart_dropdown" type="button" class="btn btn-default btn-xs dropdown-toggle" >
-                                        Filter chart
-                                        <span class="caret"></span>
-                                    </button>
-                                    <div class="list-group dropdown-menu pull-right" data-toggle="items"  >                                                                                
-                                        <div class="checkbox">
-                                            <input onclick="filterDataForStackedBarChart()" id="aviation_checkbox" type="checkbox" checked="checked">
-                                          <label for="aviation_checkbox">Aviation</label>
-                                        </div>
-                                        <div class="checkbox">
-                                            <input onclick="filterDataForStackedBarChart()" id="cement_and_lime_checkbox" type="checkbox" checked="checked">
-                                          <label for="cement_and_lime_checkbox">Cement and Lime</label>
-                                        </div>
-                                        <div class="checkbox">
-                                            <input onclick="filterDataForStackedBarChart()" id="ceramics_checkbox" type="checkbox" checked="checked">
-                                          <label for="ceramics_checkbox">Ceramics</label>
-                                        </div>     
-                                        <div class="checkbox">
-                                            <input onclick="filterDataForStackedBarChart()" id="chemicals_checkbox" type="checkbox" checked="checked">
-                                          <label for="chemicals_checkbox">Chemicals</label>
-                                        </div> 
-                                        <div class="checkbox">
-                                            <input onclick="filterDataForStackedBarChart()" id="coke_ovens_checkbox" type="checkbox" checked="checked">
-                                          <label for="coke_ovens_checkbox">Coke ovens</label>
-                                        </div>
-                                        <div class="checkbox">
-                                            <input onclick="filterDataForStackedBarChart()" id="combustion_checkbox" type="checkbox" checked="checked">
-                                          <label for="combustion_checkbox">Combustion</label>
-                                        </div>
-                                        <div class="checkbox">
-                                            <input onclick="filterDataForStackedBarChart()" id="glass_checkbox" type="checkbox" checked="checked">
-                                          <label for="glass_checkbox">Glass</label>
-                                        </div>
-                                        <div class="checkbox">
-                                            <input onclick="filterDataForStackedBarChart()" id="iron_and_steel_checkbox" type="checkbox" checked="checked">
-                                          <label for="iron_and_steel_checkbox">Iron and steel</label>
-                                        </div>
-                                        <div class="checkbox">
-                                            <input onclick="filterDataForStackedBarChart()" id="metal_ore_roasting_checkbox" type="checkbox" checked="checked">
-                                          <label for="metal_ore_roasting_checkbox">Metal ore roasting</label>
-                                        </div>
-                                        <div class="checkbox">
-                                            <input onclick="filterDataForStackedBarChart()" id="mineral_oil_checkbox" type="checkbox" checked="checked">
-                                          <label for="mineral_oil_checkbox">Mineral oil</label>
-                                        </div>
-                                        <div class="checkbox">
-                                            <input onclick="filterDataForStackedBarChart()" id="non_ferrous_metals_checkbox" type="checkbox" checked="checked">
-                                          <label for="non_ferrous_metals_checkbox">Non ferrous metals</label>
-                                        </div>
-                                        <div class="checkbox">
-                                            <input onclick="filterDataForStackedBarChart()" id="other_checkbox" type="checkbox" checked="checked">
-                                          <label for="other_checkbox">Other</label>
-                                        </div>
-                                        <div class="checkbox">
-                                            <input onclick="filterDataForStackedBarChart()" id="pulp_and_paper_checkbox" type="checkbox" checked="checked">
-                                          <label for="pulp_and_paper_checkbox">Pulp and paper</label>
-                                        </div>
-                                    </div> 
-                                </div>
-                                -->
+                                </div>                                
                             </div>
                         </div>
                         <!-- /.panel-heading -->
@@ -445,7 +400,11 @@
               <p>For more information about the tool please check the <strong>About</strong> section.</p>
           </div>
           <div class="modal-footer">
-            <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+            <div class="btn-group">
+                <label class="checkbox-inline">
+                  <input id="do_not_show_welcome_dialog_again_checkbox" type="checkbox" onchange="updateWelcomeDialogCookie()"> Don't show this message again
+                </label>                
+            </div>       
           </div>
         </div><!-- /.modal-content -->
       </div><!-- /.modal-dialog -->
@@ -469,6 +428,8 @@
     
     <script src="./js/leaflet.js"></script>
     
+    <script src="./js/cookies.min.js"></script>
+    
     <script src="./js/leaflet.markercluster.js"></script>
     
     <script src="./js/EUTLdbREST.js"></script>
@@ -477,8 +438,6 @@
     
     <script>
     
-        $('#welcome_modal').modal('show');
-        
         initMenus();
         initMainPage();
             
