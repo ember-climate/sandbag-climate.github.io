@@ -1,5 +1,8 @@
 var server_url = "http://52.208.154.95:7474/db/data/transaction/commit";
 //var server_url = "http://localhost:7474/db/data/transaction/commit";
+
+var doNotShowWelcomeDialogAgainCookieName = "no_welcome_dialog";
+
 var countries = [];
 var sectors = [];
 var periods = [];
@@ -38,7 +41,6 @@ var offset_entitlements_eu_wide_loaded = false;
 var verified_emissions_loaded = false;
 var free_allocation_loaded = false;
 var offsets_loaded = false;
-var installations_loaded = false;
 
 var line_chart_created = false;
 var stacked_bar_chart_created = false;
@@ -59,7 +61,7 @@ var installations_map;
 var marker_popups_ids = [];
 var markers;
 
-var countrySectorChartDisplayed = true;
+var countrySectorChartDisplayed = false;
 
 //-----------MAP ICONS----
 var ceramics_icon;
@@ -86,6 +88,14 @@ var map_color_scale = d3.scale.linear().domain([1000, 1000000000]).range(['beige
 function initMainPage() {
     
     console.log("init main page...");
+    
+    
+    //Welcome dialog
+    
+    if(Cookies.get(doNotShowWelcomeDialogAgainCookieName) != "true"){
+        $('#welcome_modal').modal('show');
+    }    
+    
     
     //Navbar buttons active state handler
     $(".nav a").on("click", function(){
@@ -158,6 +168,17 @@ function initializeSurplusDataArrayEUWide() {
     //-------------------------------------------
 }
 
+function updateWelcomeDialogCookie(){
+    var notShowAgain = $('#do_not_show_welcome_dialog_again_checkbox:checked').length == 1;
+    console.log("setting cookie value...");
+    if(notShowAgain){
+        Cookies.set(doNotShowWelcomeDialogAgainCookieName, "true");
+    }else{
+        Cookies.set(doNotShowWelcomeDialogAgainCookieName, "false");
+    }
+    console.log("getting cookie value...", Cookies.get(doNotShowWelcomeDialogAgainCookieName));
+}
+
 
 function loadEUWideData(includeAviation) {
 
@@ -211,8 +232,25 @@ function initMenus() {
             $('#stacked_bar_chart_row').hide();
             $('#eu_wide_chart_row').hide();
             $('#contact_us_row').hide();
+            $('#installations_row').hide();
             
+            countrySectorChartDisplayed = true;
             loadCountrySectorChart();
+            
+        }else if (tempId == "installations_button") {
+            
+            e.preventDefault();
+            $('#multi_line_chart_row').hide();            
+            $('#about_row').hide();
+            $('#periods_combo_box_row').hide();
+            $('#stacked_bar_chart_row').hide();
+            $('#eu_wide_chart_row').hide();
+            $('#contact_us_row').hide();
+            $('#installations_row').show();
+            $('#countries_sectors_row').show();
+            
+            countrySectorChartDisplayed = false;
+            loadDataForMapView();
             
         }else if(tempId == "contact_us_button"){
             
@@ -223,7 +261,10 @@ function initMenus() {
             $('#stacked_bar_chart_row').hide();
             $('#eu_wide_chart_row').hide();
             $('#about_row').hide();
+            $('#installations_row').hide();
             $('#contact_us_row').show();
+            
+            countrySectorChartDisplayed = false;
             
         } else if (tempId == "stacked_bar_chart_button") {
             
@@ -233,9 +274,11 @@ function initMenus() {
             $('#about_row').hide();
             $('#eu_wide_chart_row').hide();
             $('#contact_us_row').hide();
+            $('#installations_row').hide();
             $('#periods_combo_box_row').show();
-            $('#stacked_bar_chart_row').show();            
-                        
+            $('#stacked_bar_chart_row').show();  
+            
+            countrySectorChartDisplayed = false;                        
             onResize();
             
         } else if (tempId == "about_button") {
@@ -246,8 +289,11 @@ function initMenus() {
             $('#periods_combo_box_row').hide();
             $('#stacked_bar_chart_row').hide();
             $('#contact_us_row').hide();
+            $('#installations_row').hide();
             $('#eu_wide_chart_row').hide();
             $('#about_row').show();
+            
+            countrySectorChartDisplayed = false;
             
         } else if (tempId == "eu_wide_chart_button") {
             
@@ -258,8 +304,10 @@ function initMenus() {
             $('#contact_us_row').hide();
             $('#stacked_bar_chart_row').hide();
             $('#about_row').hide();
+            $('#installations_row').hide();
             $('#eu_wide_chart_row').show();
             
+            countrySectorChartDisplayed = false;
             onResize();
             
         }
@@ -286,14 +334,23 @@ function onResize(){
 }
 
 
-function disableLineChartPanelAndDropDowns() {
-    $("#line_chart").addClass("grey_background");
-    $("#spinner_div_country_sector").show();
+function disableCountrySectorDropDowns() {    
 
-    $("#sectors_combobox").attr("disabled", "");
-    $("#countries_combobox").attr("disabled", "");
-    $("#power_flag_combobox").attr("disabled", "");
-
+    $("#sectors_combobox").prop("disabled", true);
+    $("#sectors_combobox").selectpicker('refresh');
+    $("#countries_combobox").prop("disabled", true);
+    $("#countries_combobox").selectpicker('refresh');
+    $("#power_flag_combobox").prop("disabled", true);
+    $("#power_flag_combobox").selectpicker('refresh');
+}
+function enableCountrySectorDropDowns(){
+    
+    $("#sectors_combobox").prop("disabled", false);
+    $("#sectors_combobox").selectpicker('refresh');
+    $("#countries_combobox").prop("disabled", false);
+    $("#countries_combobox").selectpicker('refresh');
+    $("#power_flag_combobox").prop("disabled", false);
+    $("#power_flag_combobox").selectpicker('refresh');
 }
 
 function changeStackedBarChart(typeSt) {
@@ -354,23 +411,6 @@ function onExportLineChartButtonClick() {
     window.open(encodedUri);
 }
 
-function onChartViewButtonClick(){
-    countrySectorChartDisplayed = true;
-    $('#line_chart').show();
-    lineChart.draw(1000);
-    $('#map_div').hide();
-}
-
-function onMapButtonClick(){
-    
-    countrySectorChartDisplayed = false;
-    
-    $('#line_chart').hide();
-    $('#map_div').show();
-    
-    loadDataForMapView();        
-    
-}
 
 function loadDataForMapView(){
     
@@ -386,40 +426,38 @@ function loadDataForMapView(){
             accessToken: 'pk.eyJ1IjoicGFibG9wYXJlamEiLCJhIjoiY2lwamxuaHY4MDA2M3Z4a3d4emRhMG00eCJ9.gKyvi9hMyE6wxa0o4-GDgQ'
         }).addTo(installations_map);
     } 
-    
-    
-    if(installations_loaded == false){
+
         
-        var selectedCountry = $("#countries_combobox").selectpicker('val');
-        var selectedSector = $("#sectors_combobox").selectpicker('val');
-        var selectedPowerFlag = $("#power_flag_combobox").selectpicker('val');
+    var selectedCountry = $("#countries_combobox").selectpicker('val');
+    var selectedSector = $("#sectors_combobox").selectpicker('val');
+    var selectedPowerFlag = $("#power_flag_combobox").selectpicker('val');
 
-        if (selectedCountry != null && selectedSector != null) {
+    if (selectedCountry != null && selectedSector != null) {
 
-            var selectedSectorSt = "[";
-            var selectedCountrySt = "[";
+        var selectedSectorSt = "[";
+        var selectedCountrySt = "[";
 
-            for (var i = 0; i < selectedCountry.length; i++) {
-                var currentValue = selectedCountry[i];
-                selectedCountrySt += "'" + currentValue + "',";
-            }
-            for (var i = 0; i < selectedSector.length; i++) {
-                var currentValue = selectedSector[i];
-                selectedSectorSt += "'" + currentValue + "',";
-            }
+        for (var i = 0; i < selectedCountry.length; i++) {
+            var currentValue = selectedCountry[i];
+            selectedCountrySt += "'" + currentValue + "',";
+        }
+        for (var i = 0; i < selectedSector.length; i++) {
+            var currentValue = selectedSector[i];
+            selectedSectorSt += "'" + currentValue + "',";
+        }
 
-            selectedSectorSt = selectedSectorSt.slice(0, selectedSectorSt.length - 1);
-            selectedSectorSt += "]";
-            selectedCountrySt = selectedCountrySt.slice(0, selectedCountrySt.length - 1);
-            selectedCountrySt += "]";
+        selectedSectorSt = selectedSectorSt.slice(0, selectedSectorSt.length - 1);
+        selectedSectorSt += "]";
+        selectedCountrySt = selectedCountrySt.slice(0, selectedCountrySt.length - 1);
+        selectedCountrySt += "]";
 
-            getInstallationsForCountryAndSector(server_url,selectedCountrySt,selectedSectorSt, true, selectedPowerFlag,  onGetInstallationsForCountryAndSector);
+        getInstallationsForCountryAndSector(server_url,selectedCountrySt,selectedSectorSt, true, selectedPowerFlag,  onGetInstallationsForCountryAndSector);
             
-            $("#map_div").addClass("grey_background");
-            $("#spinner_div_installations_map").show();
+        $("#map_div").addClass("grey_background");
+        $("#spinner_div_installations").show();
 
-        }    
-    } 
+    }    
+    
 }
 
 function onExportVerifiedEmissionsChartButtonClick() {
@@ -1047,7 +1085,7 @@ function onComboBoxChange() {
         installations_loaded = false;
         marker_popups_ids = [];
 
-        disableLineChartPanelAndDropDowns();
+        disableCountrySectorDropDowns();
 
         var selectedSectorSt = "[";
         var selectedCountrySt = "[";
@@ -1073,17 +1111,23 @@ function onComboBoxChange() {
             
             loadDataForMapView();            
             
-        }
-        
-        lineChartDataBackup = [];
+        }else{
+            
+            $("#line_chart").addClass("grey_background");
+            $("#spinner_div_country_sector").show();
+            
+            lineChartDataBackup = [];
 
-        verified_emissions_loaded = false;
-        offsets_loaded = false;
-        free_allocation_loaded = false;
-        
-        getVerifiedEmissionsForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, true, selectedPowerFlag, 2008, onGetVerifiedEmissionsForCountryAndSector);
-        getOffsetsForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, true, selectedPowerFlag, 2008,  onGetOffsetsForCountryAndSector);
-        getFreeAllocationForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, true, selectedPowerFlag, 2008,  onGetFreeAllocationForCountryAndSector);
+            verified_emissions_loaded = false;
+            offsets_loaded = false;
+            free_allocation_loaded = false;
+
+            getVerifiedEmissionsForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, true, selectedPowerFlag, 2008, onGetVerifiedEmissionsForCountryAndSector);
+            
+            getOffsetsForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, true, selectedPowerFlag, 2008,  onGetOffsetsForCountryAndSector);
+            
+            getFreeAllocationForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, true, selectedPowerFlag, 2008,  onGetFreeAllocationForCountryAndSector);
+        }           
         
         
     }
@@ -1094,11 +1138,10 @@ function dataForLineChartLoaded() {
     filterDataForLineChart();
     $("#line_chart").removeClass("grey_background");
     $("#spinner_div_country_sector").hide();
-    $("#countries_combobox").prop("disabled", false);
-    $("#sectors_combobox").prop("disabled", false);
-    $("#power_flag_combobox").prop("disabled", false);
+    enableCountrySectorDropDowns();
     lineChart.draw(1000);
 }
+
 
 function onGetInstallationsForCountryAndSector(){
     console.log("onGetInstallationsForCountryAndSector");
@@ -1189,11 +1232,10 @@ function onGetInstallationsForCountryAndSector(){
     installations_map.addLayer(markers);
     
     installations_map.setZoom(3);
-    
-    installations_loaded = true;
-    
+        
     $("#map_div").removeClass("grey_background");
-    $("#spinner_div_installations_map").hide();
+    $("#spinner_div_installations").hide();
+    enableCountrySectorDropDowns();
     
 
 }
