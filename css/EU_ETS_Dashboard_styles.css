@@ -42,6 +42,7 @@ body{
     margin: 0 auto -60px;*/
     /* Pad bottom by footer height 
     padding: 0 0 60px;*/
+    overflow-x: hidden;
 }
 
 #page-wrapper {
@@ -55,8 +56,7 @@ body{
 .mapcluster {  
   text-align: center;
   font-size: 12px;
-  box-sizing: border-box;
-  padding-top: 10px;
+  box-sizing: border-box;  
 }
 
 footer {
@@ -77,6 +77,10 @@ footer {
 row{
     min-height: 100%;
     height: auto;
+}
+
+#countries_sectors_row{
+    padding-bottom: 10px;
 }
 
 

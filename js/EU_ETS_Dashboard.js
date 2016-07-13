@@ -83,6 +83,7 @@ var formatNumber = d3.format(".4s");
 var formatNumberAddCommas = d3.format(",");
 
 var map_color_scale = d3.scale.linear().domain([1000, 1000000000]).range(['beige', 'red']);
+var map_size_scale = d3.scale.linear().domain([1000, 1000000000]).range([40,70]);
 
 
 function initMainPage() {
@@ -1171,7 +1172,12 @@ function onGetInstallationsForCountryAndSector(){
 					total_emissions += markers[i].emissions;
 				}                
                 var totalNumber = formatNumber(total_emissions);
-                var tempHTML = '<div class="mapcluster" style="border-radius: 20px; width: 45px; height: 45px; background-color: ' + map_color_scale(total_emissions) + ';"><strong>' + totalNumber + "</strong></div>"; 
+                
+                var tempSize = map_size_scale(total_emissions);
+                var tempColor = map_color_scale(total_emissions);
+                var tempPaddingTop = tempSize/2 - 10;
+                
+                var tempHTML = '<div class="mapcluster" style="border-radius: ' + tempSize + 'px; width: ' + tempSize + 'px; height: ' + tempSize + 'px; background-color: ' + tempColor + '; padding-top: ' + tempPaddingTop +  'px;"><strong>' + totalNumber + "</strong></div>"; 
 				return L.divIcon({html: tempHTML, className: 'mapcluster', iconSize: L.point(45, 45) });
 			}
 		});

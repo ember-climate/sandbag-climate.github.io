@@ -65,22 +65,22 @@
             <div id="navbar" class="navbar-collapse collapse">
               <ul class="nav navbar-nav">
                 <li class="active">
-                  <a id="eu_wide_chart_button" href="#">EU wide</a>
+                  <a id="eu_wide_chart_button" href="#"><i class="fa fa-globe fa-fw"></i>EU wide</a>
                 </li>
                 <li>
-                    <a id="country_sector_chart_button" href="#">Country/sector</a>
+                    <a id="country_sector_chart_button" href="#"><i class="fa fa-database fa-fw"></i>Country/sector</a>
                 </li>
                 <li>
-                    <a id="installations_button" href="#">Installations</a>
+                    <a id="installations_button" href="#"><i class="fa fa-industry fa-fw"></i>Installations</a>
                 </li>
                 <li>
-                    <a id="stacked_bar_chart_button" href="#">Data per period</a>
+                    <a id="stacked_bar_chart_button" href="#"><i class="fa fa-calendar fa-fw"></i>Data per period</a>
                 </li>  
                 <li>
                   <a id="about_button" href="#"><i class="fa fa-edit fa-fw"></i>About</a>
                 </li>
                 <li>
-                  <a id="contact_us_button" href="#">Contact us</a>
+                  <a id="contact_us_button" href="#"><i class="fa fa-envelope fa-fw"></i>Contact us</a>
                 </li>                            
               </ul> 
               <a class="navbar-right" href="http://www.sandbag.org.uk"><img src="images/sandbag_logo_small.png"/></a>
@@ -114,7 +114,7 @@
                 <div class="col-md-12">
                     <div class="panel panel-default">
                         <div style="height:50px;" class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i> EU wide chart
+                            <i class="fa fa-bar-chart-o fa-fw"></i> EU wide view
                             <div class="pull-right">
                                 <div class="btn-group" >
                                         <select id="include_aviation_combobox" onchange="onIncludeAviationComboboxChange()" class="selectpicker"  width="fit">
@@ -185,7 +185,7 @@
                 <div class="col-md-12">
                     <div class="panel panel-default">
                         <div class="panel-heading">
-                            <i class="fa fa-bar-chart-o fa-fw"></i><label id="country_sector_chart_header_label">Country/sector chart</label> 
+                            <i class="fa fa-bar-chart-o fa-fw"></i><label id="country_sector_chart_header_label">Country/sector view</label> 
                             <div class="pull-right">   
                                 <!--
                                 <div class="btn-group">
@@ -392,13 +392,14 @@
         <div class="modal-content">
           <div class="modal-header">
             <button type="button" class="close" data-dismiss="modal" aria-hidden="true">×</button>
-            <h4 class="modal-title">EU ETS Dashboard</h4>
+            <h4 class="modal-title">EU ETS Dashboard 0.1</h4>
           </div>
           <div class="modal-body">
               <h3>Welcome!</h3>
               <p>Welcome to the EU ETS Dashboard, a tool that provides a user-friendly access to emission trading data extracted from the European Union Transaction Log (EUTL) together with other data integrated by Sandbag's team such as auction data and a more meaningful sectors aggregation among others. 
               </p>
               <p>For more information about the tool please check the <strong>About</strong> section.</p>
+              <br>
               <h4>Disclaimer</h4>
               <div class="welcome_dialog_disclaimer">                  
                   <p>The information contained in this website is for general information purposes only. The information is provided by Sandbag and while we endeavour to keep the information up to date and correct, we make no representations or warranties of any kind, express or implied, about the completeness, accuracy, reliability, suitability or availability with respect to the website or the information, products, services, or related graphics contained on the website for any purpose. Any reliance you place on such information is therefore strictly at your own risk.
