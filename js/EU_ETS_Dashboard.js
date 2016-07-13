@@ -662,10 +662,14 @@ function filterStackedBarChartDataByCountry(value){
     var selectedCountry = $("#countries_filter_combobox").selectpicker('val');
     var selectedSector = $("#sectors_filter_combobox").selectpicker('val');
     
-    var countryFilterPassed = selectedCountry.includes(tempCountry);    
-    var sectorFilterPassed = selectedSector.includes(tempSector);
-    
-    return (countryFilterPassed && sectorFilterPassed);
+    if(selectedCountry && selectedSector){
+        var countryFilterPassed = selectedCountry.includes(tempCountry);    
+        var sectorFilterPassed = selectedSector.includes(tempSector);
+        return (countryFilterPassed && sectorFilterPassed);
+    }else{
+        return false;
+    }
+        
 }
 
 
