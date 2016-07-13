@@ -290,12 +290,12 @@ function getVerifiedEmissionsForPeriod(serverURL, periodName, onLoadEnd){
 	    "statements" : [ ]
 	};
 
-	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
-                        "(i)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD) " +
+	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
+                        "(node)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD) " +
                        "WHERE p.name = '" + periodName + "' " +
 					   "RETURN sum(ve.value) AS Verified_Emissions, c.name, ss.name ORDER BY c.name, ss.name";
     
-    //console.log("statement!", statementSt);
+    console.log("statement!", statementSt);
 
 	query.statements.push({"statement":statementSt});
 
@@ -313,12 +313,12 @@ function getFreeAllocationForPeriod(serverURL, periodName, onLoadEnd){
 	    "statements" : [ ]
 	};
 
-	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
-                        "(i)-[aa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +
+	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
+                        "(node)-[aa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +
                        "WHERE p.name = '" + periodName + "' " +
 					   "RETURN sum(aa.value) AS Free_Allocation, c.name, ss.name ORDER BY c.name, ss.name";
     
-    //console.log("statement!", statementSt);
+    console.log("statement!", statementSt);
 
 	query.statements.push({"statement":statementSt});
 
@@ -336,12 +336,12 @@ function getOffsetsForPeriod(serverURL, periodName, onLoadEnd){
 	    "statements" : [ ]
 	};
 
-	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY]-(i:INSTALLATION)-[:INSTALLATION_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
-                        "(i)-[off:OFFSETS]->(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
+	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
+                        "(node)-[off:OFFSETS]->(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
                        "WHERE p.name = '" + periodName + "' " + " AND (o.unit_type = 'ERU' " +
 					   "OR o.unit_type = 'CER') RETURN sum(o.amount) AS Offsets, c.name, ss.name ORDER BY c.name, ss.name";
     
-    //console.log("statement!", statementSt);
+    console.log("statement!", statementSt);
 
 	query.statements.push({"statement":statementSt});
 
@@ -366,6 +366,25 @@ function getSurrenderedUnitsForPeriod(serverURL, periodName, onLoadEnd){
     
     //console.log("statement!", statementSt);
 
+	query.statements.push({"statement":statementSt});
+
+	var xhr = new XMLHttpRequest();    
+	xhr.onloadend = onLoadEnd;
+	xhr.open("POST", serverURL, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Accept', 'application/json; charset=UTF-8');
+	xhr.send(JSON.stringify(query));
+}
+
+function getInstallationData(serverURL, installationID, onLoadEnd){
+    var query = {
+	    "statements" : [ ]
+	};
+
+	var statementSt = "MATCH (i:INSTALLATION) WHERE i.id = '" + installationID + "' " +
+                        "RETURN i.id, i.name, i.city, i.post_code, i.address, i.EPRTR_ID, i.permit_id, permit_entry_date, " +
+                        "permit_expiry_or_revocation_date, i.latitude, i.longitude, i.power_flag, i.power_flag_reason";
+    
 	query.statements.push({"statement":statementSt});
 
 	var xhr = new XMLHttpRequest();    

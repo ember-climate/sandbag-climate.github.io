@@ -959,7 +959,7 @@ function createStackedBarChart(data) {
 
         stackedBarChart = new dimple.chart(svg, data);
         // Fix the margins
-        stackedBarChart.setMargins("85px", "20px", "20px", "50px");
+        stackedBarChart.setMargins("85px", "20px", "20px", "110px");
         stackedBarChart.addMeasureAxis("y", "tCO2e");
         stackedBarChart.addCategoryAxis("x", "country");
         //y.addOrderRule("Date");
@@ -1190,7 +1190,8 @@ function onGetInstallationsForCountryAndSector(){
         
         var marker = L.marker(locationArray); 
         
-        marker.bindPopup("<div id=\"" + installationId + "\"><strong>Name:</strong> " + installationName + "<br><strong>ID:</strong> " + installationId + "<br><strong>Address:</strong> " + address + "<br><strong>City:</strong> " + city + "<br><strong>Sector:</strong> " + sector + "<br><strong>Emissions 2015</strong>: " + formatNumberAddCommas(emissions2015) +  "</div>");
+        marker.bindPopup("<div id=\"" + installationId + "\"><strong>Name:</strong> " + installationName + "<br><strong>ID:</strong> " + installationId + "<br><strong>Address:</strong> " + address + "<br><strong>City:</strong> " + city + "<br><strong>Sector:</strong> " + sector + "<br><strong>Emissions 2015</strong>: " + formatNumberAddCommas(emissions2015) + "</div>");
+        //"<br><button class=\"pull-right\" onclick=\"onDownloadInstallationButtonClick(this)\">Download</button><br></div>");
         
         if(sector == "Cement and Lime"){
             marker.setIcon(cement_and_lime_icon);
@@ -1238,6 +1239,22 @@ function onGetInstallationsForCountryAndSector(){
     enableCountrySectorDropDowns();
     
 
+}
+
+function onDownloadInstallationButtonClick(value){
+    //console.log("value.parentElement",value.parentElement);
+    var tempID = value.parentElement.getAttribute("id");
+    getInstallationData(server_url, tempID, onGetInstallationData);
+}
+
+function onGetInstallationData(){
+    console.log("onGetInstallationData");
+    
+    var dataString = "data:text/csv;charset=utf-8,Period,tCO2e,type\n";
+
+
+    var encodedUri = encodeURI(dataString);
+    window.open(encodedUri); 
 }
 
 function onMarkerClick(){
