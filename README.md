@@ -2,8 +2,8 @@
 
 The EU ETS dashboard provides a user-friendly access to emission trading data extracted from the European Union Transaction Log (EUTL) together with other data integrated by Sandbag's team such as NACE codes and a more meaningful sectors aggregation.
 
-* The ETS data shown in this tool was extracted from the European Commission’s [EUTL](http://ec.europa.eu/environment/ets/) on **May 3rd 2016**.
-* Aircraft operators data is not included or taken into account in any way for any of the charts made available as part of the interface.
+* The ETS data shown in this tool was extracted from the European Commission’s [EUTL](http://ec.europa.eu/environment/ets/) on **June 20th 2016**. Such data is put in the public domain by the European Commission according to the Article 109 of the Commission Regulation 389/2013, which prescribes that the data defined in Annex XIV of the Regulation should be made public (points 1-4 and 7 of the Annex).
+* Offsets data for periods 2013 onwards is not available with sectors granularity since the European Commission stopped sharing such information after 2012.
 * When calculating offset values only those with unit types CER or ERU are used.
 
 ### Licensing
@@ -33,3 +33,10 @@ This tool was developed by the following Sandbag team members:
  * **[Bootstrap](http://getbootstrap.com/)** - _The most popular HTML, CSS, and JS framework for developing responsive, mobile first projects on the web._
  * **[jQuery](https://jquery.com/)** - _jQuery is a fast, small, and feature-rich JavaScript library_
  * **[bootstrap-select](http://silviomoreto.github.io/bootstrap-select/)** - _A jQuery plugin that utilizes Bootstrap's dropdown.js to style and bring additional functionality to standard select elements._
+ * **[Leaflet](http://leafletjs.com/)** - _an open-source JavaScript library for mobile-friendly interactive maps._
+ * **[Javascript Cookie](https://github.com/js-cookie/js-cookie)** - _A simple, lightweight JavaScript API for handling browser cookies_
+ * **[Leaflet.markercluster](https://github.com/Leaflet/Leaflet.markercluster)** - _Marker Clustering plugin for Leaflet_
+
+* **Icons/Fonts**:
+ * **[Icons8](https://icons8.com/)**
+ * **[Font Awesome](http://fontawesome.io/)** 
