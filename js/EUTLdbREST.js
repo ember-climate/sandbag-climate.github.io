@@ -187,8 +187,12 @@ function getOffsetsForAllPeriods(serverURL, includeAviation, onLoadEnd){
     
     if(includeAviation == "Include Aviation"){
             
-        statementSt = "MATCH (o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
-                    "WHERE (o.unit_type = 'ERU' OR o.unit_type = 'CER') " +
+        statementSt = "MATCH (node)-[:OFFSETS]-(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
+                    "WHERE (o.unit_type = 'ERU' OR o.unit_type = 'CER') AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) " +
+                    "RETURN sum(o.amount) AS Offsets, p.name AS Period ORDER BY p.name" +
+                    " UNION " +
+                    "MATCH (p:PERIOD)<-[:OFFSET_PERIOD]-(o:OFFSET)-[offs:OFFSETS_2013_ONWARDS]-() " + 
+                    "WHERE (o.unit_type = 'ERU' OR o.unit_type = 'CER') AND offs.type = 'all' " +
                     "RETURN sum(o.amount) AS Offsets, p.name AS Period ORDER BY p.name";
             
     }else if(includeAviation == "Exclude Aviation"){
@@ -197,8 +201,8 @@ function getOffsetsForAllPeriods(serverURL, includeAviation, onLoadEnd){
                     "WHERE (o.unit_type = 'ERU' OR o.unit_type = 'CER') " +
                     "RETURN sum(o.amount) AS Offsets, p.name AS Period ORDER BY p.name" + 
                     " UNION " +
-                    "MATCH (p:PERIOD)<-[:OFFSET_PERIOD]-(o:OFFSET)-[:OFFSETS_2013_ONWARDS]-() " + 
-                    "WHERE (o.unit_type = 'ERU' OR o.unit_type = 'CER') " +
+                    "MATCH (p:PERIOD)<-[:OFFSET_PERIOD]-(o:OFFSET)-[offs:OFFSETS_2013_ONWARDS]-() " + 
+                    "WHERE (o.unit_type = 'ERU' OR o.unit_type = 'CER') AND offs.type = 'installations' " +
                     "RETURN sum(o.amount) AS Offsets, p.name AS Period ORDER BY p.name";
             
     }else if(includeAviation == "Show only Aviation"){            
@@ -207,13 +211,13 @@ function getOffsetsForAllPeriods(serverURL, includeAviation, onLoadEnd){
                     "WHERE (o.unit_type = 'ERU' OR o.unit_type = 'CER') " +
                     "RETURN sum(o.amount) AS Offsets, p.name AS Period ORDER BY p.name" + 
                     " UNION " +
-                    "MATCH (p:PERIOD)<-[:OFFSET_PERIOD]-(o:OFFSET)-[:OFFSETS_2013_ONWARDS]-() " + 
-                    "WHERE (o.unit_type = 'ERU' OR o.unit_type = 'CER') " +
+                    "MATCH (p:PERIOD)<-[:OFFSET_PERIOD]-(o:OFFSET)-[offs:OFFSETS_2013_ONWARDS]-() " + 
+                    "WHERE (o.unit_type = 'ERU' OR o.unit_type = 'CER') AND offs.type = 'aviation' " +
                     "RETURN sum(o.amount) AS Offsets, p.name AS Period ORDER BY p.name";   
     } 
     
     
-    //console.log(statementSt);
+    console.log(statementSt);
     
     
 	query.statements.push({"statement":statementSt});
@@ -232,11 +236,20 @@ function getOffsetEntitlementsForAllPeriods(serverURL, includeAviation, onLoadEn
     var query = {
 	    "statements" : [ ]
 	};
-
-	if(includeAviation == true){
+    
+    
+    if(includeAviation == "Include Aviation"){
+            
         statementSt = "MATCH ()-[r:OFFSET_ENTITLEMENT]->() RETURN sum(toFloat(r.value)) AS Total_Entitlements";
-    }else{
-        statementSt = "MATCH (:INSTALLATION)-[r:OFFSET_ENTITLEMENT]->() RETURN sum(toFloat(r.value)) AS Total_Entitlements";
+            
+    }else if(includeAviation == "Exclude Aviation"){
+        
+        statementSt = "MATCH (:INSTALLATION)-[r:OFFSET_ENTITLEMENT]->() RETURN sum(toFloat(r.value)) AS Total_Entitlements";           
+            
+    }else if(includeAviation == "Show only Aviation"){            
+         
+        statementSt = "MATCH (:AIRCRAFT_OPERATOR)-[r:OFFSET_ENTITLEMENT]->() RETURN sum(toFloat(r.value)) AS Total_Entitlements";      
+        
     }
     
 	query.statements.push({"statement":statementSt});

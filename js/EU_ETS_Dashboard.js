@@ -1021,6 +1021,12 @@ function createEUWideChart(data) {
         
         euWideChartLegend = euWideChart.addLegend(20, 10, "95%", 300, "left");
         
+//        euWideChartLegend.shapes.selectAll("rect")
+//          // Add a hover event to each rectangle
+//          .on("hover", function (e) {
+//            
+//        });
+        
         eu_wide_chart_created = true;
     } else {
 
