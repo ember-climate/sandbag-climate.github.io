@@ -36,6 +36,7 @@ This tool was developed by the following Sandbag team members:
  * **[Leaflet](http://leafletjs.com/)** - _an open-source JavaScript library for mobile-friendly interactive maps._
  * **[Javascript Cookie](https://github.com/js-cookie/js-cookie)** - _A simple, lightweight JavaScript API for handling browser cookies_
  * **[Leaflet.markercluster](https://github.com/Leaflet/Leaflet.markercluster)** - _Marker Clustering plugin for Leaflet_
+ * **[Leaflet.Dialog](https://github.com/NBTSolutions/Leaflet.Dialog)**
 
 * **Icons/Fonts**:
  * **[Icons8](https://icons8.com/)**
