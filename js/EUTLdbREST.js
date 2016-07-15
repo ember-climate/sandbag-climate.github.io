@@ -272,12 +272,18 @@ function getAuctionedForAllPeriods(serverURL, includeAviation, onLoadEnd){
     if(includeAviation == "Include Aviation"){
             
         statementSt = "MATCH (c:COUNTRY)-[a:AUCTIONED]->(p:PERIOD) "+
-					   "RETURN sum(a.amount) AS Auctioned, p.name AS Period ORDER BY p.name";
+					   "RETURN sum(a.amount) AS Auctioned, p.name AS Period ORDER BY p.name " +
+                      "UNION " +
+                      "MATCH (n:NER300)-[a:AUCTIONED]->(p:PERIOD) " +
+                      "RETURN sum(a.amount) AS Auctioned, p.name AS Period ORDER BY p.name ";
             
     }else if(includeAviation == "Exclude Aviation"){
             
         statementSt = "MATCH (c:COUNTRY)-[a:AUCTIONED]->(p:PERIOD) "+
-					   "WHERE a.type = 'Installation' RETURN sum(a.amount) AS Auctioned, p.name AS Period ORDER BY p.name";
+					   "WHERE a.type = 'Installation' RETURN sum(a.amount) AS Auctioned, p.name AS Period ORDER BY p.name " +
+                      "UNION " +
+                      "MATCH (n:NER300)-[a:AUCTIONED]->(p:PERIOD) " +
+                      "RETURN sum(a.amount) AS Auctioned, p.name AS Period ORDER BY p.name ";
             
     }else if(includeAviation == "Show only Aviation"){            
             
@@ -285,7 +291,7 @@ function getAuctionedForAllPeriods(serverURL, includeAviation, onLoadEnd){
 					   "WHERE a.type = 'Aircraft Operator' RETURN sum(a.amount) AS Auctioned, p.name AS Period ORDER BY p.name";    
     }
 	    
-    //console.log("statement!", statementSt);
+    console.log("statement!", statementSt);
 
 	query.statements.push({"statement":statementSt});
 
