@@ -217,7 +217,7 @@ function getOffsetsForAllPeriods(serverURL, includeAviation, onLoadEnd){
     } 
     
     
-    console.log(statementSt);
+    //console.log(statementSt);
     
     
 	query.statements.push({"statement":statementSt});
@@ -308,7 +308,7 @@ function getVerifiedEmissionsForPeriod(serverURL, periodName, onLoadEnd){
                        "WHERE p.name = '" + periodName + "' " +
 					   "RETURN sum(ve.value) AS Verified_Emissions, c.name, ss.name ORDER BY c.name, ss.name";
     
-    console.log("statement!", statementSt);
+    //console.log("statement!", statementSt);
 
 	query.statements.push({"statement":statementSt});
 
@@ -331,7 +331,7 @@ function getFreeAllocationForPeriod(serverURL, periodName, onLoadEnd){
                        "WHERE p.name = '" + periodName + "' " +
 					   "RETURN sum(aa.value) AS Free_Allocation, c.name, ss.name ORDER BY c.name, ss.name";
     
-    console.log("statement!", statementSt);
+    //console.log("statement!", statementSt);
 
 	query.statements.push({"statement":statementSt});
 
@@ -354,7 +354,7 @@ function getOffsetsForPeriod(serverURL, periodName, onLoadEnd){
                        "WHERE p.name = '" + periodName + "' " + " AND (o.unit_type = 'ERU' " +
 					   "OR o.unit_type = 'CER') RETURN sum(o.amount) AS Offsets, c.name, ss.name ORDER BY c.name, ss.name";
     
-    console.log("statement!", statementSt);
+    //console.log("statement!", statementSt);
 
 	query.statements.push({"statement":statementSt});
 

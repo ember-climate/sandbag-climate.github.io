@@ -57,6 +57,8 @@ var SECTORS_ARRAY = ["Aviation", "Cement and Lime", "Ceramics", "Chemicals", "Co
                     "Glass", "Iron and steel", "Metal ore roasting", "Mineral oil", "Non ferrous metals",
                     "Other", "Pulp and paper"];
 
+var  EU_WIDE_LEGEND_VALUES = {"Free Allocation": "Permits issued by the European Commission every<br> year to each stationary installation and aircraft operator.", "Auctioned": "Auctioned", "Offsets": "Offsets", "Remaining Credit Entitlements": "This series represents an estimation of<br> how the remaining credit entitlements could be<br> distributed acroos the years", "Verified Emissions": "Tones of carbon emitted by the <br>different stationary installations and <br>aircraft operators", "Accumulated Balance":"Accumulated surplus calculated as follows: <br>Accumulated Verified Emissions - ( Accumulated Auctioned <br>+ Accumulated Offsets + Accumulated Free Allocation)", "Legal Cap": "Legal Cap stated by the European Commission"};
+
 var installations_map;
 var marker_popups_ids = [];
 var markers;
@@ -86,6 +88,7 @@ var map_color_scale = d3.scale.linear().domain([1000, 1000000000]).range(['beige
 var map_size_scale = d3.scale.linear().domain([1000, 1000000000]).range([40,70]);
 
 var map_opened_for_the_first_time = true;
+var euWideLegendTip;
 
 
 function initMainPage() {
@@ -151,6 +154,17 @@ function initMainPage() {
         //lineChart.draw(0, true);
         onResize();
     };
+    
+    /* Initialize tooltip */
+    euWideLegendTip = d3.tip()
+      .attr('class', 'd3-tip')
+      .offset([-10, 0])
+      .direction("s")
+      .html(function(d) {
+        //console.log("d",d);
+        return "<span style='color:black'>" + EU_WIDE_LEGEND_VALUES[d.key] + "</span>";
+      });
+    
     
     initializeMapIcons();
 
@@ -326,7 +340,8 @@ function onLoad() {
 function onResize(){
     console.log("onResize()");
     if(euWideChart){
-        euWideChart.draw(1000);
+        createEUWideChart(euWideChartData);
+        //euWideChart.draw(1000);
     }
     if(lineChart){
         lineChart.draw(1000);
@@ -1021,11 +1036,7 @@ function createEUWideChart(data) {
         
         euWideChartLegend = euWideChart.addLegend(20, 10, "95%", 300, "left");
         
-//        euWideChartLegend.shapes.selectAll("rect")
-//          // Add a hover event to each rectangle
-//          .on("hover", function (e) {
-//            
-//        });
+        //console.log(euWideChartLegend);
         
         eu_wide_chart_created = true;
     } else {
@@ -1036,9 +1047,24 @@ function createEUWideChart(data) {
     barSeriesEUWide.data = dimple.filterData(data, "type", ["Free Allocation", "Offsets", "Auctioned", "Remaining Credit Entitlements"]);
     lineSeriesEUWide.data = dimple.filterData(data, "type", ["Verified Emissions", "Legal Cap", "Accumulated Balance","Accumulated Balance"]);   
     euWideChart.draw(1000);
+     
+    initEUWideLegendTooltips();
     
+    
+      
 }
 
+function initEUWideLegendTooltips(){
+    
+    
+    euWideChartLegend.shapes.selectAll("*").call(euWideLegendTip);
+    euWideChartLegend.shapes.selectAll("text").
+                on('mouseover', euWideLegendTip.show)
+                .on('mouseout', euWideLegendTip.hide);
+    euWideChartLegend.shapes.selectAll("rect").
+                on('mouseover', euWideLegendTip.show)
+                .on('mouseout', euWideLegendTip.hide);
+}
 
 function createLineChart(data) {
     lineChartData = data;

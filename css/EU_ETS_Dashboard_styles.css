@@ -84,6 +84,14 @@ row{
     padding-bottom: 10px;
 }
 
-
-
-
+.d3-tip {
+    line-height: 1;
+    font-size: 11px;
+    padding: 10px;
+    background: #EFFBFF;
+    color: #fff;
+    border-radius: 3px;
+    border-style: solid;
+    border-color: #919191;
+    border-width: 1px;
+  }
