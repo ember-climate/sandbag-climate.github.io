@@ -94,4 +94,10 @@ row{
     border-style: solid;
     border-color: #919191;
     border-width: 1px;
-  }
+}
+
+
+#data_loaded_eu_wide_list{
+    margin-left: -45px;
+    list-style: none;
+}
