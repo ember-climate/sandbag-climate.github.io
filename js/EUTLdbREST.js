@@ -291,7 +291,7 @@ function getAuctionedForAllPeriods(serverURL, includeAviation, onLoadEnd){
 					   "WHERE a.type = 'Aircraft Operator' RETURN sum(a.amount) AS Auctioned, p.name AS Period ORDER BY p.name";    
     }
 	    
-    console.log("statement!", statementSt);
+    //console.log("statement!", statementSt);
 
 	query.statements.push({"statement":statementSt});
 
@@ -311,7 +311,7 @@ function getVerifiedEmissionsForPeriod(serverURL, periodName, onLoadEnd){
 
 	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
                         "(node)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD) " +
-                       "WHERE p.name = '" + periodName + "' " +
+                       "WHERE p.name IN " + periodName + " " +
 					   "RETURN sum(ve.value) AS Verified_Emissions, c.name, ss.name ORDER BY c.name, ss.name";
     
     //console.log("statement!", statementSt);
@@ -334,7 +334,7 @@ function getFreeAllocationForPeriod(serverURL, periodName, onLoadEnd){
 
 	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
                         "(node)-[aa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +
-                       "WHERE p.name = '" + periodName + "' " +
+                       "WHERE p.name IN " + periodName + " " +
 					   "RETURN sum(aa.value) AS Free_Allocation, c.name, ss.name ORDER BY c.name, ss.name";
     
     //console.log("statement!", statementSt);
@@ -357,7 +357,7 @@ function getOffsetsForPeriod(serverURL, periodName, onLoadEnd){
 
 	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
                         "(node)-[off:OFFSETS]->(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
-                       "WHERE p.name = '" + periodName + "' " + " AND (o.unit_type = 'ERU' " +
+                       "WHERE p.name IN " + periodName + " " + " AND (o.unit_type = 'ERU' " +
 					   "OR o.unit_type = 'CER') RETURN sum(o.amount) AS Offsets, c.name, ss.name ORDER BY c.name, ss.name";
     
     //console.log("statement!", statementSt);

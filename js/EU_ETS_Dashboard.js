@@ -296,7 +296,8 @@ function initMenus() {
             $('#periods_combo_box_row').show();
             $('#stacked_bar_chart_row').show();  
             
-            countrySectorChartDisplayed = false;                        
+            countrySectorChartDisplayed = false; 
+            onPeriodsComboboxChange();
             onResize();
             
         } else if (tempId == "about_button") {
@@ -661,19 +662,31 @@ function onPeriodsComboboxChange() {
     $('#offsets_warning_div').hide();
 
     var textSt = $('#stackedBarChartPerPeriodTitleText').text();
-
-    //console.log("textSt", "'" + textSt + "'");
+    var valuesSelectedAfter2012 = false;
     
     var periodSelected = $("#periods_combobox").selectpicker('val');
+    var periodSelectedSt = "[";
+    
+    for (var i = 0; i < periodSelected.length; i++) {
+        var currentValue = periodSelected[i];
+        if(currentValue > 2012){
+            valuesSelectedAfter2012 = true;
+        }
+        periodSelectedSt += "'" + currentValue + "',";
+    }
+
+    periodSelectedSt = periodSelectedSt.slice(0, periodSelectedSt.length - 1);
+    periodSelectedSt += "]";
+    
 
     if (textSt == "Free Allocation per period") {
         
-        getFreeAllocationForPeriod(server_url, periodSelected, onGetFreeAllocationForPeriod);
+        getFreeAllocationForPeriod(server_url, periodSelectedSt, onGetFreeAllocationForPeriod);
         
     } else if (textSt == "Offsets per period") {
-        
-        if(periodSelected <= 2012){
-            getOffsetsForPeriod(server_url, periodSelected, onGetOffsetsForPeriod);
+                
+        if(valuesSelectedAfter2012  == false){
+            getOffsetsForPeriod(server_url, periodSelectedSt, onGetOffsetsForPeriod);
         }else{
             stackedBarChartData = [];
             createStackedBarChart();
@@ -683,9 +696,14 @@ function onPeriodsComboboxChange() {
         
     } else if (textSt == "Verified Emissions per period") {
         
-        getVerifiedEmissionsForPeriod(server_url, periodSelected, onGetVerifiedEmissionsForPeriod);
+        getVerifiedEmissionsForPeriod(server_url, periodSelectedSt, onGetVerifiedEmissionsForPeriod);
         
     }
+    
+    $("#stacked_bar_chart").addClass("grey_background");
+    $("#data_per_period_spinner_div").show();
+    $("#periods_combobox").prop("disabled", true);
+    $("#periods_combobox").selectpicker('refresh');
 
 }
 
@@ -749,7 +767,7 @@ function onGetPeriods() {
 
         $("#periods_combobox").selectpicker('refresh');
         $("#periods_combobox").selectpicker('val', '2008');
-        onPeriodsComboboxChange();
+        //onPeriodsComboboxChange();
     
     }else{
         problemWithRequests();
@@ -761,6 +779,8 @@ function onGetPeriods() {
 function dataForPeriod(responseText) {
     
     var responseSt = responseText;
+        
+    //console.log(responseSt);
     
     if(responseSt && responseSt.length > 0){
         
@@ -785,7 +805,13 @@ function dataForPeriod(responseText) {
 
         stackedBarChartDataBackup = dataArray;
 
-        filterDataForStackedBarChart();
+        filterDataForStackedBarChart();   
+        
+        $("#stacked_bar_chart").removeClass("grey_background");
+        $("#data_per_period_spinner_div").hide();
+        $("#periods_combobox").prop("disabled", false);
+        $("#periods_combobox").selectpicker('refresh');
+        
         
     }else{
         
@@ -912,6 +938,7 @@ function onGetVerifiedEmissionsForAllPeriods() {
     console.log("onGetVerifiedEmissionsForAllPeriods");
     
     var responseSt = this.responseText;
+    
     
     if(responseSt && responseSt.length > 0){
         
