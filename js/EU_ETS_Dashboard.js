@@ -1875,23 +1875,17 @@ function updateEUWideDataLoadedText(value){
     var checkHtml = '<i class="fa fa-fw fa-check"></i>';
     
     if(value == "Verified Emissions"){
-        var previousValue = $('#verified_emissions_eu_wide_item').html();
-        $('#verified_emissions_eu_wide_item').html(previousValue + checkHtml);
+        $('#verified_emissions_eu_wide_item').html("Verified Emissions " + checkHtml);
     }else if(value == "Legal Cap"){
-        var previousValue = $('#legal_cap_eu_wide_item').html();
-        $('#legal_cap_eu_wide_item').html(previousValue + checkHtml);
+        $('#legal_cap_eu_wide_item').html("Legal Cap " + checkHtml);
     }else if(value == "Free Allocation"){
-        var previousValue = $('#free_allocation_eu_wide_item').html();
-        $('#free_allocation_eu_wide_item').html(previousValue + checkHtml);
+        $('#free_allocation_eu_wide_item').html("Free Allocation " + checkHtml);
     }else if(value == "Offset Entitlements"){
-        var previousValue = $('#offset_entitlements_eu_wide_item').html();
-        $('#offset_entitlements_eu_wide_item').html(previousValue + checkHtml);
+        $('#offset_entitlements_eu_wide_item').html("Offset Entitlements " + checkHtml);
     }else if(value == "Offsets"){
-        var previousValue = $('#offsets_eu_wide_item').html();
-        $('#offsets_eu_wide_item').html(previousValue + checkHtml);
+        $('#offsets_eu_wide_item').html("Offsets " + checkHtml);
     }else if(value == "Auctions"){
-        var previousValue = $('#auctions_eu_wide_item').html();
-        $('#auctions_eu_wide_item').html(previousValue + checkHtml);
+        $('#auctions_eu_wide_item').html("Auctions " + checkHtml);
     }
     
     
