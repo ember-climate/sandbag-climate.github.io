@@ -1,5 +1,5 @@
-var server_url = "http://52.208.154.95:7474/db/data/transaction/commit";
-//var server_url = "http://localhost:7474/db/data/transaction/commit";
+//var server_url = "http://52.208.154.95:7474/db/data/transaction/commit";
+var server_url = "http://localhost:7474/db/data/transaction/commit";
 
 var doNotShowWelcomeDialogAgainCookieName = "no_welcome_dialog";
 
@@ -279,8 +279,9 @@ function initMenus() {
             $('#eu_wide_chart_row').hide();
             $('#about_row').hide();
             $('#installations_row').hide();
+            $('#error_row').hide();
             $('#contact_us_row').show();
-            
+                        
             countrySectorChartDisplayed = false;
             
         } else if (tempId == "stacked_bar_chart_button") {
@@ -308,6 +309,7 @@ function initMenus() {
             $('#contact_us_row').hide();
             $('#installations_row').hide();
             $('#eu_wide_chart_row').hide();
+            $('#error_row').hide();
             $('#about_row').show();
             
             countrySectorChartDisplayed = false;
@@ -597,40 +599,60 @@ function onGetEUCountries() {
 function onGetSectors() {
 
     console.log("onGetSectors");
-    var resultsJSON = JSON.parse(this.responseText);
-    var results = resultsJSON.results;
-    var errors = resultsJSON.errors;
-    var sectorsData = results[0].data;
-
-
-    for (var i = 0; i < sectorsData.length; i++) {
-        var sectorName = sectorsData[i].row[0];
-        sectors.push(sectorName);
-
-        var option = document.createElement("option");
-        option.value = sectorName;
-        option.setAttribute("data-content", "<img src='./images/icons/" + sectorName + ".png'></img>    " + sectorName);
-
-        var select = document.getElementById("sectors_combobox");
-        select.appendChild(option);
-        
-        var option2 = document.createElement("option");
-        option2.value = sectorName; 
-        option2.setAttribute("data-content", "<img src='./images/icons/" + sectorName + ".png'></img>    " + sectorName);
-
-        var select2 = document.getElementById("sectors_filter_combobox");
-        select2.appendChild(option2);
-    };
-
-
-    $("#sectors_combobox").selectpicker('refresh');
-    $("#sectors_combobox").selectpicker('val', "Cement and Lime");
+    var responseSt = this.responseText;
     
-    $("#sectors_filter_combobox").selectpicker('refresh');
-    $("#sectors_filter_combobox").selectpicker('val', SECTORS_ARRAY);
+    if(responseSt && responseSt.length > 0){
+        var resultsJSON = JSON.parse();
+    
+        var results = resultsJSON.results;
+        var errors = resultsJSON.errors;
+        var sectorsData = results[0].data;
 
-    sectorsLoaded = true;
 
+        for (var i = 0; i < sectorsData.length; i++) {
+            var sectorName = sectorsData[i].row[0];
+            sectors.push(sectorName);
+
+            var option = document.createElement("option");
+            option.value = sectorName;
+            option.setAttribute("data-content", "<img src='./images/icons/" + sectorName + ".png'></img>    " + sectorName);
+
+            var select = document.getElementById("sectors_combobox");
+            select.appendChild(option);
+
+            var option2 = document.createElement("option");
+            option2.value = sectorName; 
+            option2.setAttribute("data-content", "<img src='./images/icons/" + sectorName + ".png'></img>    " + sectorName);
+
+            var select2 = document.getElementById("sectors_filter_combobox");
+            select2.appendChild(option2);
+        };
+
+
+        $("#sectors_combobox").selectpicker('refresh');
+        $("#sectors_combobox").selectpicker('val', "Cement and Lime");
+
+        $("#sectors_filter_combobox").selectpicker('refresh');
+        $("#sectors_filter_combobox").selectpicker('val', SECTORS_ARRAY);
+
+        sectorsLoaded = true;
+        
+    }else{
+        problemWithRequests();
+    }  
+
+}
+
+function problemWithRequests(){
+    $('#error_row').show();
+    $('#multi_line_chart_row').hide();
+    $('#countries_sectors_row').hide();
+    $('#about_row').hide();
+    $('#periods_combo_box_row').hide();
+    $('#stacked_bar_chart_row').hide();
+    $('#eu_wide_chart_row').hide();
+    $('#contact_us_row').hide();
+    $('#installations_row').hide();
 }
 
 function onPeriodsComboboxChange() {
@@ -695,266 +717,340 @@ function filterStackedBarChartDataByCountry(value){
 function onGetPeriods() {
 
     console.log("onGetPeriods");
-    var resultsJSON = JSON.parse(this.responseText);
-    var results = resultsJSON.results;
-    var errors = resultsJSON.errors;
-    var periodsData = results[0].data;
+    var responseSt = this.responseText;
+    
+    if(responseSt && responseSt.length > 0){
+        
+        var resultsJSON = JSON.parse(responseSt);
+        var results = resultsJSON.results;
+        var errors = resultsJSON.errors;
+        var periodsData = results[0].data;
 
 
-    for (var i = 0; i < periodsData.length; i++) {
-        var periodName = periodsData[i].row[0];
-        //console.log("periodName'", periodName, "'");
-        if (periodName != "2008to2020" && periodName >= 2008 && periodName <= 2015) {
-            periods.push(periodName);
+        for (var i = 0; i < periodsData.length; i++) {
+            var periodName = periodsData[i].row[0];
+            //console.log("periodName'", periodName, "'");
+            if (periodName != "2008to2020" && periodName >= 2008 && periodName <= 2015) {
+                periods.push(periodName);
 
-            //console.log("periodName",periodName);
+                //console.log("periodName",periodName);
 
-            var option = document.createElement("option");
-            option.value = periodName;
-            option.innerHTML = periodName;
+                var option = document.createElement("option");
+                option.value = periodName;
+                option.innerHTML = periodName;
 
-            var select = document.getElementById("periods_combobox");
-            select.appendChild(option);
-        }
+                var select = document.getElementById("periods_combobox");
+                select.appendChild(option);
+            }
 
-    };
-    //console.log("periods", periods);  
+        };
+        //console.log("periods", periods);  
 
-    $("#periods_combobox").selectpicker('refresh');
-    $("#periods_combobox").selectpicker('val', '2008');
-    onPeriodsComboboxChange();
+        $("#periods_combobox").selectpicker('refresh');
+        $("#periods_combobox").selectpicker('val', '2008');
+        onPeriodsComboboxChange();
+    
+    }else{
+        problemWithRequests();
+    }
+    
+    
 }
 
 function dataForPeriod(responseText) {
-    var resultsJSON = JSON.parse(responseText);
-    var results = resultsJSON.results;
-    var errors = resultsJSON.errors;
-
-    var tempData = results[0].data;
-
-    var dataArray = [];
-
-    for (var i = 0; i < tempData.length; i++) {
-        var rows = tempData[i].row;
-        var tempArray = [];
-        tempArray["tCO2e"] = rows[0];
-        tempArray["country"] = rows[1];
-        tempArray["sector"] = rows[2];
-        dataArray.push(tempArray);
-
-        //dataArray.push({dataType:rows[0], "country":rows[1], "sector":rows[2]});      
-    };
-
-    stackedBarChartDataBackup = dataArray;
     
-    filterDataForStackedBarChart();
+    var responseSt = responseText;
+    
+    if(responseSt && responseSt.length > 0){
+        
+        var resultsJSON = JSON.parse(responseSt);
+        var results = resultsJSON.results;
+        var errors = resultsJSON.errors;
+
+        var tempData = results[0].data;
+
+        var dataArray = [];
+
+        for (var i = 0; i < tempData.length; i++) {
+            var rows = tempData[i].row;
+            var tempArray = [];
+            tempArray["tCO2e"] = rows[0];
+            tempArray["country"] = rows[1];
+            tempArray["sector"] = rows[2];
+            dataArray.push(tempArray);
+
+            //dataArray.push({dataType:rows[0], "country":rows[1], "sector":rows[2]});      
+        };
+
+        stackedBarChartDataBackup = dataArray;
+
+        filterDataForStackedBarChart();
+        
+    }else{
+        
+        problemWithRequests();
+        
+    }    
+    
 
 }
 
 function onGetFreeAllocationForAllPeriods() {
     console.log("onGetFreeAllocationForAllPeriods");
-    //console.log(this.responseText);
-    var resultsJSON = JSON.parse(this.responseText);
-    var results = resultsJSON.results;
-    var errors = resultsJSON.errors;
-    var tempData = results[0].data;
-
-    //console.log("this.responseText", this.responseText);
-
-    for (var i = 0; i < tempData.length; i++) {
-        var rows = tempData[i].row;
-        var tempArray = [];
-        var tempPeriod = rows[1];
-        var tempValue = rows[0];
-
-        tempArray["tCO2e"] = tempValue;
-        tempArray["period"] = tempPeriod;
-        tempArray["type"] = "Free Allocation";
+    
+    var responseSt = this.responseText;
+    
+    if(responseSt && responseSt.length > 0){
         
-        if(tempPeriod >= 2008){
-            euWideChartDataBackup.push(tempArray);
+        var resultsJSON = JSON.parse(responseSt);
+        var results = resultsJSON.results;
+        var errors = resultsJSON.errors;
+        var tempData = results[0].data;
 
-            //---updating surplus data array EU wide---
-            surplusDataArrayEUWide[tempPeriod] += tempValue;
-            //-----------------------------------------
+        //console.log("this.responseText", this.responseText);
+
+        for (var i = 0; i < tempData.length; i++) {
+            var rows = tempData[i].row;
+            var tempArray = [];
+            var tempPeriod = rows[1];
+            var tempValue = rows[0];
+
+            tempArray["tCO2e"] = tempValue;
+            tempArray["period"] = tempPeriod;
+            tempArray["type"] = "Free Allocation";
+
+            if(tempPeriod >= 2008){
+                euWideChartDataBackup.push(tempArray);
+
+                //---updating surplus data array EU wide---
+                surplusDataArrayEUWide[tempPeriod] += tempValue;
+                //-----------------------------------------
+            }
+
+
+        }
+
+        free_allocation_eu_wide_loaded = true;
+
+        if (allEUWideLoaded()) {
+            filterDataForEUWideChart();
         }
         
-        
+    }else{
+        problemWithRequests();
     }
-
-    free_allocation_eu_wide_loaded = true;
-
-    if (allEUWideLoaded()) {
-        filterDataForEUWideChart();
-    }
+    
 }
 
 function onGetOffsetEntitlementsForAllPeriods() {
     console.log("onGetOffsetEntitlementsForAllPeriods");
-    //console.log("this.responseText", this.responseText);
-    var resultsJSON = JSON.parse(this.responseText);
-    var results = resultsJSON.results;
-    var errors = resultsJSON.errors;
-    var tempData = results[0].data;
+    
+    var responseSt = this.responseText;
+    
+    if(responseSt && responseSt.length > 0){
+        
+        var resultsJSON = JSON.parse(responseSt);
+        var results = resultsJSON.results;
+        var errors = resultsJSON.errors;
+        var tempData = results[0].data;
 
-    totalOffsetEntitlements = tempData[0].row[0];
+        totalOffsetEntitlements = tempData[0].row[0];
 
-    offset_entitlements_eu_wide_loaded = true;
+        offset_entitlements_eu_wide_loaded = true;
 
-    if (allEUWideLoaded()) {
-        filterDataForEUWideChart();
-    }
+        if (allEUWideLoaded()) {
+            filterDataForEUWideChart();
+        }
+        
+    }else{
+        problemWithRequests();
+    }   
 
 }
 
 function onGetLegalCapForAllPeriods() {
     console.log("onGetLegalCapForAllPeriods");
-    //console.log("this.responseText", this.responseText);
-    var resultsJSON = JSON.parse(this.responseText);
-    var results = resultsJSON.results;
-    var errors = resultsJSON.errors;
-    var tempData = results[0].data;
-
-
-    for (var i = 0; i < tempData.length; i++) {
-        var rows = tempData[i].row;
-        var tempArray = [];
-        var tempPeriod = rows[1];
-        tempArray["tCO2e"] = rows[0];
-        tempArray["period"] = tempPeriod;
-        tempArray["type"] = "Legal Cap";
+    
+    var responseSt = this.responseText;
+    
+    if(responseSt && responseSt.length > 0){
         
-        if(tempPeriod >= 2008){
-            euWideChartDataBackup.push(tempArray);
-        }        
+        var resultsJSON = JSON.parse(responseSt);
+        var results = resultsJSON.results;
+        var errors = resultsJSON.errors;
+        var tempData = results[0].data;
+
+
+        for (var i = 0; i < tempData.length; i++) {
+            var rows = tempData[i].row;
+            var tempArray = [];
+            var tempPeriod = rows[1];
+            tempArray["tCO2e"] = rows[0];
+            tempArray["period"] = tempPeriod;
+            tempArray["type"] = "Legal Cap";
+
+            if(tempPeriod >= 2008){
+                euWideChartDataBackup.push(tempArray);
+            }        
+
+        }
+
+        legal_cap_eu_wide_loaded = true;
+
+        if (allEUWideLoaded()) {
+            filterDataForEUWideChart();
+        }
         
-    }
-
-    legal_cap_eu_wide_loaded = true;
-
-    if (allEUWideLoaded()) {
-        filterDataForEUWideChart();
-    }
+    }else{
+        problemWithRequests();
+    }  
+    
 }
 
 function onGetVerifiedEmissionsForAllPeriods() {
     console.log("onGetVerifiedEmissionsForAllPeriods");
-    var resultsJSON = JSON.parse(this.responseText);
-    var results = resultsJSON.results;
-    var errors = resultsJSON.errors;
     
-    var tempData = results[0].data;
-
-    for (var i = 0; i < tempData.length; i++) {
-
-        var rows = tempData[i].row;
-        var tempArray = [];
-        var tempPeriod = rows[1];
-        var tempValue = rows[0];
-
-        tempArray["tCO2e"] = tempValue;
-        tempArray["period"] = tempPeriod;
-        tempArray["type"] = "Verified Emissions";
+    var responseSt = this.responseText;
+    
+    if(responseSt && responseSt.length > 0){
         
-        if(tempPeriod >= 2008){
-            euWideChartDataBackup.push(tempArray);
+        var resultsJSON = JSON.parse(responseSt);
+        var results = resultsJSON.results;
+        var errors = resultsJSON.errors;
 
-            //---updating surplus data array EU wide---
-            surplusDataArrayEUWide[tempPeriod] -= tempValue;
-            //-----------------------------------------
+        var tempData = results[0].data;
+
+        for (var i = 0; i < tempData.length; i++) {
+
+            var rows = tempData[i].row;
+            var tempArray = [];
+            var tempPeriod = rows[1];
+            var tempValue = rows[0];
+
+            tempArray["tCO2e"] = tempValue;
+            tempArray["period"] = tempPeriod;
+            tempArray["type"] = "Verified Emissions";
+
+            if(tempPeriod >= 2008){
+                euWideChartDataBackup.push(tempArray);
+
+                //---updating surplus data array EU wide---
+                surplusDataArrayEUWide[tempPeriod] -= tempValue;
+                //-----------------------------------------
+            }        
+
+        };
+
+
+        verified_emissions_eu_wide_loaded = true;
+
+        if (allEUWideLoaded()) {
+            filterDataForEUWideChart();
         }
         
-
-    };
-
-
-    verified_emissions_eu_wide_loaded = true;
-
-    if (allEUWideLoaded()) {
-        filterDataForEUWideChart();
-    }
+    }else{
+        problemWithRequests();
+    }   
 
 }
 
 function onGetAuctionedForAllPeriods() {
 
     console.log("onGetAuctionedForAllPeriods");
-    //console.log(this.responseText);
-    var resultsJSON = JSON.parse(this.responseText);
-    var results = resultsJSON.results;
-    var errors = resultsJSON.errors;
-    var tempData = results[0].data;
-
-    //console.log("this.responseText", this.responseText);
-
-    for (var i = 0; i < tempData.length; i++) {
-        var rows = tempData[i].row;
-        var tempPeriod = rows[1];
-        var tempValue = rows[0];
-        var tempArray = [];
-
-        tempArray["tCO2e"] = tempValue;
-        tempArray["period"] = tempPeriod;
-        tempArray["type"] = "Auctioned";
+    
+    var responseSt = this.responseText;
+    
+    if(responseSt && responseSt.length > 0){
         
-        if(tempPeriod >= 2008){
-            euWideChartDataBackup.push(tempArray);
+        var resultsJSON = JSON.parse(responseSt);
+        var results = resultsJSON.results;
+        var errors = resultsJSON.errors;
+        var tempData = results[0].data;
 
-            //---updating surplus data array EU wide---
-            surplusDataArrayEUWide[tempPeriod] += tempValue;
-            //-----------------------------------------
+        for (var i = 0; i < tempData.length; i++) {
+            var rows = tempData[i].row;
+            var tempPeriod = rows[1];
+            var tempValue = rows[0];
+            var tempArray = [];
+
+            tempArray["tCO2e"] = tempValue;
+            tempArray["period"] = tempPeriod;
+            tempArray["type"] = "Auctioned";
+
+            if(tempPeriod >= 2008){
+                euWideChartDataBackup.push(tempArray);
+
+                //---updating surplus data array EU wide---
+                surplusDataArrayEUWide[tempPeriod] += tempValue;
+                //-----------------------------------------
+            }
+
+
+        };
+
+        auctioned_eu_wide_loaded = true;
+
+        if (allEUWideLoaded()) {
+            filterDataForEUWideChart();
         }
         
+    }else{
         
-    };
-
-    auctioned_eu_wide_loaded = true;
-
-    if (allEUWideLoaded()) {
-        filterDataForEUWideChart();
+        problemWithRequests();
     }
+    
+    
 
 }
 
 function onGetOffsetsForAllPeriods() {
     console.log("onGetOffsetsForAllPeriods");
-    //console.log(this.responseText);
-    var resultsJSON = JSON.parse(this.responseText);
-    var results = resultsJSON.results;
-    var errors = resultsJSON.errors;
-    var tempData = results[0].data;
-
-    //console.log("this.responseText", this.responseText);
-
-    for (var i = 0; i < tempData.length; i++) {
-        var rows = tempData[i].row;
-        var tempArray = [];
-        var tempPeriod = rows[1];
-        var tempValue = rows[0];
-
-        if (tempPeriod >= 2008) {
-            totalOffsetsSoFar += tempValue;
-        }
-
-        tempArray["tCO2e"] = tempValue;
-        tempArray["period"] = tempPeriod;
-        tempArray["type"] = "Offsets";
+    
+    var responseSt = this.responseText;
+    
+    if(responseSt && responseSt.length > 0){
         
-        if(tempPeriod >= 2008){
-            euWideChartDataBackup.push(tempArray);
+        var resultsJSON = JSON.parse(responseSt);
+        var results = resultsJSON.results;
+        var errors = resultsJSON.errors;
+        var tempData = results[0].data;
 
-            //---updating surplus data array EU wide---
-            surplusDataArrayEUWide[tempPeriod] += tempValue;
-            //-----------------------------------------
-        }        
+        //console.log("this.responseText", this.responseText);
 
-    };
+        for (var i = 0; i < tempData.length; i++) {
+            var rows = tempData[i].row;
+            var tempArray = [];
+            var tempPeriod = rows[1];
+            var tempValue = rows[0];
 
-    offsets_eu_wide_loaded = true;
+            if (tempPeriod >= 2008) {
+                totalOffsetsSoFar += tempValue;
+            }
 
-    if (allEUWideLoaded()) {
-        filterDataForEUWideChart();
-    }
+            tempArray["tCO2e"] = tempValue;
+            tempArray["period"] = tempPeriod;
+            tempArray["type"] = "Offsets";
+
+            if(tempPeriod >= 2008){
+                euWideChartDataBackup.push(tempArray);
+
+                //---updating surplus data array EU wide---
+                surplusDataArrayEUWide[tempPeriod] += tempValue;
+                //-----------------------------------------
+            }        
+
+        };
+
+        offsets_eu_wide_loaded = true;
+
+        if (allEUWideLoaded()) {
+            filterDataForEUWideChart();
+        }
+        
+    }else{
+        problemWithRequests();
+    }   
+    
 }
 
 function onGetVerifiedEmissionsForPeriod() {
@@ -1186,116 +1282,123 @@ function dataForLineChartLoaded() {
 function onGetInstallationsForCountryAndSector(){
     
     console.log("onGetInstallationsForCountryAndSector");
-    var resultsJSON = JSON.parse(this.responseText);
-    var results = resultsJSON.results;
-    var errors = resultsJSON.errors;
-    //console.log("errors", errors);
-    var tempData = results[0].data;
     
-    //-----remove previous layers----
-    if(markers){
-        installations_map.removeLayer(markers);
-    }    
-    //-------------------------------
+    var responseSt = this.responseText;
+    
+    if(responseSt && responseSt.length > 0){
+        
+        var resultsJSON = JSON.parse(responseSt);
+        var results = resultsJSON.results;
+        var errors = resultsJSON.errors;
+        //console.log("errors", errors);
+        var tempData = results[0].data;
 
-    //----Creating markers cluster-----
-    markers = L.markerClusterGroup({
-			maxClusterRadius: 120,
-			iconCreateFunction: function (cluster) {
-				var markers = cluster.getAllChildMarkers();
-				var total_emissions = 0;
-				for (var i = 0; i < markers.length; i++) {
-					total_emissions += markers[i].emissions;
-				}                
-                var totalNumber = formatNumber(total_emissions);
-                
-                var tempSize = map_size_scale(total_emissions);
-                var tempColor = map_color_scale(total_emissions);
-                var tempPaddingTop = tempSize/2 - 10;
-                
-                var tempHTML = '<div class="mapcluster" style="border-radius: ' + tempSize + 'px; width: ' + tempSize + 'px; height: ' + tempSize + 'px; background-color: ' + tempColor + '; padding-top: ' + tempPaddingTop +  'px;"><strong>' + totalNumber + "</strong></div>"; 
-				return L.divIcon({html: tempHTML, className: 'mapcluster', iconSize: L.point(45, 45) });
-			}
-		});
-    
-    for (var i = 0; i < tempData.length; i++) {
-        
-        var rows = tempData[i].row;
-        var installationId = rows[0];
-        var installationName = rows[1];
-        var latitude = rows[2];
-        var longitude = rows[3];
-        var sector = rows[4];
-        var city = rows[5];
-        var address = rows[6];
-        var emissions2015 = rows[7];
-        
-        var locationArray = [latitude, longitude];
-        
-        marker_popups_ids.push(installationId);
-        
-        var marker = L.marker(locationArray); 
-        
-        marker.bindPopup("<div id=\"" + installationId + "\"><strong>Name:</strong> " + installationName + "<br><strong>ID:</strong> " + installationId + "<br><strong>Address:</strong> " + address + "<br><strong>City:</strong> " + city + "<br><strong>Sector:</strong> " + sector + "<br><strong>Emissions 2015</strong>: " + formatNumberAddCommas(emissions2015) + "</div>");
-        //"<br><button class=\"pull-right\" onclick=\"onDownloadInstallationButtonClick(this)\">Download</button><br></div>");
-        
-        if(sector == "Cement and Lime"){
-            marker.setIcon(cement_and_lime_icon);
-        }else if(sector == "Aviation"){
-            marker.setIcon(aviation_icon);
-        }else if(sector == "Ceramics"){
-            marker.setIcon(ceramics_icon);
-        }else if(sector == "Chemicals"){
-            marker.setIcon(chemicals_icon);
-        }else if(sector == "Coke ovens"){
-            marker.setIcon(coke_ovens_icon);
-        }else if(sector == "Combustion"){
-            marker.setIcon(combustion_icon);
-        }else if(sector == "Glass"){
-            marker.setIcon(glass_icon);
-        }else if(sector == "Iron and steel"){
-            marker.setIcon(iron_and_steel_icon);
-        }else if(sector == "Metal ore roasting"){
-            marker.setIcon(metal_ore_roasting_icon);
-        }else if(sector == "Mineral oil"){
-            marker.setIcon(mineral_oil_icon);
-        }else if(sector == "Non ferrous metals"){
-            marker.setIcon(non_ferrous_metals_icon);
-        }else if(sector == "Other"){
-            marker.setIcon(other_icon);
-        }else if(sector == "Pulp and paper"){
-            marker.setIcon(pulp_and_paper_icon);
+        //-----remove previous layers----
+        if(markers){
+            installations_map.removeLayer(markers);
+        }    
+        //-------------------------------
+
+        //----Creating markers cluster-----
+        markers = L.markerClusterGroup({
+                maxClusterRadius: 120,
+                iconCreateFunction: function (cluster) {
+                    var markers = cluster.getAllChildMarkers();
+                    var total_emissions = 0;
+                    for (var i = 0; i < markers.length; i++) {
+                        total_emissions += markers[i].emissions;
+                    }                
+                    var totalNumber = formatNumber(total_emissions);
+
+                    var tempSize = map_size_scale(total_emissions);
+                    var tempColor = map_color_scale(total_emissions);
+                    var tempPaddingTop = tempSize/2 - 10;
+
+                    var tempHTML = '<div class="mapcluster" style="border-radius: ' + tempSize + 'px; width: ' + tempSize + 'px; height: ' + tempSize + 'px; background-color: ' + tempColor + '; padding-top: ' + tempPaddingTop +  'px;"><strong>' + totalNumber + "</strong></div>"; 
+                    return L.divIcon({html: tempHTML, className: 'mapcluster', iconSize: L.point(45, 45) });
+                }
+            });
+
+        for (var i = 0; i < tempData.length; i++) {
+
+            var rows = tempData[i].row;
+            var installationId = rows[0];
+            var installationName = rows[1];
+            var latitude = rows[2];
+            var longitude = rows[3];
+            var sector = rows[4];
+            var city = rows[5];
+            var address = rows[6];
+            var emissions2015 = rows[7];
+
+            var locationArray = [latitude, longitude];
+
+            marker_popups_ids.push(installationId);
+
+            var marker = L.marker(locationArray); 
+
+            marker.bindPopup("<div id=\"" + installationId + "\"><strong>Name:</strong> " + installationName + "<br><strong>ID:</strong> " + installationId + "<br><strong>Address:</strong> " + address + "<br><strong>City:</strong> " + city + "<br><strong>Sector:</strong> " + sector + "<br><strong>Emissions 2015</strong>: " + formatNumberAddCommas(emissions2015) + "</div>");
+            //"<br><button class=\"pull-right\" onclick=\"onDownloadInstallationButtonClick(this)\">Download</button><br></div>");
+
+            if(sector == "Cement and Lime"){
+                marker.setIcon(cement_and_lime_icon);
+            }else if(sector == "Aviation"){
+                marker.setIcon(aviation_icon);
+            }else if(sector == "Ceramics"){
+                marker.setIcon(ceramics_icon);
+            }else if(sector == "Chemicals"){
+                marker.setIcon(chemicals_icon);
+            }else if(sector == "Coke ovens"){
+                marker.setIcon(coke_ovens_icon);
+            }else if(sector == "Combustion"){
+                marker.setIcon(combustion_icon);
+            }else if(sector == "Glass"){
+                marker.setIcon(glass_icon);
+            }else if(sector == "Iron and steel"){
+                marker.setIcon(iron_and_steel_icon);
+            }else if(sector == "Metal ore roasting"){
+                marker.setIcon(metal_ore_roasting_icon);
+            }else if(sector == "Mineral oil"){
+                marker.setIcon(mineral_oil_icon);
+            }else if(sector == "Non ferrous metals"){
+                marker.setIcon(non_ferrous_metals_icon);
+            }else if(sector == "Other"){
+                marker.setIcon(other_icon);
+            }else if(sector == "Pulp and paper"){
+                marker.setIcon(pulp_and_paper_icon);
+            }
+
+            marker.on("click", onMarkerClick);
+            marker.installationId = installationId;
+            marker.emissions = emissions2015;        
+            markers.addLayer(marker);         
+            //console.log("i", i);
+
+        };
+
+
+        installations_map.addLayer(markers);
+
+        installations_map.setZoom(3);
+
+        if(map_opened_for_the_first_time){
+            map_opened_for_the_first_time = false;
+
+            var outerWidth = $('#map_div').outerWidth();
+            var leftPadding = outerWidth / 5;
+
+            //creating welcome dialog
+            var dialog = L.control.dialog({size: [300,180], anchor: [80,leftPadding]}).setContent("<h4>Welcome to the Map View!</h4><p>Values displayed in circles correspond to the <strong>aggregation of emissions</strong> generated by the installations included in the circle for the <strong>year 2015</strong></p>").addTo(installations_map);
+            //dialog.freeze();
         }
-        
-        marker.on("click", onMarkerClick);
-        marker.installationId = installationId;
-        marker.emissions = emissions2015;        
-        markers.addLayer(marker);         
-        //console.log("i", i);
-        
-    };
-    
-    
-    installations_map.addLayer(markers);
-    
-    installations_map.setZoom(3);
-    
-    if(map_opened_for_the_first_time){
-        map_opened_for_the_first_time = false;
-        
-        var outerWidth = $('#map_div').outerWidth();
-        var leftPadding = outerWidth / 5;
-                
-        //creating welcome dialog
-        var dialog = L.control.dialog({size: [300,180], anchor: [80,leftPadding]}).setContent("<h4>Welcome to the Map View!</h4><p>Values displayed in circles correspond to the <strong>aggregation of emissions</strong> generated by the installations included in the circle for the <strong>year 2015</strong></p>").addTo(installations_map);
-        dialog.freeze();
-    }
-        
-    $("#map_div").removeClass("grey_background");
-    $("#spinner_div_installations").hide();
-    enableCountrySectorDropDowns();
-    
 
+        $("#map_div").removeClass("grey_background");
+        $("#spinner_div_installations").hide();
+        enableCountrySectorDropDowns();
+        
+    }else{
+        problemWithRequests();
+    }
 }
 
 function onDownloadInstallationButtonClick(value){
@@ -1322,77 +1425,107 @@ function onMarkerClick(){
 function onGetVerifiedEmissionsForCountryAndSector() {
 
     console.log("onGetVerifiedEmissionsForCountryAndSector");
-    var resultsJSON = JSON.parse(this.responseText);
-    var results = resultsJSON.results;
-    var errors = resultsJSON.errors;
-    //console.log("errors", errors);
+    
+    var responseSt = this.responseText;
+    
+    if(responseSt && responseSt.length > 0){
         
-    var tempData = results[0].data;
-    for (var i = 0; i < tempData.length; i++) {
-        var rows = tempData[i].row;
-        lineChartDataBackup.push({
-            "tCO2e": rows[0],
-            "type": "Verified_Emissions",
-            "period": rows[1]
-        });
-    };        
-    
-    
-    verified_emissions_loaded = true;
-    if (verified_emissions_loaded && free_allocation_loaded && offsets_loaded) {
-         dataForLineChartLoaded();
+        var resultsJSON = JSON.parse(responseSt);
+        var results = resultsJSON.results;
+        var errors = resultsJSON.errors;
+        //console.log("errors", errors);
+
+        var tempData = results[0].data;
+        for (var i = 0; i < tempData.length; i++) {
+            var rows = tempData[i].row;
+            lineChartDataBackup.push({
+                "tCO2e": rows[0],
+                "type": "Verified_Emissions",
+                "period": rows[1]
+            });
+        };        
+
+
+        verified_emissions_loaded = true;
+        if (verified_emissions_loaded && free_allocation_loaded && offsets_loaded) {
+             dataForLineChartLoaded();
+        }
+        
+    }else{
+        problemWithRequests();
     }
+    
     
 }
 
 function onGetOffsetsForCountryAndSector() {
 
     console.log("onGetOffsetsForCountryAndSector");
-    var resultsJSON = JSON.parse(this.responseText);
-    var results = resultsJSON.results;
-    var errors = resultsJSON.errors;
-    //console.log("errors", errors);
-    var tempData = results[0].data;
+    
+    var responseSt = this.responseText;
+    
+    if(responseSt && responseSt.length > 0){
+        
+        var resultsJSON = JSON.parse(responseSt);
+        var results = resultsJSON.results;
+        var errors = resultsJSON.errors;
+        //console.log("errors", errors);
+        var tempData = results[0].data;
 
-    for (var i = 0; i < tempData.length; i++) {
-        var rows = tempData[i].row;
-        lineChartDataBackup.push({
-            "tCO2e": rows[0],
-            "type": "Offsets (2008-2012)",
-            "period": rows[1]
-        });
-    };
+        for (var i = 0; i < tempData.length; i++) {
+            var rows = tempData[i].row;
+            lineChartDataBackup.push({
+                "tCO2e": rows[0],
+                "type": "Offsets (2008-2012)",
+                "period": rows[1]
+            });
+        };
 
-    offsets_loaded = true;
-    if (verified_emissions_loaded && free_allocation_loaded && offsets_loaded) {
-        dataForLineChartLoaded();
+        offsets_loaded = true;
+        if (verified_emissions_loaded && free_allocation_loaded && offsets_loaded) {
+            dataForLineChartLoaded();
+        }
+        
+    }else{
+        problemWithRequests();
     }
+    
+    
 }
 
 function onGetFreeAllocationForCountryAndSector() {
 
     console.log("onGetFreeAllocationForCountryAndSector");
-    var resultsJSON = JSON.parse(this.responseText);
-    var results = resultsJSON.results;
-    var errors = resultsJSON.errors;
-    //console.log("errors", errors);
-    var tempData = results[0].data;
+    
+    var responseSt = this.responseText;
+    
+    if(responseSt && responseSt.length > 0){
+        
+        var resultsJSON = JSON.parse(responseSt);
+        var results = resultsJSON.results;
+        var errors = resultsJSON.errors;
+        //console.log("errors", errors);
+        var tempData = results[0].data;
 
 
-    for (var i = 0; i < tempData.length; i++) {
-        var rows = tempData[i].row;
-        //console.log("aa: ",rows[0], rows[1]);
-        lineChartDataBackup.push({
-            "tCO2e": rows[0],
-            "type": "Free_Allocation",
-            "period": rows[1]
-        });
-    };
+        for (var i = 0; i < tempData.length; i++) {
+            var rows = tempData[i].row;
+            //console.log("aa: ",rows[0], rows[1]);
+            lineChartDataBackup.push({
+                "tCO2e": rows[0],
+                "type": "Free_Allocation",
+                "period": rows[1]
+            });
+        };
 
-    free_allocation_loaded = true;
-    if (verified_emissions_loaded && free_allocation_loaded && offsets_loaded) {
-        dataForLineChartLoaded();
+        free_allocation_loaded = true;
+        if (verified_emissions_loaded && free_allocation_loaded && offsets_loaded) {
+            dataForLineChartLoaded();
+        }
+    }else{
+        problemWithRequests();
     }
+    
 }
 
 function calculateCumulativeSurplusEUWide() {
