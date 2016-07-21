@@ -602,7 +602,8 @@ function onGetSectors() {
     var responseSt = this.responseText;
     
     if(responseSt && responseSt.length > 0){
-        var resultsJSON = JSON.parse();
+        
+        var resultsJSON = JSON.parse(responseSt);
     
         var results = resultsJSON.results;
         var errors = resultsJSON.errors;
