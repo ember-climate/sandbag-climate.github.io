@@ -64,6 +64,7 @@ var marker_popups_ids = [];
 var markers;
 
 var countrySectorChartDisplayed = false;
+var noInternetConnection = false;
 
 //-----------MAP ICONS----
 var ceramics_icon;
@@ -237,37 +238,56 @@ function initMenus() {
     
     $('.nav li a').click(function(e) {
         
-        var tempId = e.currentTarget.getAttribute("id");
+        var tempId = e.currentTarget.getAttribute("id");        
         
-        if (tempId == "country_sector_chart_button") {
+        if (tempId == "country_sector_chart_button" ) {
             
-            e.preventDefault();
-            $('#multi_line_chart_row').show();
-            $('#countries_sectors_row').show();
-            $('#about_row').hide();
-            $('#periods_combo_box_row').hide();
-            $('#stacked_bar_chart_row').hide();
-            $('#eu_wide_chart_row').hide();
-            $('#contact_us_row').hide();
-            $('#installations_row').hide();
+            if(noInternetConnection == false){
+                
+                e.preventDefault();
+                $('#multi_line_chart_row').show();
+                $('#countries_sectors_row').show();
+                $('#about_row').hide();
+                $('#periods_combo_box_row').hide();
+                $('#stacked_bar_chart_row').hide();
+                $('#eu_wide_chart_row').hide();
+                $('#contact_us_row').hide();
+                $('#installations_row').hide();
+
+                countrySectorChartDisplayed = true;
+                loadCountrySectorChart();
+                
+            }else{
+                $('#error_row').show();
+                $('#about_row').hide();
+                $('#contact_us_row').hide();
+            }
             
-            countrySectorChartDisplayed = true;
-            loadCountrySectorChart();
+            
             
         }else if (tempId == "installations_button") {
             
-            e.preventDefault();
-            $('#multi_line_chart_row').hide();            
-            $('#about_row').hide();
-            $('#periods_combo_box_row').hide();
-            $('#stacked_bar_chart_row').hide();
-            $('#eu_wide_chart_row').hide();
-            $('#contact_us_row').hide();
-            $('#installations_row').show();
-            $('#countries_sectors_row').show();
+            if(noInternetConnection == false){
+                
+                e.preventDefault();
+                $('#multi_line_chart_row').hide();            
+                $('#about_row').hide();
+                $('#periods_combo_box_row').hide();
+                $('#stacked_bar_chart_row').hide();
+                $('#eu_wide_chart_row').hide();
+                $('#contact_us_row').hide();
+                $('#installations_row').show();
+                $('#countries_sectors_row').show();
+
+                countrySectorChartDisplayed = false;
+                loadDataForMapView();
+                
+            }else{
+                $('#error_row').show();
+                $('#about_row').hide();
+                $('#contact_us_row').hide();
+            }
             
-            countrySectorChartDisplayed = false;
-            loadDataForMapView();
             
         }else if(tempId == "contact_us_button"){
             
@@ -286,19 +306,28 @@ function initMenus() {
             
         } else if (tempId == "stacked_bar_chart_button") {
             
-            e.preventDefault();
-            $('#multi_line_chart_row').hide();
-            $('#countries_sectors_row').hide();
-            $('#about_row').hide();
-            $('#eu_wide_chart_row').hide();
-            $('#contact_us_row').hide();
-            $('#installations_row').hide();
-            $('#periods_combo_box_row').show();
-            $('#stacked_bar_chart_row').show();  
-            
-            countrySectorChartDisplayed = false; 
-            onPeriodsComboboxChange();
-            onResize();
+            if(noInternetConnection == false){
+                
+                e.preventDefault();
+                $('#multi_line_chart_row').hide();
+                $('#countries_sectors_row').hide();
+                $('#about_row').hide();
+                $('#eu_wide_chart_row').hide();
+                $('#contact_us_row').hide();
+                $('#installations_row').hide();
+                $('#periods_combo_box_row').show();
+                $('#stacked_bar_chart_row').show();  
+
+                countrySectorChartDisplayed = false; 
+                onPeriodsComboboxChange();
+                onResize();
+                
+            }else{
+                $('#error_row').show();
+                $('#about_row').hide();
+                $('#contact_us_row').hide();
+            }
+                        
             
         } else if (tempId == "about_button") {
             
@@ -315,20 +344,29 @@ function initMenus() {
             
             countrySectorChartDisplayed = false;
             
-        } else if (tempId == "eu_wide_chart_button") {
+        } else if (tempId == "eu_wide_chart_button" && noInternetConnection == false) {
             
-            e.preventDefault();
-            $('#multi_line_chart_row').hide();
-            $('#countries_sectors_row').hide();
-            $('#periods_combo_box_row').hide();
-            $('#contact_us_row').hide();
-            $('#stacked_bar_chart_row').hide();
-            $('#about_row').hide();
-            $('#installations_row').hide();
-            $('#eu_wide_chart_row').show();
+            if(noInternetConnection == false){
+                
+                e.preventDefault();
+                $('#multi_line_chart_row').hide();
+                $('#countries_sectors_row').hide();
+                $('#periods_combo_box_row').hide();
+                $('#contact_us_row').hide();
+                $('#stacked_bar_chart_row').hide();
+                $('#about_row').hide();
+                $('#installations_row').hide();
+                $('#eu_wide_chart_row').show();
+
+                countrySectorChartDisplayed = false;
+                onResize();
+                
+            }else{
+                $('#error_row').show();
+                $('#about_row').hide();
+                $('#contact_us_row').hide();
+            }
             
-            countrySectorChartDisplayed = false;
-            onResize();
             
         }
 
@@ -655,6 +693,8 @@ function problemWithRequests(){
     $('#eu_wide_chart_row').hide();
     $('#contact_us_row').hide();
     $('#installations_row').hide();
+    
+    noInternetConnection = true;
 }
 
 function onPeriodsComboboxChange() {
