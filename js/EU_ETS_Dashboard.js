@@ -898,6 +898,8 @@ function onGetFreeAllocationForAllPeriods() {
         }
 
         free_allocation_eu_wide_loaded = true;
+        
+        updateEUWideDataLoadedText("Free Allocation");
 
         if (allEUWideLoaded()) {
             filterDataForEUWideChart();
@@ -924,6 +926,8 @@ function onGetOffsetEntitlementsForAllPeriods() {
         totalOffsetEntitlements = tempData[0].row[0];
 
         offset_entitlements_eu_wide_loaded = true;
+        
+        updateEUWideDataLoadedText("Offset Entitlements");
 
         if (allEUWideLoaded()) {
             filterDataForEUWideChart();
@@ -963,6 +967,8 @@ function onGetLegalCapForAllPeriods() {
         }
 
         legal_cap_eu_wide_loaded = true;
+        
+        updateEUWideDataLoadedText("Legal Cap");
 
         if (allEUWideLoaded()) {
             filterDataForEUWideChart();
@@ -1009,8 +1015,9 @@ function onGetVerifiedEmissionsForAllPeriods() {
 
         };
 
-
         verified_emissions_eu_wide_loaded = true;
+        
+        updateEUWideDataLoadedText("Verified Emissions");
 
         if (allEUWideLoaded()) {
             filterDataForEUWideChart();
@@ -1057,6 +1064,8 @@ function onGetAuctionedForAllPeriods() {
         };
 
         auctioned_eu_wide_loaded = true;
+        
+        updateEUWideDataLoadedText("Auctions");
 
         if (allEUWideLoaded()) {
             filterDataForEUWideChart();
@@ -1110,6 +1119,8 @@ function onGetOffsetsForAllPeriods() {
         };
 
         offsets_eu_wide_loaded = true;
+        
+        updateEUWideDataLoadedText("Offsets");
 
         if (allEUWideLoaded()) {
             filterDataForEUWideChart();
@@ -1856,4 +1867,35 @@ function validateForm(){
     }
     
 }
+
+function updateEUWideDataLoadedText(value){
+    
+    //console.log("previousValue", previousValue);
+    
+    var checkHtml = '<i class="fa fa-fw fa-check"></i>';
+    
+    if(value == "Verified Emissions"){
+        var previousValue = $('#verified_emissions_eu_wide_item').html();
+        $('#verified_emissions_eu_wide_item').html(previousValue + checkHtml);
+    }else if(value == "Legal Cap"){
+        var previousValue = $('#legal_cap_eu_wide_item').html();
+        $('#legal_cap_eu_wide_item').html(previousValue + checkHtml);
+    }else if(value == "Free Allocation"){
+        var previousValue = $('#free_allocation_eu_wide_item').html();
+        $('#free_allocation_eu_wide_item').html(previousValue + checkHtml);
+    }else if(value == "Offset Entitlements"){
+        var previousValue = $('#offset_entitlements_eu_wide_item').html();
+        $('#offset_entitlements_eu_wide_item').html(previousValue + checkHtml);
+    }else if(value == "Offsets"){
+        var previousValue = $('#offsets_eu_wide_item').html();
+        $('#offsets_eu_wide_item').html(previousValue + checkHtml);
+    }else if(value == "Auctions"){
+        var previousValue = $('#auctions_eu_wide_item').html();
+        $('#auctions_eu_wide_item').html(previousValue + checkHtml);
+    }
+    
+    
+}
+
+
  
