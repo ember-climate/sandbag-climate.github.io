@@ -86,7 +86,8 @@ var formatNumber = d3.format(".4s");
 var formatNumberAddCommas = d3.format(",");
 
 var map_color_scale = d3.scale.linear().domain([1000, 1000000000]).range(['beige', 'red']);
-var map_size_scale = d3.scale.linear().domain([1000, 1000000000]).range([40,70]);
+var map_size_scale = d3.scale.linear().domain([1000, 1300000000]).range([40,70]);
+                                                     
 
 var map_opened_for_the_first_time = true;
 var euWideLegendTip;
@@ -201,6 +202,7 @@ function updateWelcomeDialogCookie(){
 function loadEUWideData(includeAviation) {
 
     initializeSurplusDataArrayEUWide();
+    resetEUWideDataLoadedText();
 
     verified_emissions_eu_wide_loaded = false;
     free_allocation_eu_wide_loaded = false;
@@ -1331,6 +1333,8 @@ function onComboBoxChange() {
             $("#line_chart").addClass("grey_background");
             $("#spinner_div_country_sector").show();
             
+            resetCountrySectorDataLoadedText();
+            
             lineChartDataBackup = [];
 
             verified_emissions_loaded = false;
@@ -1392,7 +1396,7 @@ function onGetInstallationsForCountryAndSector(){
                     var tempSize = map_size_scale(total_emissions);
                     var tempColor = map_color_scale(total_emissions);
                     var tempPaddingTop = tempSize/2 - 10;
-
+                    
                     var tempHTML = '<div class="mapcluster" style="border-radius: ' + tempSize + 'px; width: ' + tempSize + 'px; height: ' + tempSize + 'px; background-color: ' + tempColor + '; padding-top: ' + tempPaddingTop +  'px;"><strong>' + totalNumber + "</strong></div>"; 
                     return L.divIcon({html: tempHTML, className: 'mapcluster', iconSize: L.point(45, 45) });
                 }
@@ -1524,6 +1528,7 @@ function onGetVerifiedEmissionsForCountryAndSector() {
             });
         };        
 
+        updateCountrySectorDataLoadedText("Verified Emissions");
 
         verified_emissions_loaded = true;
         if (verified_emissions_loaded && free_allocation_loaded && offsets_loaded) {
@@ -1559,6 +1564,8 @@ function onGetOffsetsForCountryAndSector() {
                 "period": rows[1]
             });
         };
+        
+        updateCountrySectorDataLoadedText("Offsets");
 
         offsets_loaded = true;
         if (verified_emissions_loaded && free_allocation_loaded && offsets_loaded) {
@@ -1596,6 +1603,8 @@ function onGetFreeAllocationForCountryAndSector() {
                 "period": rows[1]
             });
         };
+        
+        updateCountrySectorDataLoadedText("Free Allocation");
 
         free_allocation_loaded = true;
         if (verified_emissions_loaded && free_allocation_loaded && offsets_loaded) {
@@ -1868,6 +1877,24 @@ function validateForm(){
     
 }
 
+function updateCountrySectorDataLoadedText(value){
+    var checkHtml = '<i class="fa fa-fw fa-check"></i>';
+    
+    if(value == "Verified Emissions"){
+        $('#verified_emissions_country_sector_item').html("Verified Emissions " + checkHtml);
+    }else if(value == "Offsets"){
+        $('#offsets_country_sector_item').html("Offsets " + checkHtml);
+    }else if(value == "Free Allocation"){
+        $('#free_allocation_country_sector_item').html("Free Allocation " + checkHtml);
+    }
+}
+
+function resetCountrySectorDataLoadedText(){
+    $('#verified_emissions_country_sector_item').html("Verified Emissions ");
+    $('#offsets_country_sector_item').html("Offsets ");
+    $('#free_allocation_country_sector_item').html("Free Allocation ");
+}
+
 function updateEUWideDataLoadedText(value){
     
     //console.log("previousValue", previousValue);
@@ -1886,9 +1913,17 @@ function updateEUWideDataLoadedText(value){
         $('#offsets_eu_wide_item').html("Offsets " + checkHtml);
     }else if(value == "Auctions"){
         $('#auctions_eu_wide_item').html("Auctions " + checkHtml);
-    }
+    }    
     
-    
+}
+
+function resetEUWideDataLoadedText(){
+    $('#verified_emissions_eu_wide_item').html("Verified Emissions ");
+    $('#legal_cap_eu_wide_item').html("Legal Cap ");
+    $('#free_allocation_eu_wide_item').html("Free Allocation ");
+    $('#offset_entitlements_eu_wide_item').html("Offset Entitlements ");
+    $('#offsets_eu_wide_item').html("Offsets ");
+    $('#auctions_eu_wide_item').html("Auctions ");
 }
 
 

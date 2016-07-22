@@ -432,13 +432,13 @@ function getInstallationsForCountryAndSector(serverURL, countryNames, sectorName
         }else if(powerFlag == "Exclude Power installations"){
             
             statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR), (node)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD) " +  
-                "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.latitude <> '0' AND node.latitude <> '' AND node.longitude <> '0' AND node.longitude <> '' AND node.power_flag <> 'true'" +
+                "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.latitude <> '0' AND node.latitude <> '' AND node.longitude <> '0' AND node.longitude <> '' AND p.name = '2015' AND node.power_flag <> 'true'" +
 					   "RETURN node.id, node.name, node.latitude, node.longitude, ss.name, node.city, node.address, ve.value";
             
         }else if(powerFlag == "Show only Power installations"){            
             
             statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR), (node)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD) " +  
-                "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.latitude <> '0' AND node.latitude <> '' AND node.longitude <> '0' AND node.longitude <> '' AND node.power_flag = 'true'" +
+                "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.latitude <> '0' AND node.latitude <> '' AND node.longitude <> '0' AND node.longitude <> '' AND p.name = '2015' AND node.power_flag = 'true'" +
 					   "RETURN node.id, node.name, node.latitude, node.longitude, ss.name, node.city, node.address, ve.value";
         }
         
