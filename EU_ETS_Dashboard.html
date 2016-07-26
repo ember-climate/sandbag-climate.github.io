@@ -294,11 +294,11 @@
                     </select>
                 </div>  
                 <div class="col-md-4">
-                    <select class="selectpicker" multiple id="countries_filter_combobox" onchange="filterDataForStackedBarChart()" data-actions-box="true" data-size="8">
+                    <select class="selectpicker" multiple id="countries_filter_combobox" onchange="filterDataForDataPerPeriodChart()" data-actions-box="true" data-size="8">
                     </select> 
                 </div>
                 <div class="col-md-4">
-                    <select class="selectpicker" multiple id="sectors_filter_combobox" onchange="filterDataForStackedBarChart()" data-actions-box="true" data-size="8">
+                    <select class="selectpicker" multiple id="sectors_filter_combobox" onchange="filterDataForDataPerPeriodChart()" data-actions-box="true" data-size="8">
                     </select> 
                 </div>
             </div>
@@ -323,12 +323,17 @@
                                 </div>                                
                             </div>
                             -->
+                            <div class="pull-right">
+                                <div class="btn-group">
+                                    <button id="swith_chart_data_per_period_button" type="button" class="btn btn-default btn-xs" onclick="onSwitchChartDataPerPeriod(this)" title="Switch chart">Switch to line chart</button>                                     
+                                </div>                                
+                            </div>
                         </div>
                         <!-- /.panel-heading -->
                         <div id="data_per_period_spinner_div" class="loading" style="display:none">
                             <i class="fa fa-refresh fa-spin fa-3x fa-fw margin-bottom"></i>
                         </div>
-                        <div id="stacked_bar_chart" class="panel-body" style="height:400px">
+                        <div id="data_per_period_chart" class="panel-body" style="height:400px">
                             <div id="offsets_warning_div" style="display:none">
                                 <p>
                                     <strong>Warning:</strong> Offsets data for periods 2013 onwards is not available with sectors granularity since the European Commission stopped sharing such information after 2012.
@@ -510,7 +515,7 @@
               </p>
               <p>For more information about the tool please check the <strong>About</strong> section.</p>
               <br>
-              <h4>Disclaimer</h4>
+              <h5>Disclaimer</h5>
               <div class="welcome_dialog_disclaimer">                  
                   <p>The information contained in this website is for general information purposes only. The information is provided by Sandbag and while we endeavour to keep the information up to date and correct, we make no representations or warranties of any kind, express or implied, about the completeness, accuracy, reliability, suitability or availability with respect to the website or the information, products, services, or related graphics contained on the website for any purpose. Any reliance you place on such information is therefore strictly at your own risk.
                   </p>

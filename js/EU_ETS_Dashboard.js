@@ -25,9 +25,12 @@ var totalOffsetsSoFar = 0;
 
 var barSeries;
 var lineSeries;
-var stackedBarChart
-var stackedBarChartData = [];
-var stackedBarChartDataBackup = [];
+var dataPerPeriodChart;
+var dataPerPeriodChartSvg;
+var dataPerPeriodChartCategoryAxis;
+var dataPerPeriodChartData = [];
+var dataPerPeriodChartDataBackup = [];
+var dataPerPeriodChartCurrentType = 'bar';
 var sectorsLoaded = false;
 var countriesLoaded = false;
 
@@ -43,7 +46,7 @@ var free_allocation_loaded = false;
 var offsets_loaded = false;
 
 var line_chart_created = false;
-var stacked_bar_chart_created = false;
+var data_per_period_chart_created = false;
 var eu_wide_chart_created = false;
 
 var EU_COUNTRIES_ARRAY = ["Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus", "Czech Republic",
@@ -389,8 +392,8 @@ function onResize(){
     if(lineChart){
         lineChart.draw(1000);
     }
-    if(stackedBarChart){
-        stackedBarChart.draw(1000);
+    if(dataPerPeriodChart){
+        dataPerPeriodChart.draw(1000);
     }
 }
 
@@ -526,8 +529,8 @@ function onExportVerifiedEmissionsChartButtonClick() {
 
     var dataString = "data:text/tsv;charset=utf-8,Verified Emissions\tCountry\tSector\n";
 
-    for (var i = 0; i < stackedBarChartData.length; i++) {
-        var row = stackedBarChartData[i];
+    for (var i = 0; i < dataPerPeriodChartData.length; i++) {
+        var row = dataPerPeriodChartData[i];
         //console.log("row", row);
         dataString += row["tCO2e"] + "\t" + row.country + "\t" + row.sector + "\n";
     }
@@ -549,9 +552,9 @@ function filterDataForEUWideChart() {
     createEUWideChart(euWideChartData);
 }
 
-function filterDataForStackedBarChart() {
-    stackedBarChartData = stackedBarChartDataBackup.filter(filterStackedBarArrayBasedOnCheckboxesSelected);
-    createStackedBarChart(stackedBarChartData);
+function filterDataForDataPerPeriodChart() {
+    dataPerPeriodChartData = dataPerPeriodChartDataBackup.filter(filterStackedBarArrayBasedOnCheckboxesSelected);
+    createDataPerPeriodChart(dataPerPeriodChartData, dataPerPeriodChartCurrentType);
 }
 
 
@@ -720,6 +723,8 @@ function onPeriodsComboboxChange() {
     periodSelectedSt = periodSelectedSt.slice(0, periodSelectedSt.length - 1);
     periodSelectedSt += "]";
     
+    var offsetsAfter2012 = false;
+    
 
     if (textSt == "Free Allocation per period") {
         
@@ -730,8 +735,9 @@ function onPeriodsComboboxChange() {
         if(valuesSelectedAfter2012  == false){
             getOffsetsForPeriod(server_url, periodSelectedSt, onGetOffsetsForPeriod);
         }else{
-            stackedBarChartData = [];
-            createStackedBarChart();
+            offsetsAfter2012 = true;
+            dataPerPeriodChartData = [];
+            createDataPerPeriodChart([],dataPerPeriodChartCurrentType);
             $('#offsets_warning_div').show();
         }        
         
@@ -742,21 +748,24 @@ function onPeriodsComboboxChange() {
         
     }
     
-    $("#stacked_bar_chart").addClass("grey_background");
-    $("#data_per_period_spinner_div").show();
-    $("#periods_combobox").prop("disabled", true);
-    $("#periods_combobox").selectpicker('refresh');
+    if(offsetsAfter2012 == false){
+        $("#data_per_period_chart").addClass("grey_background");
+        $("#data_per_period_spinner_div").show();
+        $("#periods_combobox").prop("disabled", true);
+        $("#periods_combobox").selectpicker('refresh');
+    }   
+    
 
 }
 
-function filterDataForStackedBarChart(){    
+function filterDataForDataPerPeriodChart(){    
     
-    stackedBarChartData = stackedBarChartDataBackup.filter(filterStackedBarChartDataByCountry);
-    createStackedBarChart(stackedBarChartData);
+    dataPerPeriodChartData = dataPerPeriodChartDataBackup.filter(filterdataPerPeriodChartDataByCountry);
+    createDataPerPeriodChart(dataPerPeriodChartData, dataPerPeriodChartCurrentType);
     
 }
 
-function filterStackedBarChartDataByCountry(value){
+function filterdataPerPeriodChartDataByCountry(value){
         
     var tempCountry = value.country;
     var tempSector = value.sector;    
@@ -840,16 +849,17 @@ function dataForPeriod(responseText) {
             tempArray["tCO2e"] = rows[0];
             tempArray["country"] = rows[1];
             tempArray["sector"] = rows[2];
+            tempArray["period"] = rows[3];
             dataArray.push(tempArray);
 
             //dataArray.push({dataType:rows[0], "country":rows[1], "sector":rows[2]});      
         };
 
-        stackedBarChartDataBackup = dataArray;
+        dataPerPeriodChartDataBackup = dataArray;
 
-        filterDataForStackedBarChart();   
+        filterDataForDataPerPeriodChart();   
         
-        $("#stacked_bar_chart").removeClass("grey_background");
+        $("#data_per_period_chart").removeClass("grey_background");
         $("#data_per_period_spinner_div").hide();
         $("#periods_combobox").prop("disabled", false);
         $("#periods_combobox").selectpicker('refresh');
@@ -1150,31 +1160,78 @@ function onGetOffsetsForPeriod() {
 }
 
 
-function createStackedBarChart(data) {
+function createDataPerPeriodChart(data, type) {
     
-    stackedBarChartData = data;
+    dataPerPeriodChartData = data;
+    
 
-    if (!stacked_bar_chart_created) {
-        var svg = dimple.newSvg("#stacked_bar_chart", "100%", "100%");
+    if (!data_per_period_chart_created) {
+        dataPerPeriodChartSvg = dimple.newSvg("#data_per_period_chart", "100%", "100%");
 
-        stackedBarChart = new dimple.chart(svg, data);
+        dataPerPeriodChart = new dimple.chart(dataPerPeriodChartSvg, data);
         // Fix the margins
-        stackedBarChart.setMargins("85px", "20px", "20px", "110px");
-        stackedBarChart.addMeasureAxis("y", "tCO2e");
-        stackedBarChart.addCategoryAxis("x", "country");
-        //y.addOrderRule("Date");
-        stackedBarChart.addSeries("sector", dimple.plot.bar);
-        //stackedBarChart.addLegend(60, 10, 510, 20, "right");
+        dataPerPeriodChart.setMargins("85px", "20px", "20px", "110px");
+        dataPerPeriodChart.addMeasureAxis("y", "tCO2e");        
+                
+        if(type == "line"){
+            dataPerPeriodChartCategoryAxis = dataPerPeriodChart.addCategoryAxis("x", "period");
+            dataPerPeriodChart.addSeries("country", dimple.plot.line);
+            dataPerPeriodChartCurrentType = "line";
+        }else if(type == "bar"){
+            dataPerPeriodChartCategoryAxis = dataPerPeriodChart.addCategoryAxis("x", "country");
+            dataPerPeriodChart.addSeries("sector", dimple.plot.bar);
+            dataPerPeriodChartCurrentType = "bar";
+        }        
 
-        stacked_bar_chart_created = true;
+        data_per_period_chart_created = true;
 
     } else {
-        stackedBarChart.data = data;
+        
+        dataPerPeriodChart.data = data;
+        
+        if(type == "line"){
+            
+            if(dataPerPeriodChartCurrentType == "bar"){
+            
+               $("#data_per_period_chart").children("svg").remove();
+                
+               //dataPerPeriodChart.selectAll('svg').remove();  
+               dataPerPeriodChartSvg = dimple.newSvg("#data_per_period_chart", "100%", "100%");
+               dataPerPeriodChart = new dimple.chart(dataPerPeriodChartSvg, data);
+               // Fix the margins
+               dataPerPeriodChart.setMargins("85px", "20px", "20px", "110px");
+               dataPerPeriodChart.addMeasureAxis("y", "tCO2e");      
+               dataPerPeriodChart.addMeasureAxis("y", "tCO2e");  
+               dataPerPeriodChart.addCategoryAxis("x", "period");
+               dataPerPeriodChart.addSeries("country", dimple.plot.line);
+               dataPerPeriodChartCurrentType = "line";
+            }
+            
+            
+            
+            
+        }else if(type == "bar"){
+            
+            if(dataPerPeriodChartCurrentType == "line"){
+                
+                $("#data_per_period_chart").children("svg").remove();
+                
+                //dataPerPeriodChart.selectAll('svg').remove();  
+                
+                dataPerPeriodChartSvg = dimple.newSvg("#data_per_period_chart", "100%", "100%");
+                dataPerPeriodChart = new dimple.chart(dataPerPeriodChartSvg, data);
+                // Fix the margins
+                dataPerPeriodChart.setMargins("85px", "20px", "20px", "110px");
+                dataPerPeriodChart.addMeasureAxis("y", "tCO2e");  
+                dataPerPeriodChart.addCategoryAxis("x", "country");
+                dataPerPeriodChart.addSeries("sector", dimple.plot.bar);
+                dataPerPeriodChartCurrentType = "bar";
+            }
+            
+        }
     }
 
-    stackedBarChart.draw(1000);
-
-
+    dataPerPeriodChart.draw(1000);
 
 }
 
@@ -1471,7 +1528,7 @@ function onGetInstallationsForCountryAndSector(){
             var leftPadding = outerWidth / 5;
 
             //creating welcome dialog
-            var dialog = L.control.dialog({size: [300,180], anchor: [80,leftPadding]}).setContent("<h4>Welcome to the Map View!</h4><p>Values displayed in circles correspond to the <strong>aggregation of emissions</strong> generated by the installations included in the circle for the <strong>year 2015</strong></p>").addTo(installations_map);
+            var dialog = L.control.dialog({size: [300,180], anchor: [80,leftPadding]}).setContent("<h4>Welcome to the Map View!</h4><p>Values displayed in circles correspond to the <strong>aggregation of emissions</strong> generated by the installations included in the circle for the <strong>year 2015</strong></p><p>Hover your mouse pointer over a circle to see the area aggregated. Single installations are indicated by an icon for their main activity sector.</p>").addTo(installations_map);
             //dialog.freeze();
         }
 
@@ -1924,6 +1981,19 @@ function resetEUWideDataLoadedText(){
     $('#offset_entitlements_eu_wide_item').html("Offset Entitlements ");
     $('#offsets_eu_wide_item').html("Offsets ");
     $('#auctions_eu_wide_item').html("Auctions ");
+}
+
+function onSwitchChartDataPerPeriod(value){
+    var buttonText = $('#swith_chart_data_per_period_button').html();
+        
+    if(buttonText == "Switch to line chart"){
+        createDataPerPeriodChart(dataPerPeriodChartData, "line");
+        $('#swith_chart_data_per_period_button').html("Switch to bar chart");
+        
+    }else if(buttonText == "Switch to bar chart"){
+        createDataPerPeriodChart(dataPerPeriodChartData, "bar");
+        $('#swith_chart_data_per_period_button').html("Switch to line chart");
+    }
 }
 
 

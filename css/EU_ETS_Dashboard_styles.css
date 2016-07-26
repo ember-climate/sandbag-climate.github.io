@@ -72,7 +72,8 @@ footer {
 .welcome_dialog_disclaimer{
     overflow: scroll;
     overflow-x: hidden;
-    height: 100px;
+    height: 35px;
+    font-size: 10px;
 }
 
 row{
