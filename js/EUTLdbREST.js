@@ -107,6 +107,43 @@ function getVerifiedEmissionsForAllPeriods(serverURL, includeAviation, onLoadEnd
 	xhr.send(JSON.stringify(query));
 }
 
+function getVerifiedEmissionsEUWide(serverURL, includeAviation, onLoadEnd){
+    var query = {
+	    "statements" : [ ]
+	};
+    
+	var statementSt;
+    
+    if(includeAviation == "Include Aviation"){
+            
+        statementSt = "MATCH (c:COUNTRY)-[ve:VERIFIED_EMISSIONS_EU_WIDE]->(p:PERIOD) " +
+                      "WHERE c.id = 'EU' AND ve.type = 'all'" +
+				      "RETURN sum(ve.value) AS Verified_Emissions, p.name AS Period ORDER BY p.name";
+        
+    }else if(includeAviation == "Exclude Aviation"){
+        
+        statementSt = "MATCH (c:COUNTRY)-[ve:VERIFIED_EMISSIONS_EU_WIDE]->(p:PERIOD) " +
+                      "WHERE c.id = 'EU' AND ve.type = 'installations' " +
+				      "RETURN sum(ve.value) AS Verified_Emissions, p.name AS Period ORDER BY p.name";
+      
+    }else if(includeAviation == "Show only Aviation"){   
+        
+        statementSt = "MATCH (c:COUNTRY)-[ve:VERIFIED_EMISSIONS_EU_WIDE]->(p:PERIOD) " +
+                      "WHERE c.id = 'EU' AND ve.type = 'aviation' " +
+				      "RETURN sum(ve.value) AS Verified_Emissions, p.name AS Period ORDER BY p.name";
+
+    } 
+        
+	query.statements.push({"statement":statementSt});
+
+	var xhr = new XMLHttpRequest();    
+	xhr.onloadend = onLoadEnd;
+	xhr.open("POST", serverURL, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Accept', 'application/json; charset=UTF-8');
+	xhr.send(JSON.stringify(query));
+}
+
 function getFreeAllocationForAllPeriods(serverURL, includeAviation, onLoadEnd){
     var query = {
 	    "statements" : [ ]
@@ -128,6 +165,43 @@ function getFreeAllocationForAllPeriods(serverURL, includeAviation, onLoadEnd){
         
         statementSt = "MATCH (ao:AIRCRAFT_OPERATOR)-[aa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +
 				      "RETURN sum(aa.value) AS Free_Allocation, p.name AS Period ORDER BY p.name";            
+
+    } 
+    
+	query.statements.push({"statement":statementSt});
+
+	var xhr = new XMLHttpRequest();    
+	xhr.onloadend = onLoadEnd;
+	xhr.open("POST", serverURL, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Accept', 'application/json; charset=UTF-8');
+	xhr.send(JSON.stringify(query));
+}
+
+function getFreeAllocationEUWide(serverURL, includeAviation, onLoadEnd){
+    var query = {
+	    "statements" : [ ]
+	};
+
+	var statementSt;
+    
+    if(includeAviation == "Include Aviation"){
+            
+        statementSt = "MATCH (c:COUNTRY)-[aa:ALLOWANCES_IN_ALLOCATION_EU_WIDE]->(p:PERIOD) " +
+                      "WHERE c.id = 'EU' AND aa.type = 'all' " +
+				      "RETURN sum(aa.value) AS Free_Allocation, p.name AS Period ORDER BY p.name";
+            
+    }else if(includeAviation == "Exclude Aviation"){
+        
+        statementSt = "MATCH (c:COUNTRY)-[aa:ALLOWANCES_IN_ALLOCATION_EU_WIDE]->(p:PERIOD) " +
+                      "WHERE c.id = 'EU' AND aa.type = 'installations' " +
+				      "RETURN sum(aa.value) AS Free_Allocation, p.name AS Period ORDER BY p.name";
+      
+    }else if(includeAviation == "Show only Aviation"){   
+        
+        statementSt = "MATCH (c:COUNTRY)-[aa:ALLOWANCES_IN_ALLOCATION_EU_WIDE]->(p:PERIOD) " +
+                      "WHERE c.id = 'EU' AND aa.type = 'aviation' " +
+				      "RETURN sum(aa.value) AS Free_Allocation, p.name AS Period ORDER BY p.name";        
 
     } 
     
@@ -164,6 +238,43 @@ function getLegalCapForAllPeriods(serverURL, includeAviation, onLoadEnd){
         statementSt = "MATCH (node)-[lc:LEGAL_CAP]->(p:PERIOD) " +
                     "WHERE (node:SANDBAG_SECTOR AND node.name = 'Aviation') " +
                     "RETURN sum(lc.amount) AS Legal_Cap, p.name AS Period ORDER BY p.name";     
+
+    }     
+    
+	query.statements.push({"statement":statementSt});
+
+	var xhr = new XMLHttpRequest();    
+	xhr.onloadend = onLoadEnd;
+	xhr.open("POST", serverURL, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Accept', 'application/json; charset=UTF-8');
+	xhr.send(JSON.stringify(query));
+}
+
+function getLegalCapEUWide(serverURL, includeAviation, onLoadEnd){
+    var query = {
+	    "statements" : [ ]
+	};
+
+	var statementSt;
+    
+    if(includeAviation == "Include Aviation"){
+            
+        statementSt = "MATCH (c:COUNTRY)-[lc:LEGAL_CAP_EU_WIDE]->(p:PERIOD) " +
+                    "WHERE c.id = 'EU' AND lc.type = 'all' " +
+                    "RETURN sum(lc.value) AS Legal_Cap, p.name AS Period ORDER BY p.name";
+        
+    }else if(includeAviation == "Exclude Aviation"){
+        
+        statementSt = "MATCH (c:COUNTRY)-[lc:LEGAL_CAP_EU_WIDE]->(p:PERIOD) " +
+                    "WHERE c.id = 'EU' AND lc.type = 'installations' " +
+                    "RETURN sum(lc.value) AS Legal_Cap, p.name AS Period ORDER BY p.name";
+      
+    }else if(includeAviation == "Show only Aviation"){   
+        
+        statementSt = "MATCH (c:COUNTRY)-[lc:LEGAL_CAP_EU_WIDE]->(p:PERIOD) " +
+                    "WHERE c.id = 'EU' AND lc.type = 'aviation' " +
+                    "RETURN sum(lc.value) AS Legal_Cap, p.name AS Period ORDER BY p.name";     
 
     }     
     
@@ -230,6 +341,46 @@ function getOffsetsForAllPeriods(serverURL, includeAviation, onLoadEnd){
 	xhr.send(JSON.stringify(query));
 }
 
+function getOffsetsEUWide(serverURL, includeAviation, onLoadEnd){
+    var query = {
+	    "statements" : []
+	};
+
+	var statementSt;
+    
+    if(includeAviation == "Include Aviation"){
+            
+        statementSt = "MATCH (c:COUNTRY)-[o:OFFSETS_EU_WIDE]->(p:PERIOD) " +
+                    "WHERE c.id = 'EU' AND  o.type = 'all' " +
+                    "RETURN sum(o.value) AS Offsets, p.name AS Period ORDER BY p.name";
+            
+    }else if(includeAviation == "Exclude Aviation"){
+            
+        statementSt = "MATCH (c:COUNTRY)-[o:OFFSETS_EU_WIDE]->(p:PERIOD) " +
+                    "WHERE c.id = 'EU' AND  o.type = 'installations' " +
+                    "RETURN sum(o.value) AS Offsets, p.name AS Period ORDER BY p.name";
+            
+    }else if(includeAviation == "Show only Aviation"){            
+            
+        statementSt = "MATCH (c:COUNTRY)-[o:OFFSETS_EU_WIDE]->(p:PERIOD) " +
+                    "WHERE c.id = 'EU' AND  o.type = 'aviation' " +
+                    "RETURN sum(o.value) AS Offsets, p.name AS Period ORDER BY p.name"; 
+    } 
+    
+    
+    //console.log(statementSt);
+    
+    
+	query.statements.push({"statement":statementSt});
+
+	var xhr = new XMLHttpRequest();    
+	xhr.onloadend = onLoadEnd;
+	xhr.open("POST", serverURL, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Accept', 'application/json; charset=UTF-8');
+	xhr.send(JSON.stringify(query));
+}
+
 function getOffsetEntitlementsForAllPeriods(serverURL, includeAviation, onLoadEnd){
     
     
@@ -249,6 +400,44 @@ function getOffsetEntitlementsForAllPeriods(serverURL, includeAviation, onLoadEn
     }else if(includeAviation == "Show only Aviation"){            
          
         statementSt = "MATCH (:AIRCRAFT_OPERATOR)-[r:OFFSET_ENTITLEMENT]->() RETURN sum(toFloat(r.value)) AS Total_Entitlements";      
+        
+    }
+    
+	query.statements.push({"statement":statementSt});
+
+	var xhr = new XMLHttpRequest();    
+	xhr.onloadend = onLoadEnd;
+	xhr.open("POST", serverURL, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Accept', 'application/json; charset=UTF-8');
+	xhr.send(JSON.stringify(query));
+}
+
+function getOffsetEntitlementsEUWide(serverURL, includeAviation, onLoadEnd){
+    
+    
+    var query = {
+	    "statements" : [ ]
+	};
+    
+    
+    if(includeAviation == "Include Aviation"){
+            
+        statementSt = "MATCH (c:COUNTRY)-[r:OFFSET_ENTITLEMENT_EU_WIDE]->() " +
+                    "WHERE c.id = 'EU' AND r.type = 'all' " +
+                    "RETURN sum(toFloat(r.value)) AS Total_Entitlements";
+            
+    }else if(includeAviation == "Exclude Aviation"){
+        
+        statementSt = "MATCH (c:COUNTRY)-[r:OFFSET_ENTITLEMENT_EU_WIDE]->() " +
+                    "WHERE c.id = 'EU' AND r.type = 'installations' " +
+                    "RETURN sum(toFloat(r.value)) AS Total_Entitlements";           
+            
+    }else if(includeAviation == "Show only Aviation"){            
+         
+        statementSt = "MATCH (c:COUNTRY)-[r:OFFSET_ENTITLEMENT_EU_WIDE]->() " +
+                    "WHERE c.id = 'EU' AND r.type = 'aviation' " + 
+                    "RETURN sum(toFloat(r.value)) AS Total_Entitlements";      
         
     }
     
@@ -289,6 +478,44 @@ function getAuctionedForAllPeriods(serverURL, includeAviation, onLoadEnd){
             
         statementSt = "MATCH (c:COUNTRY)-[a:AUCTIONED]->(p:PERIOD) "+
 					   "WHERE a.type = 'Aircraft Operator' RETURN sum(a.amount) AS Auctioned, p.name AS Period ORDER BY p.name";    
+    }
+	    
+    //console.log("statement!", statementSt);
+
+	query.statements.push({"statement":statementSt});
+
+	var xhr = new XMLHttpRequest();    
+	xhr.onloadend = onLoadEnd;
+	xhr.open("POST", serverURL, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Accept', 'application/json; charset=UTF-8');
+	xhr.send(JSON.stringify(query));
+}
+
+function getAuctionedEUWide(serverURL, includeAviation, onLoadEnd){
+    var query = {
+	    "statements" : [ ]
+	};
+    
+    var statementSt;
+    
+    if(includeAviation == "Include Aviation"){
+            
+        statementSt = "MATCH (c:COUNTRY)-[a:AUCTIONED_EU_WIDE]->(p:PERIOD) "+
+                      "WHERE c.id = 'EU' AND a.type = 'all' " + 
+				      "RETURN sum(a.value) AS Auctioned, p.name AS Period ORDER BY p.name ";                      
+            
+    }else if(includeAviation == "Exclude Aviation"){
+            
+        statementSt = "MATCH (c:COUNTRY)-[a:AUCTIONED_EU_WIDE]->(p:PERIOD) "+
+                      "WHERE c.id = 'EU' AND a.type = 'installations' " + 
+				      "RETURN sum(a.value) AS Auctioned, p.name AS Period ORDER BY p.name ";   
+            
+    }else if(includeAviation == "Show only Aviation"){            
+            
+        statementSt = "MATCH (c:COUNTRY)-[a:AUCTIONED_EU_WIDE]->(p:PERIOD) "+
+                      "WHERE c.id = 'EU' AND a.type = 'aviation' " +
+				      "RETURN sum(a.value) AS Auctioned, p.name AS Period ORDER BY p.name ";       
     }
 	    
     //console.log("statement!", statementSt);

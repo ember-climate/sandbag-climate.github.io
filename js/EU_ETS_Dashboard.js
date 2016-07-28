@@ -1,5 +1,5 @@
-var server_url = "http://52.208.154.95:7474/db/data/transaction/commit";
-//var server_url = "http://localhost:7474/db/data/transaction/commit";
+//var server_url = "http://52.208.154.95:7474/db/data/transaction/commit";
+var server_url = "http://localhost:7474/db/data/transaction/commit";
 
 var doNotShowWelcomeDialogAgainCookieName = "no_welcome_dialog";
 
@@ -223,12 +223,12 @@ function loadEUWideData(includeAviation) {
     $("#eu_wide_chart").addClass("grey_background");
     $("#eu_wide_spinner_div").show();
 
-    getAuctionedForAllPeriods(server_url, includeAviation, onGetAuctionedForAllPeriods);
-    getOffsetsForAllPeriods(server_url, includeAviation, onGetOffsetsForAllPeriods);
-    getVerifiedEmissionsForAllPeriods(server_url, includeAviation, onGetVerifiedEmissionsForAllPeriods);
-    getFreeAllocationForAllPeriods(server_url, includeAviation, onGetFreeAllocationForAllPeriods)
-    getLegalCapForAllPeriods(server_url, includeAviation, onGetLegalCapForAllPeriods);
-    getOffsetEntitlementsForAllPeriods(server_url, includeAviation, onGetOffsetEntitlementsForAllPeriods);
+    getAuctionedEUWide(server_url, includeAviation, onGetAuctionedEUWide);
+    getOffsetsEUWide(server_url, includeAviation, onGetOffsetsEUWide);
+    getVerifiedEmissionsEUWide(server_url, includeAviation, onGetVerifiedEmissionsEUWide);
+    getFreeAllocationEUWide(server_url, includeAviation, onGetFreeAllocationEUWide)
+    getLegalCapEUWide(server_url, includeAviation, onGetLegalCapEUWide);
+    getOffsetEntitlementsEUWide(server_url, includeAviation, onGetOffsetEntitlementsEUWide);
 }
 
 function noValueSelectedForCountriesOrSectors() {
@@ -874,8 +874,8 @@ function dataForPeriod(responseText) {
 
 }
 
-function onGetFreeAllocationForAllPeriods() {
-    console.log("onGetFreeAllocationForAllPeriods");
+function onGetFreeAllocationEUWide() {
+    console.log("onGetFreeAllocationEUWide");
     
     var responseSt = this.responseText;
     
@@ -923,8 +923,8 @@ function onGetFreeAllocationForAllPeriods() {
     
 }
 
-function onGetOffsetEntitlementsForAllPeriods() {
-    console.log("onGetOffsetEntitlementsForAllPeriods");
+function onGetOffsetEntitlementsEUWide() {
+    console.log("onGetOffsetEntitlementsEUwide");
     
     var responseSt = this.responseText;
     
@@ -951,11 +951,13 @@ function onGetOffsetEntitlementsForAllPeriods() {
 
 }
 
-function onGetLegalCapForAllPeriods() {
-    console.log("onGetLegalCapForAllPeriods");
+function onGetLegalCapEUWide() {
+    console.log("onGetLegalCapEUWide");
     
     var responseSt = this.responseText;
     
+    console.log("responseSt", responseSt);
+        
     if(responseSt && responseSt.length > 0){
         
         var resultsJSON = JSON.parse(responseSt);
@@ -992,8 +994,8 @@ function onGetLegalCapForAllPeriods() {
     
 }
 
-function onGetVerifiedEmissionsForAllPeriods() {
-    console.log("onGetVerifiedEmissionsForAllPeriods");
+function onGetVerifiedEmissionsEUWide() {
+    console.log("onGetVerifiedEmissionsEUwide");
     
     var responseSt = this.responseText;
     
@@ -1041,11 +1043,13 @@ function onGetVerifiedEmissionsForAllPeriods() {
 
 }
 
-function onGetAuctionedForAllPeriods() {
+function onGetAuctionedEUWide() {
 
-    console.log("onGetAuctionedForAllPeriods");
+    console.log("onGetAuctionedEUWide");
     
     var responseSt = this.responseText;
+    
+    console.log("responseSt", responseSt);
     
     if(responseSt && responseSt.length > 0){
         
@@ -1092,8 +1096,8 @@ function onGetAuctionedForAllPeriods() {
 
 }
 
-function onGetOffsetsForAllPeriods() {
-    console.log("onGetOffsetsForAllPeriods");
+function onGetOffsetsEUWide() {
+    console.log("onGetOffsetsEUWide");
     
     var responseSt = this.responseText;
     
