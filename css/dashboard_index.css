@@ -306,7 +306,7 @@ h1, h2, h3, h4, h5, h6, figure {
 }
 
 #fh5co-header {
-  padding: 40px 0;
+  padding: 10px 0;
   width: 100%;
   margin: 0;
   border-bottom: 1px solid rgba(0, 0, 0, 0.1);
@@ -325,15 +325,15 @@ h1, h2, h3, h4, h5, h6, figure {
     margin: 0px 0 0 0;
   }
 }
-#fh5co-header .header-inner {
+/*#fh5co-header .header-inner {
   float: left;
   width: 100%;
-}
+}*/
 #fh5co-header h1 {
   float: left;
-  padding: 0;
+  padding: 10px;
   font-weight: 900;
-  font-size: 28px;
+  font-size: 24px;
   margin-bottom: 0;
   text-transform: uppercase;
   font-family: "Roboto", Arial, sans-serif;
@@ -486,7 +486,7 @@ h1, h2, h3, h4, h5, h6, figure {
 }
 
 #fh5co-intro-section {
-  padding-top: 6em;
+  padding-top: 3em;
 }
 #fh5co-intro-section h2 {
   font-weight: 400;
