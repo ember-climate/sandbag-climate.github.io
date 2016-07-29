@@ -552,11 +552,11 @@ h1, h2, h3, h4, h5, h6, figure {
   transition: 0.3s;
 }
 .featured-grid .desc h3 {
-  color: rgba(255, 255, 255, 0.9);
+  color: rgba(86, 86, 86, 0.9);
   margin-bottom: 10px;
 }
 .featured-grid .desc span {
-  color: rgba(255, 255, 255, 0.5);
+  color: rgba(0, 0, 0, 0.5);
 }
 .featured-grid:hover, .featured-grid:focus {
   -webkit-box-shadow: 0px 18px 43px -7px rgba(0, 0, 0, 0.32);
@@ -697,6 +697,10 @@ h1, h2, h3, h4, h5, h6, figure {
 }
 #fh5co-services-section .fh5co-heading p {
   color: rgba(255, 255, 255, 0.7);
+}
+
+#fh5co-services-section .services-inner a {
+    color: #fff;
 }
 
 #fh5co-main-services-section .services-inner {
