@@ -1175,7 +1175,8 @@ function createDataPerPeriodChart(data, type) {
         dataPerPeriodChart = new dimple.chart(dataPerPeriodChartSvg, data);
         // Fix the margins
         dataPerPeriodChart.setMargins("85px", "20px", "20px", "110px");
-        dataPerPeriodChart.addMeasureAxis("y", "tCO2e");        
+        var y = dataPerPeriodChart.addMeasureAxis("y", "tCO2e");       
+        y.tickFormat = 's';
                 
         if(type == "line"){
             dataPerPeriodChartCategoryAxis = dataPerPeriodChart.addCategoryAxis("x", "period");
@@ -1205,7 +1206,8 @@ function createDataPerPeriodChart(data, type) {
                // Fix the margins
                dataPerPeriodChart.setMargins("85px", "20px", "20px", "110px");
                dataPerPeriodChart.addMeasureAxis("y", "tCO2e");      
-               dataPerPeriodChart.addMeasureAxis("y", "tCO2e");  
+               var y = dataPerPeriodChart.addMeasureAxis("y", "tCO2e");  
+               y.tickFormat = 's';
                dataPerPeriodChart.addCategoryAxis("x", "period");
                dataPerPeriodChart.addSeries("country", dimple.plot.line);
                dataPerPeriodChartCurrentType = "line";
@@ -1226,7 +1228,8 @@ function createDataPerPeriodChart(data, type) {
                 dataPerPeriodChart = new dimple.chart(dataPerPeriodChartSvg, data);
                 // Fix the margins
                 dataPerPeriodChart.setMargins("85px", "20px", "20px", "110px");
-                dataPerPeriodChart.addMeasureAxis("y", "tCO2e");  
+                var y = dataPerPeriodChart.addMeasureAxis("y", "tCO2e");
+                y.tickFormat = 's';
                 dataPerPeriodChart.addCategoryAxis("x", "country");
                 dataPerPeriodChart.addSeries("sector", dimple.plot.bar);
                 dataPerPeriodChartCurrentType = "bar";
