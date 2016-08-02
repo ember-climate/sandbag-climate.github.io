@@ -931,7 +931,7 @@ h1, h2, h3, h4, h5, h6, figure {
 }
 
 #fh5co-footer {
-  padding: 7em 0;
+  /*padding: 2em 0;*/
   float: left;
   width: 100%;
   position: relative;
@@ -989,8 +989,8 @@ h1, h2, h3, h4, h5, h6, figure {
 .fh5co-copyright {
   border-top: 1px solid rgba(255, 255, 255, 0.1);
   clear: both;
-  margin-top: 40px !important;
-  padding: 40px 0 0 0;
+  margin-top: 10px !important;
+  padding: 10px 0 0 0;
 }
 .fh5co-copyright span {
   display: block;
