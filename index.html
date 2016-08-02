@@ -6,18 +6,20 @@
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<title>Sandbag EU ETS Dashboard</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="description" content="EU ETS Dashboard, a tool that provides a user-friendly access to emission trading data extracted from the European Union Transaction Log (EUTL) together with other data integrated by Sandbag's team (e.g. auction data and a more meaningful sectors aggregation). " />
+	<meta name="keywords" content="climate change, sandbag, d3.js, data visualization, html5, css3, interactive , responsive, dimple.js, leaflet" />
 	<meta name="author" content="Pablo Pareja Tobes" />
 
 
   	<!-- Facebook and Twitter integration -->
 	<meta property="og:title" content=""/>
 	<meta property="og:image" content=""/>
-	<meta property="og:url" content=""/>
-	<meta property="og:site_name" content=""/>
-	<meta property="og:description" content=""/>
-	<meta name="twitter:title" content="" />
+	<meta property="og:url" content="http://sandbag-climate.githug.io"/>
+	<meta property="og:site_name" content="EU ETS Dashboard"/>
+	<meta property="og:description" content="EU ETS Dashboard, a tool that provides a user-friendly access to emission trading data extracted from the European Union Transaction Log (EUTL) together with other data integrated by Sandbag's team (e.g. auction data and a more meaningful sectors aggregation). "/>
+	<meta name="twitter:title" content="Sandbag Climate Campaign" />
 	<meta name="twitter:image" content="" />
-	<meta name="twitter:url" content="" />
+	<meta name="twitter:url" content="https://twitter.com/sandbagorguk" />
 	<meta name="twitter:card" content="" />
 
 	<!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
@@ -81,7 +83,7 @@
 		<div class="container">
 			<div class="row">
 				<div class="col-md-6">
-					<a href="#" class="featured-grid" style="background-image: url(./images/dashboard_country_sector_chart.png);">
+					<a href="filter_data_dashboard.html" class="featured-grid" style="background-image: url(./images/dashboard_country_sector_chart.png);">
 						<div class="desc">
 							<h3>Filter data in real time</h3>
 							<span>Analyze data by country, sector, period...</span>
@@ -371,8 +373,6 @@
         };
 
 
-
-
         $(function(){
             fullHeight();
             centerBlock();
@@ -394,10 +394,7 @@
           ga('create', 'UA-81304709-2', 'auto');
           ga('send', 'pageview');
 
-        </script>
         //-------------------------------
-
-
     }());    
     </script>
 	</body>
