@@ -330,7 +330,7 @@ function initMenus() {
                 $('#stacked_bar_chart_row').show();  
 
                 countrySectorChartDisplayed = false; 
-                onPeriodsComboboxChange();
+                onDataPerPeriodComboboxChange();
                 onResize();
                 
             }else{
@@ -444,7 +444,7 @@ function changeStackedBarChart(typeSt) {
 
     }
 
-    onPeriodsComboboxChange();
+    onDataPerPeriodComboboxChange();
 }
 
 function onIncludeAviationComboboxChange() {
@@ -708,7 +708,7 @@ function problemWithRequests(){
     noInternetConnection = true;
 }
 
-function onPeriodsComboboxChange() {
+function onDataPerPeriodComboboxChange() {
     
     $('#offsets_warning_div').hide();
 
@@ -729,17 +729,19 @@ function onPeriodsComboboxChange() {
     periodSelectedSt = periodSelectedSt.slice(0, periodSelectedSt.length - 1);
     periodSelectedSt += "]";
     
+    var powerFlagValue = $("#power_flag_combobox_data_per_period").selectpicker('val');
+    
     var offsetsAfter2012 = false;
     
 
     if (textSt == "Free Allocation per period") {
         
-        getFreeAllocationForPeriod(server_url, periodSelectedSt, onGetFreeAllocationForPeriod);
+        getFreeAllocationForPeriod(server_url, periodSelectedSt, powerFlagValue, onGetFreeAllocationForPeriod);
         
     } else if (textSt == "Offsets per period") {
                 
         if(valuesSelectedAfter2012  == false){
-            getOffsetsForPeriod(server_url, periodSelectedSt, onGetOffsetsForPeriod);
+            getOffsetsForPeriod(server_url, periodSelectedSt, powerFlagValue, onGetOffsetsForPeriod);
         }else{
             offsetsAfter2012 = true;
             dataPerPeriodChartData = [];
@@ -750,7 +752,7 @@ function onPeriodsComboboxChange() {
         
     } else if (textSt == "Verified Emissions per period") {
         
-        getVerifiedEmissionsForPeriod(server_url, periodSelectedSt, onGetVerifiedEmissionsForPeriod);
+        getVerifiedEmissionsForPeriod(server_url, periodSelectedSt, powerFlagValue, onGetVerifiedEmissionsForPeriod);
         
     }
     
@@ -763,6 +765,7 @@ function onPeriodsComboboxChange() {
     
 
 }
+
 
 function filterDataForDataPerPeriodChart(){    
     
@@ -824,7 +827,6 @@ function onGetPeriods() {
 
         $("#periods_combobox").selectpicker('refresh');
         $("#periods_combobox").selectpicker('val', '2008');
-        //onPeriodsComboboxChange();
     
     }else{
         problemWithRequests();

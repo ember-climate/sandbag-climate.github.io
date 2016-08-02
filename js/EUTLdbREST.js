@@ -530,20 +530,39 @@ function getAuctionedEUWide(serverURL, includeAviation, onLoadEnd){
 	xhr.send(JSON.stringify(query));
 }
 
-function getVerifiedEmissionsForPeriod(serverURL, periodName, onLoadEnd){
+function getVerifiedEmissionsForPeriod(serverURL, periodName, powerFlagValue, onLoadEnd){
     
     var query = {
 	    "statements" : [ ]
 	};
 
-	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
+    var statementSt;
+    
+    if(powerFlagValue == 'Include Power installations'){
+        
+        statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
                         "(node)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD) " +
                        "WHERE p.name IN " + periodName + " " +
 					   "RETURN sum(ve.value) AS Verified_Emissions, c.name, ss.name, p.name ORDER BY c.name, ss.name";
+        
+    }else if(powerFlagValue == 'Exclude Power installations'){
+        
+        statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
+                        "(node)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD) " +
+                       "WHERE p.name IN " + periodName + " AND node.power_flag <> 'true' " +
+					   "RETURN sum(ve.value) AS Verified_Emissions, c.name, ss.name, p.name ORDER BY c.name, ss.name";     
+        
+        
+    }else if(powerFlagValue == 'Show only Power installations'){
+        
+        statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
+                        "(node)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD) " +
+                       "WHERE p.name IN " + periodName + " AND node.power_flag = 'true' " +
+					   "RETURN sum(ve.value) AS Verified_Emissions, c.name, ss.name, p.name ORDER BY c.name, ss.name";
+        
+    }
     
-    //console.log("statement!", statementSt);
-
-	query.statements.push({"statement":statementSt});
+    query.statements.push({"statement":statementSt});
 
 	var xhr = new XMLHttpRequest();    
 	xhr.onloadend = onLoadEnd;
@@ -553,19 +572,41 @@ function getVerifiedEmissionsForPeriod(serverURL, periodName, onLoadEnd){
 	xhr.send(JSON.stringify(query));
 }
 
-function getFreeAllocationForPeriod(serverURL, periodName, onLoadEnd){
-        
+function getFreeAllocationForPeriod(serverURL, periodName, powerFlagValue, onLoadEnd){
+    
+    console.log("getFreeAllocationForPeriod");
+    
     var query = {
 	    "statements" : [ ]
 	};
-
-	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
+    
+    var statementSt;
+    
+    if(powerFlagValue == 'Include Power installations'){
+        
+        statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
                         "(node)-[aa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +
                        "WHERE p.name IN " + periodName + " " +
 					   "RETURN sum(aa.value) AS Free_Allocation, c.name, ss.name, p.name ORDER BY c.name, ss.name ";
-    
-    //console.log("statement!", statementSt);
+        
+    }else if(powerFlagValue == 'Exclude Power installations'){
+          
+        statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
+                        "(node)-[aa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +
+                       "WHERE p.name IN " + periodName + " AND node.power_flag <> 'true' " +
+					   "RETURN sum(aa.value) AS Free_Allocation, c.name, ss.name, p.name ORDER BY c.name, ss.name ";
+        
+    }else if(powerFlagValue == 'Show only Power installations'){
+        
+        statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
+                        "(node)-[aa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +
+                       "WHERE p.name IN " + periodName + " AND node.power_flag = 'true' " +
+					   "RETURN sum(aa.value) AS Free_Allocation, c.name, ss.name, p.name ORDER BY c.name, ss.name ";
+        
+    }
 
+    
+    
 	query.statements.push({"statement":statementSt});
 
 	var xhr = new XMLHttpRequest();    
@@ -576,18 +617,35 @@ function getFreeAllocationForPeriod(serverURL, periodName, onLoadEnd){
 	xhr.send(JSON.stringify(query));
 }
 
-function getOffsetsForPeriod(serverURL, periodName, onLoadEnd){
+function getOffsetsForPeriod(serverURL, periodName, powerFlagValue,  onLoadEnd){
         
     var query = {
 	    "statements" : [ ]
 	};
-
-	var statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
+    
+    var statementSt;
+    
+    if(powerFlagValue == 'Include Power installations'){
+        
+        statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
                         "(node)-[off:OFFSETS]->(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
                        "WHERE p.name IN " + periodName + " " + " AND (o.unit_type = 'ERU' " +
 					   "OR o.unit_type = 'CER') RETURN sum(o.amount) AS Offsets, c.name, ss.name, p.name ORDER BY c.name, ss.name";
-    
-    //console.log("statement!", statementSt);
+        
+    }else if(powerFlagValue == 'Exclude Power installations'){
+          
+        statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
+                        "(node)-[off:OFFSETS]->(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
+                       "WHERE p.name IN " + periodName + " " + " AND (o.unit_type = 'ERU' " +
+					   "OR o.unit_type = 'CER') AND node.power_flag <> 'true' RETURN sum(o.amount) AS Offsets, c.name, ss.name, p.name ORDER BY c.name, ss.name";
+        
+    }else if(powerFlagValue == 'Show only Power installations'){
+        
+        statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR)," +
+                        "(node)-[off:OFFSETS]->(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +
+                       "WHERE p.name IN " + periodName + " " + " AND (o.unit_type = 'ERU' " +
+					   "OR o.unit_type = 'CER') AND node.power_flag = 'true' RETURN sum(o.amount) AS Offsets, c.name, ss.name, p.name ORDER BY c.name, ss.name";
+    }
 
 	query.statements.push({"statement":statementSt});
 

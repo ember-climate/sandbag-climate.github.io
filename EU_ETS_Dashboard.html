@@ -284,17 +284,24 @@
             <!-- /.row -->
 
             <div id="periods_combo_box_row" class="row" style="display: none">
-                <div class="col-md-4 " >
-                    <select id="periods_combobox" multiple data-actions-box="true" class="selectpicker" onchange="onPeriodsComboboxChange()"  data-size="8">
+                <div class="col-md-3 " >
+                    <select id="periods_combobox" multiple data-actions-box="true" class="selectpicker" onchange="onDataPerPeriodComboboxChange()"  data-size="8">
                     </select>
                 </div>  
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <select class="selectpicker" multiple id="countries_filter_combobox" onchange="filterDataForDataPerPeriodChart()" data-actions-box="true" data-size="8">
                     </select> 
                 </div>
-                <div class="col-md-4">
+                <div class="col-md-3">
                     <select class="selectpicker" multiple id="sectors_filter_combobox" onchange="filterDataForDataPerPeriodChart()" data-actions-box="true" data-size="8">
                     </select> 
+                </div>   
+                <div class="col-md-3">
+                    <select id="power_flag_combobox_data_per_period" onchange="onDataPerPeriodComboboxChange()" class="selectpicker" width="fit">
+                        <option>Include Power installations</option>
+                        <option>Exclude Power installations</option>
+                        <option>Show only Power installations</option>
+                    </select>
                 </div>
             </div>
             <!-- /.row -->
