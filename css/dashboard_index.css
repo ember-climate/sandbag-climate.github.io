@@ -486,7 +486,7 @@ h1, h2, h3, h4, h5, h6, figure {
 }
 
 #fh5co-intro-section {
-  padding-top: 3em;
+  padding-top: 2em;
 }
 #fh5co-intro-section h2 {
   font-weight: 400;
@@ -550,9 +550,11 @@ h1, h2, h3, h4, h5, h6, figure {
   -webkit-transition: 0.3s;
   -o-transition: 0.3s;
   transition: 0.3s;
+  background-color: white;
+  opacity: 0.8;
 }
 .featured-grid .desc h3 {
-  color: rgba(86, 86, 86, 0.9);
+  color: rgba(0, 0, 0, 0.5);
   margin-bottom: 10px;
 }
 .featured-grid .desc span {
@@ -650,6 +652,12 @@ h1, h2, h3, h4, h5, h6, figure {
 .work-inner:hover .work-grid:after {
   opacity: 1;
 }
+
+#fh5co-featured-section {
+    padding-top: 20px;
+    background: #e6e6e6;
+}
+
 
 #fh5co-services-section {
   position: relative;
