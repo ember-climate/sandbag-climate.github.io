@@ -86,6 +86,7 @@ var pulp_and_paper_icon;
 //-------------------------
 
 var formatNumber = d3.format(".4s");
+var formatNumberEUWideChart = d3.format(".5s");
 var formatNumberAddCommas = d3.format(",");
 
 var map_color_scale = d3.scale.linear().domain([1000, 1000000000]).range(['beige', 'red']);
@@ -1287,11 +1288,18 @@ function createEUWideChart(data) {
         y.tickFormat = 's';
         y.overrideMin = -100000000;      
         
-        barSeriesEUWide = euWideChart.addSeries("type", dimple.plot.bar);
+        barSeriesEUWide = euWideChart.addSeries("type", dimple.plot.bar);        
+        barSeriesEUWide.getTooltipText = function (e) {            
+            return ["Type: " + e.aggField[0], "Period: " + e.x , "tCO2e: " +  formatNumberEUWideChart(e.y)];
+        };
 
         lineSeriesEUWide = euWideChart.addSeries("type", dimple.plot.line);
         lineSeriesEUWide.lineMarkers = true;
         lineSeriesEUWide.interpolation = "cardinal";
+        lineSeriesEUWide.getTooltipText = function (e) {            
+            return ["Type: " + e.aggField[0], "Period: " + e.x , "tCO2e: " +  formatNumberEUWideChart(e.y)];
+        };
+        
         
         euWideChartLegend = euWideChart.addLegend(20, 10, "95%", 300, "left");
                 
