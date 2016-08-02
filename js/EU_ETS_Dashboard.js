@@ -60,7 +60,7 @@ var SECTORS_ARRAY = ["Aviation", "Cement and Lime", "Ceramics", "Chemicals", "Co
                     "Glass", "Iron and steel", "Metal ore roasting", "Mineral oil", "Non ferrous metals",
                     "Other", "Pulp and paper"];
 
-var  EU_WIDE_LEGEND_VALUES = {"Free Allocation": "Permits issued by the European Commission every<br> year to each stationary installation and aircraft operator.", "Auctioned": "Auctioned", "Offsets": "Offsets", "Remaining Credit Entitlements": "This series represents an estimation of<br> how the remaining credit entitlements could be<br> distributed acroos the years", "Verified Emissions": "Tones of carbon emitted by the <br>different stationary installations and <br>aircraft operators", "Accumulated Balance":"Accumulated surplus calculated as follows: <br>Accumulated Verified Emissions - ( Accumulated Auctioned <br>+ Accumulated Offsets + Accumulated Free Allocation)", "Legal Cap": "Legal Cap stated by the European Commission"};
+var  EU_WIDE_LEGEND_VALUES = {"Free Allocation": "Permits issued by the European Commission every<br> year to each stationary installation and aircraft operator.", "Auctioned": "Auctioned", "Offsets": "Offsets", "Remaining Credit Entitlements": "This series represents an estimation of<br> how the remaining credit entitlements could be<br> distributed across the years", "Verified Emissions": "Tones of carbon emitted by the <br>different stationary installations and <br>aircraft operators", "Accumulated Balance":"Accumulated surplus calculated as follows: <br>Accumulated Verified Emissions - ( Accumulated Auctioned <br>+ Accumulated Offsets + Accumulated Free Allocation)", "Legal Cap": "Legal Cap stated by the European Commission"};
 
 var installations_map;
 var marker_popups_ids = [];
@@ -203,6 +203,9 @@ function updateWelcomeDialogCookie(){
 
 
 function loadEUWideData(includeAviation) {
+    
+    console.log("loadEUWideData");
+    console.log("includeAviation",includeAviation);
 
     initializeSurplusDataArrayEUWide();
     resetEUWideDataLoadedText();
@@ -212,6 +215,8 @@ function loadEUWideData(includeAviation) {
     offsets_eu_wide_loaded = false;
     auctioned_eu_wide_loaded = false;
     legal_cap_eu_wide_loaded = false;
+    offset_entitlements_eu_wide_loaded = false;
+    
 
     euWideChartDataBackup = [];
     euWideChartData = [];
@@ -443,7 +448,7 @@ function changeStackedBarChart(typeSt) {
 
 function onIncludeAviationComboboxChange() {
     var includeAviation = $('#include_aviation_combobox').selectpicker('val');
-    console.log("includeAviation", includeAviation);
+    //console.log("includeAviation", includeAviation);
     loadEUWideData(includeAviation);
 }
 
@@ -913,7 +918,9 @@ function onGetFreeAllocationEUWide() {
         
         updateEUWideDataLoadedText("Free Allocation");
 
-        if (allEUWideLoaded()) {
+        if (allEUWideLoaded()) {            
+            calculateCumulativeSurplusEUWide();
+            calculateRemainingCreditEntitlement();    
             filterDataForEUWideChart();
         }
         
@@ -942,6 +949,8 @@ function onGetOffsetEntitlementsEUWide() {
         updateEUWideDataLoadedText("Offset Entitlements");
 
         if (allEUWideLoaded()) {
+            calculateCumulativeSurplusEUWide();
+            calculateRemainingCreditEntitlement(); 
             filterDataForEUWideChart();
         }
         
@@ -956,7 +965,7 @@ function onGetLegalCapEUWide() {
     
     var responseSt = this.responseText;
     
-    console.log("responseSt", responseSt);
+    //console.log("responseSt", responseSt);
         
     if(responseSt && responseSt.length > 0){
         
@@ -975,7 +984,13 @@ function onGetLegalCapEUWide() {
             tempArray["type"] = "Legal Cap";
 
             if(tempPeriod >= 2008){
-                euWideChartDataBackup.push(tempArray);
+                //temporal hack so that just the legal cap for installations only is shown.
+                //Legal cap for aviation only or aviation + stationary installations cannot 
+                //be displayed since the exact values for aviation are not accurate enough
+                var includeAviation = $('#include_aviation_combobox').selectpicker('val');
+                if(includeAviation == 'Exclude Aviation'){
+                    euWideChartDataBackup.push(tempArray);
+                }                
             }        
 
         }
@@ -985,6 +1000,8 @@ function onGetLegalCapEUWide() {
         updateEUWideDataLoadedText("Legal Cap");
 
         if (allEUWideLoaded()) {
+            calculateCumulativeSurplusEUWide();
+            calculateRemainingCreditEntitlement(); 
             filterDataForEUWideChart();
         }
         
@@ -1034,6 +1051,8 @@ function onGetVerifiedEmissionsEUWide() {
         updateEUWideDataLoadedText("Verified Emissions");
 
         if (allEUWideLoaded()) {
+            calculateCumulativeSurplusEUWide();
+            calculateRemainingCreditEntitlement(); 
             filterDataForEUWideChart();
         }
         
@@ -1044,13 +1063,10 @@ function onGetVerifiedEmissionsEUWide() {
 }
 
 function onGetAuctionedEUWide() {
-
     console.log("onGetAuctionedEUWide");
     
     var responseSt = this.responseText;
-    
-    console.log("responseSt", responseSt);
-    
+        
     if(responseSt && responseSt.length > 0){
         
         var resultsJSON = JSON.parse(responseSt);
@@ -1084,6 +1100,8 @@ function onGetAuctionedEUWide() {
         updateEUWideDataLoadedText("Auctions");
 
         if (allEUWideLoaded()) {
+            calculateCumulativeSurplusEUWide();
+            calculateRemainingCreditEntitlement(); 
             filterDataForEUWideChart();
         }
         
@@ -1139,6 +1157,8 @@ function onGetOffsetsEUWide() {
         updateEUWideDataLoadedText("Offsets");
 
         if (allEUWideLoaded()) {
+            calculateCumulativeSurplusEUWide();
+            calculateRemainingCreditEntitlement(); 
             filterDataForEUWideChart();
         }
         
@@ -1248,12 +1268,10 @@ function createEUWideChart(data) {
     $("#eu_wide_chart").removeClass("grey_background");
     $("#eu_wide_spinner_div").hide();
 
-    euWideChartData = data;
-
     if (!eu_wide_chart_created) {
         var svg = dimple.newSvg("#eu_wide_chart", "100%", "100%");
 
-        euWideChart = new dimple.chart(svg, euWideChartData);
+        euWideChart = new dimple.chart(svg, data);
 
         // Fix the margins
         if(window.chrome){
@@ -1276,21 +1294,20 @@ function createEUWideChart(data) {
         lineSeriesEUWide.interpolation = "cardinal";
         
         euWideChartLegend = euWideChart.addLegend(20, 10, "95%", 300, "left");
-        
-        //console.log(euWideChartLegend);
-        
+                
         eu_wide_chart_created = true;
+        
     } else {
-
-        euWideChart.data = euWideChartData;
+        
+        //euWideChart.data = euWideChartData;
 
     }
+    
     barSeriesEUWide.data = dimple.filterData(data, "type", ["Free Allocation", "Offsets", "Auctioned", "Remaining Credit Entitlements"]);
     lineSeriesEUWide.data = dimple.filterData(data, "type", ["Verified Emissions", "Legal Cap", "Accumulated Balance","Accumulated Balance"]);   
     euWideChart.draw(1000);
      
-    initEUWideLegendTooltips();
-    
+    initEUWideLegendTooltips();    
     
       
 }
@@ -1683,11 +1700,13 @@ function onGetFreeAllocationForCountryAndSector() {
 function calculateCumulativeSurplusEUWide() {
 
     var accumulatedAmount = 0;
-
+    
+    console.log("calculateCumulativeSurplusEUWide");
+    
     for (i = 2008; i <= 2015; i++) {
         accumulatedAmount += surplusDataArrayEUWide[i];
         surplusAccumulatedDataArrayEUWide[i] = accumulatedAmount;
-
+        
         var tempArray = [];
         tempArray["tCO2e"] = surplusAccumulatedDataArrayEUWide[i];
         tempArray["period"] = i;
@@ -1696,12 +1715,23 @@ function calculateCumulativeSurplusEUWide() {
         euWideChartDataBackup.push(tempArray);
 
     }
-
+    
 }
 
 function calculateRemainingCreditEntitlement() {
 
+    //console.log("calculateRemainingCreditEntitlement");
+    
+    //console.log("totalOffsetEntitlements", totalOffsetEntitlements);
+    //console.log("totalOffsetsSoFar",totalOffsetsSoFar);
+    
     var annualValue = (totalOffsetEntitlements - totalOffsetsSoFar) / 5; //2016 - 2020
+    
+    if(annualValue < 0){
+        annualValue = 0;
+    }
+    
+    //console.log("annualValue",annualValue);
 
     for (i = 2016; i <= 2020; i++) {
 
@@ -1814,18 +1844,9 @@ function filterStackedBarArrayBasedOnCheckboxesSelected(value) {
 
 function allEUWideLoaded() {
 
-    var everythingLoaded = verified_emissions_eu_wide_loaded == true && free_allocation_eu_wide_loaded == true &&
+    return everythingLoaded = verified_emissions_eu_wide_loaded == true && free_allocation_eu_wide_loaded == true &&
         offsets_eu_wide_loaded == true && auctioned_eu_wide_loaded == true && legal_cap_eu_wide_loaded == true &&
         offset_entitlements_eu_wide_loaded == true;
-
-    if (everythingLoaded == true) {
-        calculateCumulativeSurplusEUWide();
-        calculateRemainingCreditEntitlement();
-    }
-
-    //console.log("everythingLoaded", everythingLoaded);
-
-    return everythingLoaded;
 }
 
 
