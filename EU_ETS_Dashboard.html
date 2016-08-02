@@ -587,7 +587,26 @@
           ga('create', 'UA-81304709-1', 'auto');
           ga('send', 'pageview');
         //-------------------------------
-
+        
+        //---check URL parameters-----
+        var url = window.location.href;
+        var tempArray = url.split('?');
+        if(tempArray.length > 1){
+            var arguments = tempArray[1].split('=');
+            arguments.shift();
+            if(arguments == "contact"){
+                $('#multi_line_chart_row').hide();
+                $('#countries_sectors_row').hide();
+                $('#periods_combo_box_row').hide();
+                $('#stacked_bar_chart_row').hide();
+                $('#eu_wide_chart_row').hide();
+                $('#about_row').hide();
+                $('#installations_row').hide();
+                $('#error_row').hide();
+                $('#contact_us_row').show();
+            }
+        }
+        
     </script>
 
 </body>
