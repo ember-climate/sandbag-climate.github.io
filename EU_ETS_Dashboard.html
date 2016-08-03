@@ -475,7 +475,7 @@
                  <div class="col-lg-6">
                      <h3 class="page-header">Contact us</h3>   
                      <p class="bg-info">
-                         <strong>Notice an interesting story as you’re investigating this data? Please tell us about it, and we can see if there’s a campaign needed!</strong>
+                         <strong>Notice an interesting story as you’re investigating this data? Have an idea of something else you'd like the Dashboard to do? Please tell us about it here.</strong>
                      </p>
                      <form id="contact_us_form" role="form" action="http://formspree.io/pablo@sandbag.org.uk" method="POST"
                            onsubmit="return validateForm()">
@@ -598,10 +598,16 @@
         //---check URL parameters-----
         var url = window.location.href;
         var tempArray = url.split('?');
+        
         if(tempArray.length > 1){
+            
             var arguments = tempArray[1].split('=');
             arguments.shift();
+            
+            console.log("arguments", arguments);
+            
             if(arguments == "contact"){
+                
                 $('#multi_line_chart_row').hide();
                 $('#countries_sectors_row').hide();
                 $('#periods_combo_box_row').hide();
@@ -611,6 +617,64 @@
                 $('#installations_row').hide();
                 $('#error_row').hide();
                 $('#contact_us_row').show();
+                
+            }else if(arguments == "map"){
+                
+                $('#multi_line_chart_row').hide();            
+                $('#about_row').hide();
+                $('#periods_combo_box_row').hide();
+                $('#stacked_bar_chart_row').hide();
+                $('#eu_wide_chart_row').hide();
+                $('#contact_us_row').hide();
+                $('#installations_row').show();
+                $('#countries_sectors_row').show();
+
+                countrySectorChartDisplayed = false;
+                loadDataForMapView();
+                
+            }else if(arguments == "euwide"){
+                
+                $('#multi_line_chart_row').hide();
+                $('#countries_sectors_row').hide();
+                $('#periods_combo_box_row').hide();
+                $('#contact_us_row').hide();
+                $('#stacked_bar_chart_row').hide();
+                $('#about_row').hide();
+                $('#installations_row').hide();
+                $('#eu_wide_chart_row').show();
+
+                countrySectorChartDisplayed = false;
+                onResize();
+                
+            }else if(arguments == "trends"){
+                
+                $('#multi_line_chart_row').hide();
+                $('#countries_sectors_row').hide();
+                $('#about_row').hide();
+                $('#eu_wide_chart_row').hide();
+                $('#contact_us_row').hide();
+                $('#installations_row').hide();
+                $('#periods_combo_box_row').show();
+                $('#stacked_bar_chart_row').show();  
+
+                countrySectorChartDisplayed = false; 
+                onDataPerPeriodComboboxChange();
+                onResize();
+                
+            }else if(arguments == "sectors"){
+                
+                $('#multi_line_chart_row').show();
+                $('#countries_sectors_row').show();
+                $('#about_row').hide();
+                $('#periods_combo_box_row').hide();
+                $('#stacked_bar_chart_row').hide();
+                $('#eu_wide_chart_row').hide();
+                $('#contact_us_row').hide();
+                $('#installations_row').hide();
+
+                countrySectorChartDisplayed = true;
+                loadCountrySectorChart();
+                
             }
         }
         
