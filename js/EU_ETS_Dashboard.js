@@ -33,6 +33,7 @@ var dataPerPeriodChartDataBackup = [];
 var dataPerPeriodChartCurrentType = 'bar';
 var sectorsLoaded = false;
 var countriesLoaded = false;
+var periodsLoaded = false;
 
 var verified_emissions_eu_wide_loaded = false;
 var free_allocation_eu_wide_loaded = false;
@@ -96,8 +97,29 @@ var map_size_scale = d3.scale.linear().domain([1000, 1300000000]).range([40,70])
 var map_opened_for_the_first_time = true;
 var euWideLegendTip;
 
+var firstSectionToLoad = "euwide";
 
-function initMainPage() {
+function loadFirstSection(){
+    
+    console.log("loadFirstSection");
+    console.log("firstSectionToLoad",firstSectionToLoad);
+    
+    if(firstSectionToLoad == "map"){
+        loadMapView();
+    }else if(firstSectionToLoad == "trends"){
+        loadDataPerPeriodView();
+    }else if(firstSectionToLoad == "sectors"){
+        loadCountrySectorsView();        
+    }else if(firstSectionToLoad == "euwide"){
+        loadEUWideView();
+    }
+    
+}
+
+
+function initMainPage(argument) {
+    
+    firstSectionToLoad = argument;
     
     console.log("init main page...");
     
@@ -174,13 +196,24 @@ function initMainPage() {
     
     initializeMapIcons();
 
-    onGetEUCountries();
-    getSandbagSectors(server_url, onGetSectors);
-    getPeriods(server_url, onGetPeriods);
-
-    var includeAviation = $('#include_aviation_combobox').selectpicker('val');
-    loadEUWideData(includeAviation);
-
+    initCountries();
+    
+    if(argument == "euwide"){
+        
+        var includeAviation = $('#include_aviation_combobox').selectpicker('val');
+        loadEUWideData(includeAviation);
+        
+    }else if(argument == "map" || argument == "trends" || argument == "sectors") {
+        
+        getSandbagSectors(server_url, onGetSectors);
+        getPeriods(server_url, onGetPeriods);
+        
+    }else if(argument == "contact"){
+        
+        loadContactUsView();
+        
+    }
+    
 }
 
 function initializeSurplusDataArrayEUWide() {
@@ -201,7 +234,6 @@ function updateWelcomeDialogCookie(){
     }
     console.log("getting cookie value...", Cookies.get(doNotShowWelcomeDialogAgainCookieName));
 }
-
 
 function loadEUWideData(includeAviation) {
     
@@ -245,6 +277,124 @@ function loadCountrySectorChart() {
     onComboBoxChange();
 }
 
+function loadCountrySectorsView(){
+    $('#multi_line_chart_row').show();
+    $('#countries_sectors_row').show();
+    $('#about_row').hide();
+    $('#periods_combo_box_row').hide();
+    $('#stacked_bar_chart_row').hide();
+    $('#eu_wide_chart_row').hide();
+    $('#contact_us_row').hide();
+    $('#installations_row').hide();
+    
+    //deselecting other buttons and selecting appropriate button
+    $(".nav").find(".active").removeClass("active");
+    $('#country_sector_chart_button').parent().addClass("active");
+
+    countrySectorChartDisplayed = true;
+    loadCountrySectorChart();
+}
+
+function loadErrorView(){
+    $('#error_row').show();
+    $('#about_row').hide();
+    $('#contact_us_row').hide();
+}
+
+function loadMapView(){
+    $('#multi_line_chart_row').hide();            
+    $('#about_row').hide();
+    $('#periods_combo_box_row').hide();
+    $('#stacked_bar_chart_row').hide();
+    $('#eu_wide_chart_row').hide();
+    $('#contact_us_row').hide();
+    $('#installations_row').show();
+    $('#countries_sectors_row').show();
+    
+    //deselecting other buttons and selecting appropriate button
+    $(".nav").find(".active").removeClass("active");
+    $('#installations_button').parent().addClass("active");
+
+    countrySectorChartDisplayed = false;
+    loadDataForMapView();
+}
+
+function loadAboutView(){
+    $('#multi_line_chart_row').hide();
+    $('#countries_sectors_row').hide();
+    $('#periods_combo_box_row').hide();
+    $('#stacked_bar_chart_row').hide();
+    $('#contact_us_row').hide();
+    $('#installations_row').hide();
+    $('#eu_wide_chart_row').hide();
+    $('#error_row').hide();
+    $('#about_row').show();
+    
+    //deselecting other buttons and selecting appropriate button
+    $(".nav").find(".active").removeClass("active");
+    $('#about_button').parent().addClass("active");
+            
+    countrySectorChartDisplayed = false;
+}
+
+function loadDataPerPeriodView(){
+    console.log("loadDataPerPeriodView");
+    $('#multi_line_chart_row').hide();
+    $('#countries_sectors_row').hide();
+    $('#about_row').hide();
+    $('#eu_wide_chart_row').hide();
+    $('#contact_us_row').hide();
+    $('#installations_row').hide();
+    $('#periods_combo_box_row').show();
+    $('#stacked_bar_chart_row').show();  
+
+    //deselecting other buttons and selecting appropriate button
+    $(".nav").find(".active").removeClass("active");
+    $('#stacked_bar_chart_button').parent().addClass("active");
+        
+    countrySectorChartDisplayed = false; 
+    onDataPerPeriodComboboxChange();
+    onResize();
+}
+
+function loadEUWideView(){
+    $('#multi_line_chart_row').hide();
+    $('#countries_sectors_row').hide();
+    $('#periods_combo_box_row').hide();
+    $('#contact_us_row').hide();
+    $('#stacked_bar_chart_row').hide();
+    $('#about_row').hide();
+    $('#installations_row').hide();
+    $('#eu_wide_chart_row').show();
+    
+    //deselecting other buttons and selecting appropriate button
+    $(".nav").find(".active").removeClass("active");
+    $('#eu_wide_chart_button').parent().addClass("active");
+
+    var includeAviation = $('#include_aviation_combobox').selectpicker('val');
+    loadEUWideData(includeAviation);
+    countrySectorChartDisplayed = false;
+    onResize();
+}
+
+function loadContactUsView(){
+    $('#multi_line_chart_row').hide();
+    $('#countries_sectors_row').hide();
+    $('#periods_combo_box_row').hide();
+    $('#stacked_bar_chart_row').hide();
+    $('#eu_wide_chart_row').hide();
+    $('#about_row').hide();
+    $('#installations_row').hide();
+    $('#error_row').hide();
+    $('#contact_us_row').show();
+    
+    //deselecting other buttons and selecting appropriate button
+    $(".nav").find(".active").removeClass("active");
+    $('#contact_us_button').parent().addClass("active");
+    
+    countrySectorChartDisplayed = false;
+}
+
 function initMenus() {
     
     $('.nav li a').click(function(e) {
@@ -256,24 +406,11 @@ function initMenus() {
             if(noInternetConnection == false){
                 
                 e.preventDefault();
-                $('#multi_line_chart_row').show();
-                $('#countries_sectors_row').show();
-                $('#about_row').hide();
-                $('#periods_combo_box_row').hide();
-                $('#stacked_bar_chart_row').hide();
-                $('#eu_wide_chart_row').hide();
-                $('#contact_us_row').hide();
-                $('#installations_row').hide();
-
-                countrySectorChartDisplayed = true;
-                loadCountrySectorChart();
+                loadCountrySectorsView();
                 
             }else{
-                $('#error_row').show();
-                $('#about_row').hide();
-                $('#contact_us_row').hide();
-            }
-            
+                loadErrorView();                
+            }           
             
             
         }else if (tempId == "installations_button") {
@@ -281,103 +418,47 @@ function initMenus() {
             if(noInternetConnection == false){
                 
                 e.preventDefault();
-                $('#multi_line_chart_row').hide();            
-                $('#about_row').hide();
-                $('#periods_combo_box_row').hide();
-                $('#stacked_bar_chart_row').hide();
-                $('#eu_wide_chart_row').hide();
-                $('#contact_us_row').hide();
-                $('#installations_row').show();
-                $('#countries_sectors_row').show();
-
-                countrySectorChartDisplayed = false;
-                loadDataForMapView();
+                loadMapView();
                 
             }else{
-                $('#error_row').show();
-                $('#about_row').hide();
-                $('#contact_us_row').hide();
+                loadErrorView();     
             }
             
             
         }else if(tempId == "contact_us_button"){
             
             e.preventDefault();
-            $('#multi_line_chart_row').hide();
-            $('#countries_sectors_row').hide();
-            $('#periods_combo_box_row').hide();
-            $('#stacked_bar_chart_row').hide();
-            $('#eu_wide_chart_row').hide();
-            $('#about_row').hide();
-            $('#installations_row').hide();
-            $('#error_row').hide();
-            $('#contact_us_row').show();
-                        
-            countrySectorChartDisplayed = false;
+            loadContactUsView();
+            
             
         } else if (tempId == "stacked_bar_chart_button") {
             
             if(noInternetConnection == false){
                 
                 e.preventDefault();
-                $('#multi_line_chart_row').hide();
-                $('#countries_sectors_row').hide();
-                $('#about_row').hide();
-                $('#eu_wide_chart_row').hide();
-                $('#contact_us_row').hide();
-                $('#installations_row').hide();
-                $('#periods_combo_box_row').show();
-                $('#stacked_bar_chart_row').show();  
-
-                countrySectorChartDisplayed = false; 
-                onDataPerPeriodComboboxChange();
-                onResize();
+                loadDataPerPeriodView();
                 
             }else{
-                $('#error_row').show();
-                $('#about_row').hide();
-                $('#contact_us_row').hide();
+                loadErrorView();     
             }
                         
             
         } else if (tempId == "about_button") {
-            
+                        
             e.preventDefault();
-            $('#multi_line_chart_row').hide();
-            $('#countries_sectors_row').hide();
-            $('#periods_combo_box_row').hide();
-            $('#stacked_bar_chart_row').hide();
-            $('#contact_us_row').hide();
-            $('#installations_row').hide();
-            $('#eu_wide_chart_row').hide();
-            $('#error_row').hide();
-            $('#about_row').show();
+            loadAboutView();
             
-            countrySectorChartDisplayed = false;
             
         } else if (tempId == "eu_wide_chart_button" && noInternetConnection == false) {
             
             if(noInternetConnection == false){
                 
                 e.preventDefault();
-                $('#multi_line_chart_row').hide();
-                $('#countries_sectors_row').hide();
-                $('#periods_combo_box_row').hide();
-                $('#contact_us_row').hide();
-                $('#stacked_bar_chart_row').hide();
-                $('#about_row').hide();
-                $('#installations_row').hide();
-                $('#eu_wide_chart_row').show();
-
-                countrySectorChartDisplayed = false;
-                onResize();
+                loadEUWideView();
                 
             }else{
-                $('#error_row').show();
-                $('#about_row').hide();
-                $('#contact_us_row').hide();
-            }
-            
+                loadErrorView();     
+            }         
             
         }
 
@@ -606,7 +687,7 @@ function calculateSurplusWithOffsets() {
 }
 
 
-function onGetEUCountries() {
+function initCountries() {
 
 
     for (var i = 0; i < EU_COUNTRIES_ARRAY.length; i++) {
@@ -687,6 +768,10 @@ function onGetSectors() {
         $("#sectors_filter_combobox").selectpicker('val', SECTORS_ARRAY);
 
         sectorsLoaded = true;
+        
+        if(periodsLoaded){
+            loadFirstSection();
+        }
         
     }else{
         problemWithRequests();
@@ -812,8 +897,6 @@ function onGetPeriods() {
             if (periodName != "2008to2020" && periodName >= 2008 && periodName <= 2015) {
                 periods.push(periodName);
 
-                //console.log("periodName",periodName);
-
                 var option = document.createElement("option");
                 option.value = periodName;
                 option.innerHTML = periodName;
@@ -823,10 +906,15 @@ function onGetPeriods() {
             }
 
         };
-        //console.log("periods", periods);  
 
         $("#periods_combobox").selectpicker('refresh');
         $("#periods_combobox").selectpicker('val', '2008');
+        
+        periodsLoaded = true;
+        
+        if(sectorsLoaded){
+            loadFirstSection();
+        }
     
     }else{
         problemWithRequests();
