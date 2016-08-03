@@ -98,6 +98,7 @@ var map_opened_for_the_first_time = true;
 var euWideLegendTip;
 
 var firstSectionToLoad = "euwide";
+var loadFirstSectionFlag = false;
 
 function loadFirstSection(){
     
@@ -197,6 +198,7 @@ function initMainPage(argument) {
     initializeMapIcons();
 
     initCountries();
+        
     
     if(argument == "euwide"){
         
@@ -205,14 +207,16 @@ function initMainPage(argument) {
         
     }else if(argument == "map" || argument == "trends" || argument == "sectors") {
         
-        getSandbagSectors(server_url, onGetSectors);
-        getPeriods(server_url, onGetPeriods);
+        loadFirstSectionFlag = true;
         
     }else if(argument == "contact"){
         
         loadContactUsView();
         
     }
+    
+    getSandbagSectors(server_url, onGetSectors);
+    getPeriods(server_url, onGetPeriods);
     
 }
 
@@ -769,7 +773,7 @@ function onGetSectors() {
 
         sectorsLoaded = true;
         
-        if(periodsLoaded){
+        if(periodsLoaded && loadFirstSectionFlag){
             loadFirstSection();
         }
         
@@ -912,7 +916,7 @@ function onGetPeriods() {
         
         periodsLoaded = true;
         
-        if(sectorsLoaded){
+        if(sectorsLoaded && loadFirstSectionFlag){
             loadFirstSection();
         }
     
