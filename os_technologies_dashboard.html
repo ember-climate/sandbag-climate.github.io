@@ -1,0 +1,217 @@
+
+<!DOCTYPE html>
+<html class="no-js">
+	<head>
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<title>Sandbag EU ETS Dashboard - Explore trends</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="EU ETS Dashboard, a tool that provides a user-friendly access to emission trading data extracted from the European Union Transaction Log (EUTL) together with other data integrated by Sandbag's team (e.g. auction data and a more meaningful sectors aggregation). " />
+	<meta name="keywords" content="climate change, sandbag, d3.js, data visualization, html5, css3, interactive , responsive, interactive, dimple.js, leaflet" />
+	<meta name="author" content="Pablo Pareja Tobes" />
+
+
+  	<!-- Facebook and Twitter integration -->
+	<meta property="og:title" content=""/>
+	<meta property="og:image" content=""/>
+	<meta property="og:url" content="http://sandbag-climate.githug.io"/>
+	<meta property="og:site_name" content="EU ETS Dashboard"/>
+	<meta property="og:description" content="EU ETS Dashboard, a tool that provides a user-friendly access to emission trading data extracted from the European Union Transaction Log (EUTL) together with other data integrated by Sandbag's team (e.g. auction data and a more meaningful sectors aggregation). "/>
+	<meta name="twitter:title" content="Sandbag Climate Campaign" />
+	<meta name="twitter:image" content="" />
+	<meta name="twitter:url" content="https://twitter.com/sandbagorguk" />
+	<meta name="twitter:card" content="" />
+
+	<!-- Place favicon.ico and apple-touch-icon.png in the root directory -->
+	<link rel="shortcut icon" href="favicon.ico">
+
+	<link href='https://fonts.googleapis.com/css?family=Roboto:400,100,300,700,900' rel='stylesheet' type='text/css'>
+
+	<link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,700" rel="stylesheet">
+	
+	<!-- Animate.css -->
+	<link rel="stylesheet" href="./css/animate.css">
+	<!-- Icomoon Icon Fonts-->
+	<link rel="stylesheet" href="./css/icomoon.css">
+	<!-- Simple Line Icons -->
+	<link rel="stylesheet" href="./css/simple-line-icons.css">
+	<!-- Bootstrap  -->
+	<link rel="stylesheet" href="./css/bootstrap.css">
+	<!-- Theme style  -->
+	<link rel="stylesheet" href="./css/dashboard_index.css">
+        
+    <!-- Custom Fonts -->
+    <link href="./css/font-awesome.min.css" rel="stylesheet" type="text/css">
+
+	<!-- Modernizr JS -->
+	<script src="./js/modernizr-2.6.2.min.js"></script>
+	<!-- FOR IE9 below -->
+	<!--[if lt IE 9]>
+	<script src="js/respond.min.js"></script>
+	<![endif]-->
+	
+	</head>
+	<body>
+	
+	
+	<div id="fh5co-page">
+	<header id="fh5co-header" role="banner">
+		<div class="container">
+			<div class="header-inner">
+				<h1><a href="http://sandbag-climate.github.io">EU ETS Dashboard</a></h1>
+				<nav role="navigation">
+					<ul class="nav navbar-nav navbar-right" >
+                          <a href="https://twitter.com/sandbagorguk" style="color: #0066cc;"><i class="fa fa-twitter fa-lg fa-fw"></i></a>
+                          <a href="https://github.com/sandbag-climate/sandbag-climate.github.io" style="color: #0066cc;"><i class="fa fa-github fa-lg fa-fw"></i></a>
+                          <a href="http://www.sandbag.org.uk"><img src="images/sandbag_logo_small.png"/></a>
+                    </ul> 
+				</nav>
+			</div>
+		</div>
+	</header>
+	<div id="fh5co-about-section">
+		<div class="container">
+			<div class="row">
+				<div class="col-md-6 col-md-offset-3 text-center fh5co-heading">
+					<h2>Open Source technologies/libraries used</h2>                    
+				</div>
+			</div>
+            <div class="row"> 
+                <div class="col-md-2"></div>
+                <img class="col-md-8 img-responsive" src="images/os_technologies_main_image.png" alt="Open Source technologies">
+                <div class="col-md-"></div>
+            </div>
+            <br>
+            <br>
+            <div class="row">
+				<div class="col-md-4 text-center">
+					<div class="blog-inner">
+						<a href="http://neo4j.com">
+                            <img class="img-responsive center-block" width="200" src="images/logos/neo4j.png" alt="Neo4j">
+                        </a>
+						<div class="desc">
+							<h3><a href="http://neo4j.com">Neo4j Graph Database</a></h3>
+							<p>A highly scalable native graph database that leverages data relationships as first-class entities.</p>
+						</div>
+					</div>
+				</div>
+				<div class="col-md-4 text-center">
+					<div class="blog-inner">
+						<a href="https://d3js.org/" >
+                            <img class="img-responsive center-block"  width="350" src="images/logos/d3js.png" alt="D3.js">
+                        </a>
+						<div class="desc">
+							<h3><a href="https://d3js.org/">D3.js</a></h3>
+							<p>D3.js is a JavaScript library for manipulating documents based on data. D3 helps you bring data to life using HTML, SVG, and CSS.</p>
+						</div>
+					</div>
+				</div>		
+                <div class="col-md-4 text-center">
+					<div class="blog-inner">
+						<a href="http://leafletjs.com/" >
+                            <img class="img-responsive center-block"  width="250" src="images/logos/leafletjs.png" alt="D3.js">
+                        </a>
+						<div class="desc">
+							<h3><a href="http://leafletjs.com/">Leaflet.js</a></h3>
+							<p>An open-source JavaScript library for mobile-friendly interactive maps, designed with simplicity, performance and usability in mind. </p>
+						</div>
+					</div>
+				</div>		
+			</div>
+            <div class="row">				
+				<div class="col-md-4 text-center">
+					<div class="blog-inner">
+						<a href="https://getbootstrap.com/" >
+                            <img class="img-responsive center-block"  width="150" src="images/logos/bootstrap.png" alt="Bootstrap">
+                        </a>
+						<div class="desc">
+							<h3><a href="https://getbootstrap.com/">Bootstrap</a></h3>
+							<p>Bootstrap is the most popular HTML, CSS, and JS framework for developing responsive, mobile first projects on the web.</p>
+						</div>
+					</div>
+				</div>		
+                <div class="col-md-4 text-center">
+					<div class="blog-inner">
+						<a href="https://jquery.com/">
+                            <img class="img-responsive center-block" width="200" src="images/logos/jquery.png" alt="jQuery">
+                        </a>
+						<div class="desc">
+							<h3><a href="https://jquery.com/">jQuery</a></h3>
+							<p>jQuery is a fast, small, and feature-rich JavaScript library. It makes things like HTML document traversal and manipulation, event handling, animation, and Ajax much simpler with an easy-to-use API that works across a multitude of browsers.</p>
+						</div>
+					</div>
+				</div>
+                <div class="col-md-4 text-center">
+					<div class="blog-inner">
+						<a href="http://dimplejs.org/" >
+                            <img class="img-responsive center-block"  width="250" src="images/logos/dimplejs.png" alt="dimple.js">
+                        </a>
+						<div class="desc">
+							<h3><a href="http://dimplejs.org/">dimple.js</a></h3>
+							<p>An object-oriented API for business analytics powered by d3. The aim of dimple is to open up the power and flexibility of d3 to analysts.</p>
+						</div>
+					</div>
+				</div>		
+			</div>	
+            <div class="row">				
+				<div class="col-md-4 text-center">
+					<div class="blog-inner">
+						<a href="http://fontawesome.io/" >
+                            <img class="img-responsive center-block"  width="150" src="images/logos/fontawesome.png" alt="Font Awesome">
+                        </a>
+						<div class="desc">
+							<h3><a href="http://fontawesome.io/">Font Awesome</a></h3>
+							<p>The iconic font and CSS toolkit</p>
+						</div>
+					</div>
+				</div>		
+                <div class="col-md-4 text-center">
+					<div class="blog-inner">
+						<a href="https://icons8.com/" >
+                            <img class="img-responsive center-block"  width="120" src="images/logos/icons8.png" alt="Icons8">
+                        </a>
+						<div class="desc">
+							<h3><a href="https://icons8.com/">Icons8</a></h3>
+							<p>31,300 Free Flat Icons</p>
+						</div>
+					</div>
+				</div>	
+                <div class="col-md-4 text-center">
+					<div class="blog-inner">
+						<a href="https://silviomoreto.github.io/bootstrap-select/" >
+                            <img class="img-responsive center-block"  width="250" src="images/logos/bootstrapselect.png" alt="Icons8">
+                        </a>
+						<div class="desc">
+							<h3><a href="https://silviomoreto.github.io/bootstrap-select/">bootstrap-select</a></h3>
+							<p>Bootstrap-select is a jQuery plugin that utilizes Bootstrap's dropdown.js to style and bring additional functionality to standard select elements.</p>
+						</div>
+					</div>
+				</div>	
+			</div>	
+		</div>
+	</div>
+	
+	<footer id="fh5co-footer" role="contentinfo">
+        <div class="container">		
+			
+			<div class="col-md-12 fh5co-copyright text-center">
+                <p>&copy; 2016 Sandbag Climate Campaign.<span>Page based on Free HTML5 template by <a href="http://freehtml5.co/" target="_blank">FreeHTML5.co</a></span></p>	
+			</div>
+			
+		</div>
+	</footer>
+	</div>
+	
+	
+	<!-- jQuery -->
+	<script src="./js/jquery-1.9.1.min.js"></script>
+	<!-- jQuery Easing -->
+	<script src="./js/jquery.easing.1.3.js"></script>
+	<!-- Bootstrap -->
+	<script src="./js/bootstrap.js"></script>
+	<!-- Waypoints -->
+	<script src="./js/jquery.waypoints.min.js"></script>
+
+	</body>
+</html>
+
