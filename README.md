@@ -16,6 +16,14 @@ This tool was developed by the following Sandbag team members:
 
 * Pablo Pareja - Main developer and project leader.
 
+### Contributors
+
+The following Sandbag team members helped in the creation of this tool:
+
+* Tricia Buckley - Data, testing and support.
+* Boris Lagadinov - ETS expertise and data testing.
+* Phil MacDonald - Campaigning expert.
+
 ## Technologies/resources used
 
 ### Back-end
