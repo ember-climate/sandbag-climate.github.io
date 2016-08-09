@@ -766,7 +766,7 @@ function onGetSectors() {
 
 
         $("#sectors_combobox").selectpicker('refresh');
-        $("#sectors_combobox").selectpicker('val', "Cement and Lime");
+        $("#sectors_combobox").selectpicker('val', SECTORS_ARRAY);
 
         $("#sectors_filter_combobox").selectpicker('refresh');
         $("#sectors_filter_combobox").selectpicker('val', SECTORS_ARRAY);
