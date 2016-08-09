@@ -88,6 +88,8 @@ var pulp_and_paper_icon;
 
 var formatNumber = d3.format(".4s");
 var formatNumberEUWideChart = d3.format(".5s");
+var formatNumberDataPerPeriod = d3.format(".5s");
+var formatNumberCountrySector = d3.format(".5s");
 var formatNumberAddCommas = d3.format(",");
 
 var map_color_scale = d3.scale.linear().domain([1000, 1000000000]).range(['beige', 'red']);
@@ -766,7 +768,7 @@ function onGetSectors() {
 
 
         $("#sectors_combobox").selectpicker('refresh');
-        $("#sectors_combobox").selectpicker('val', SECTORS_ARRAY);
+        $("#sectors_combobox").selectpicker('val', "Cement and Lime");
 
         $("#sectors_filter_combobox").selectpicker('refresh');
         $("#sectors_filter_combobox").selectpicker('val', SECTORS_ARRAY);
@@ -1282,7 +1284,7 @@ function onGetOffsetsForPeriod() {
 function createDataPerPeriodChart(data, type) {
     
     dataPerPeriodChartData = data;
-    
+        
 
     if (!data_per_period_chart_created) {
         dataPerPeriodChartSvg = dimple.newSvg("#data_per_period_chart", "100%", "100%");
@@ -1295,11 +1297,17 @@ function createDataPerPeriodChart(data, type) {
                 
         if(type == "line"){
             dataPerPeriodChartCategoryAxis = dataPerPeriodChart.addCategoryAxis("x", "period");
-            dataPerPeriodChart.addSeries("country", dimple.plot.line);
+            var countrySeries = dataPerPeriodChart.addSeries("country", dimple.plot.line);
+            countrySeries.getTooltipText = function (e) {     
+                return ["Sector: " + e.aggField[0], "Period: " + e.x , "tCO2e: " +  formatNumberDataPerPeriod(e.y)];
+            };
             dataPerPeriodChartCurrentType = "line";
         }else if(type == "bar"){
             dataPerPeriodChartCategoryAxis = dataPerPeriodChart.addCategoryAxis("x", "country");
-            dataPerPeriodChart.addSeries("sector", dimple.plot.bar);
+            var sectorSeries = dataPerPeriodChart.addSeries("sector", dimple.plot.bar);
+            sectorSeries.getTooltipText = function (e) {     
+                return ["Sector: " + e.aggField[0], "Period: " + e.x , "tCO2e: " +  formatNumberDataPerPeriod(e.y)];
+            };
             dataPerPeriodChartCurrentType = "bar";
         }        
 
@@ -1324,7 +1332,10 @@ function createDataPerPeriodChart(data, type) {
                var y = dataPerPeriodChart.addMeasureAxis("y", "tCO2e");  
                y.tickFormat = 's';
                dataPerPeriodChart.addCategoryAxis("x", "period");
-               dataPerPeriodChart.addSeries("country", dimple.plot.line);
+               var countrySeries = dataPerPeriodChart.addSeries("country", dimple.plot.line);
+               countrySeries.getTooltipText = function (e) {       
+                    return ["Country: " + e.aggField[0], "Period: " + e.x , "tCO2e: " +  formatNumberDataPerPeriod(e.y)];
+               };
                dataPerPeriodChartCurrentType = "line";
             }
             
@@ -1346,7 +1357,10 @@ function createDataPerPeriodChart(data, type) {
                 var y = dataPerPeriodChart.addMeasureAxis("y", "tCO2e");
                 y.tickFormat = 's';
                 dataPerPeriodChart.addCategoryAxis("x", "country");
-                dataPerPeriodChart.addSeries("sector", dimple.plot.bar);
+                var sectorSeries = dataPerPeriodChart.addSeries("sector", dimple.plot.bar);
+                sectorSeries.getTooltipText = function (e) {      
+                    return ["Sector: " + e.aggField[0], "Period: " + e.x , "tCO2e: " +  formatNumberDataPerPeriod(e.y)];
+                };
                 dataPerPeriodChartCurrentType = "bar";
             }
             
@@ -1443,9 +1457,14 @@ function createLineChart(data) {
         y.tickFormat = 's';           
 
         barSeries = lineChart.addSeries("type", dimple.plot.bar);
-
+        barSeries.getTooltipText = function (e) {     
+            return ["Type: " + e.aggField[0], "Period: " + e.x , "tCO2e: " +  formatNumberCountrySector(e.y)];
+        };
 
         lineSeries = lineChart.addSeries("type", dimple.plot.line);
+        lineSeries.getTooltipText = function (e) {     
+            return ["Type: " + e.aggField[0], "Period: " + e.x , "tCO2e: " +  formatNumberCountrySector(e.y)];
+        };
 
         lineSeries.lineMarkers = true;
         lineSeries.interpolation = "cardinal";
@@ -1605,7 +1624,7 @@ function onGetInstallationsForCountryAndSector(){
 
             var etsURL = "http://ec.europa.eu/environment/ets/ohaDetails.do?buttonAction=all&permitIdentifier=&languageCode=en&form=oha&installationName=&accountHolder=&installationIdentifier=" + installationId.substring(2) + "&account.registryCodes=" + installationId.substring(0,2) +  "&searchType=oha&mainActivityType=-1&currentSortSettings=";
             
-            marker.bindPopup("<div id=\"" + installationId + "\"><strong>Name:</strong> " + installationName + "<br><strong>ID:<a target='_blank' href='" + etsURL + "'></strong> " + installationId + "<br><strong></a>Address:</strong> " + address + "<br><strong>City:</strong> " + city + "<br><strong>Sector:</strong> " + sector + "<br><strong>Emissions 2015</strong>: " + formatNumberAddCommas(emissions2015) + "</div>");
+            marker.bindPopup("<div id=\"" + installationId + "\"><strong>Name:</strong> " + installationName + "<br><strong>ID:<a target='_blank' href='" + etsURL + "'></strong> " + installationId + "<br><strong></a>Address:</strong> " + address + "<br><strong>City:</strong> " + city + "<br><strong>Sector:</strong> " + sector + "<br><strong>Emissions 2015</strong>: " + formatNumberAddCommas(emissions2015) + " tCO2e</div>");
             //"<br><button class=\"pull-right\" onclick=\"onDownloadInstallationButtonClick(this)\">Download</button><br></div>");
 
             if(sector == "Cement and Lime"){
