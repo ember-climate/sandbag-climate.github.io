@@ -1287,6 +1287,7 @@ function createDataPerPeriodChart(data, type) {
         
 
     if (!data_per_period_chart_created) {
+        
         dataPerPeriodChartSvg = dimple.newSvg("#data_per_period_chart", "100%", "100%");
 
         dataPerPeriodChart = new dimple.chart(dataPerPeriodChartSvg, data);
@@ -1296,18 +1297,25 @@ function createDataPerPeriodChart(data, type) {
         y.tickFormat = 's';
                 
         if(type == "line"){
+            
             dataPerPeriodChartCategoryAxis = dataPerPeriodChart.addCategoryAxis("x", "period");
+            
             var countrySeries = dataPerPeriodChart.addSeries("country", dimple.plot.line);
+            countrySeries.lineMarkers = true;
             countrySeries.getTooltipText = function (e) {     
                 return ["Sector: " + e.aggField[0], "Period: " + e.x , "tCO2e: " +  formatNumberDataPerPeriod(e.y)];
             };
+            
             dataPerPeriodChartCurrentType = "line";
+            
         }else if(type == "bar"){
+            
             dataPerPeriodChartCategoryAxis = dataPerPeriodChart.addCategoryAxis("x", "country");
             var sectorSeries = dataPerPeriodChart.addSeries("sector", dimple.plot.bar);
             sectorSeries.getTooltipText = function (e) {     
                 return ["Sector: " + e.aggField[0], "Period: " + e.x , "tCO2e: " +  formatNumberDataPerPeriod(e.y)];
             };
+            
             dataPerPeriodChartCurrentType = "bar";
         }        
 
@@ -1327,12 +1335,12 @@ function createDataPerPeriodChart(data, type) {
                dataPerPeriodChartSvg = dimple.newSvg("#data_per_period_chart", "100%", "100%");
                dataPerPeriodChart = new dimple.chart(dataPerPeriodChartSvg, data);
                // Fix the margins
-               dataPerPeriodChart.setMargins("85px", "20px", "20px", "110px");
-               dataPerPeriodChart.addMeasureAxis("y", "tCO2e");      
+               dataPerPeriodChart.setMargins("85px", "20px", "20px", "110px");    
                var y = dataPerPeriodChart.addMeasureAxis("y", "tCO2e");  
                y.tickFormat = 's';
                dataPerPeriodChart.addCategoryAxis("x", "period");
                var countrySeries = dataPerPeriodChart.addSeries("country", dimple.plot.line);
+               countrySeries.lineMarkers = true;
                countrySeries.getTooltipText = function (e) {       
                     return ["Country: " + e.aggField[0], "Period: " + e.x , "tCO2e: " +  formatNumberDataPerPeriod(e.y)];
                };
