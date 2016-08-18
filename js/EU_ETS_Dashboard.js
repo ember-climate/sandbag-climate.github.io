@@ -1609,18 +1609,14 @@ function onGetInstallationsForCountryAndSector(){
                     var tempSize = map_size_scale(total_emissions);
                     var tempColor = map_color_scale(total_emissions);
                     var tempPaddingTop = tempSize/2 - 10;
-                    
-                    console.log("map_size_scale(total_emissions)",map_size_scale(total_emissions));
-                    console.log("total_emissions",total_emissions);
-                    console.log("tempSize",tempSize);
-                    
+                                        
                     var tempHTML = '<div class="mapcluster" style="border-radius: ' + tempSize + 'px; width: ' + tempSize + 'px; height: ' + tempSize + 'px; background-color: ' + tempColor + '; padding-top: ' + tempPaddingTop +  'px;"><strong>' + totalNumber + "</strong></div>"; 
                     return L.divIcon({html: tempHTML, className: 'mapcluster', iconSize: L.point(45, 45) });
                 }
             });
 
         
-        var min_emissions = 0;
+        var min_emissions = 9999999999;
         var aggregated_emissions = 0;
         
         for (var i = 0; i < tempData.length; i++) {
@@ -1695,7 +1691,7 @@ function onGetInstallationsForCountryAndSector(){
             map_legend.removeFrom(installations_map);
         }
         map_legend = L.control({position: 'bottomright'});        
-
+        
 		map_legend.onAdd = function (map) {
 
 			var div = L.DomUtil.create('div', 'info legend'),
@@ -1703,6 +1699,10 @@ function onGetInstallationsForCountryAndSector(){
                           aggregated_emissions*0.8,aggregated_emissions],
 				labels = [],
 				from, to;
+                        
+            labels.push(
+					'<i style="background:' + map_color_scale(min_emissions) + '"></i> ' +
+					formatNumber(min_emissions) + ( formatNumber(grades[0]) ? '&ndash;' + formatNumber(grades[0]) : '+') + " tCO2e");
 
 			for (var i = 0; i < grades.length -1; i++) {
 				from = grades[i];
