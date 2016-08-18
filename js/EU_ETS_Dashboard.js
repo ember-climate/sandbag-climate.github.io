@@ -92,12 +92,15 @@ var formatNumberDataPerPeriod = d3.format(".5s");
 var formatNumberCountrySector = d3.format(".5s");
 var formatNumberAddCommas = d3.format(",");
 
-var map_color_scale = d3.scale.linear().domain([1000, 1000000000]).range(['beige', 'red']);
-var map_size_scale = d3.scale.linear().domain([1000, 1300000000]).range([40,70]);
+var MARKERS_SIZE_RANGE = [40,80];
+
+var map_color_scale;
+var map_size_scale;
                                                      
 
 var map_opened_for_the_first_time = true;
 var euWideLegendTip;
+var map_legend;
 
 var firstSectionToLoad = "euwide";
 var loadFirstSectionFlag = false;
@@ -1607,11 +1610,19 @@ function onGetInstallationsForCountryAndSector(){
                     var tempColor = map_color_scale(total_emissions);
                     var tempPaddingTop = tempSize/2 - 10;
                     
+                    console.log("map_size_scale(total_emissions)",map_size_scale(total_emissions));
+                    console.log("total_emissions",total_emissions);
+                    console.log("tempSize",tempSize);
+                    
                     var tempHTML = '<div class="mapcluster" style="border-radius: ' + tempSize + 'px; width: ' + tempSize + 'px; height: ' + tempSize + 'px; background-color: ' + tempColor + '; padding-top: ' + tempPaddingTop +  'px;"><strong>' + totalNumber + "</strong></div>"; 
                     return L.divIcon({html: tempHTML, className: 'mapcluster', iconSize: L.point(45, 45) });
                 }
             });
 
+        
+        var min_emissions = 0;
+        var aggregated_emissions = 0;
+        
         for (var i = 0; i < tempData.length; i++) {
 
             var rows = tempData[i].row;
@@ -1623,6 +1634,12 @@ function onGetInstallationsForCountryAndSector(){
             var city = rows[5];
             var address = rows[6];
             var emissions2015 = rows[7];
+            
+            if(emissions2015 < min_emissions){
+                min_emissions = emissions2015;
+            }
+            aggregated_emissions += emissions2015;
+            
 
             var locationArray = [latitude, longitude];
 
@@ -1670,7 +1687,38 @@ function onGetInstallationsForCountryAndSector(){
             //console.log("i", i);
 
         };
+        
+        map_size_scale = d3.scale.linear().domain([min_emissions, aggregated_emissions]).range(MARKERS_SIZE_RANGE);
+        map_color_scale = d3.scale.linear().domain([min_emissions, aggregated_emissions]).range(['beige', 'red']);
 
+        if(map_legend){
+            map_legend.removeFrom(installations_map);
+        }
+        map_legend = L.control({position: 'bottomright'});        
+
+		map_legend.onAdd = function (map) {
+
+			var div = L.DomUtil.create('div', 'info legend'),
+				grades = [aggregated_emissions*0.2, aggregated_emissions*0.4, aggregated_emissions*0.6, 
+                          aggregated_emissions*0.8,aggregated_emissions],
+				labels = [],
+				from, to;
+
+			for (var i = 0; i < grades.length -1; i++) {
+				from = grades[i];
+				to = grades[i + 1];
+
+				labels.push(
+					'<i style="background:' + map_color_scale(grades[i]) + '"></i> ' +
+					formatNumber(from) + ( formatNumber(to) ? '&ndash;' + formatNumber(to) : '+') + " tCO2e");
+			}
+
+			div.innerHTML = labels.join('<br>');
+			return div;
+		};
+
+		map_legend.addTo(installations_map);
+        
 
         installations_map.addLayer(markers);
 
