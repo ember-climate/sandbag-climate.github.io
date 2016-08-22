@@ -1551,7 +1551,7 @@ function onGetInstallationsForCountryAndSector(){
 
         //----Creating markers cluster-----
         markers = L.markerClusterGroup({
-                maxClusterRadius: 55,
+                maxClusterRadius: 40,
                 spiderfyOnMaxZoom: true,
                 iconCreateFunction: function (cluster) {
                     var markers = cluster.getAllChildMarkers();
