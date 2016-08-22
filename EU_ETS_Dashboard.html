@@ -252,6 +252,28 @@
                 </div>
             </div>
             <!-- /.row -->
+            <div id="periods_combo_box_row" class="row" style="display: none">
+                <div class="col-md-3 " >
+                    <select id="periods_combobox" multiple data-actions-box="true" class="selectpicker" onchange="onDataPerPeriodComboboxChange()"  data-size="8">
+                    </select>
+                </div>  
+                <div class="col-md-3">
+                    <select class="selectpicker" multiple id="countries_filter_combobox" onchange="filterDataForDataPerPeriodChart()" data-actions-box="true" data-size="8">
+                    </select> 
+                </div>
+                <div class="col-md-3">
+                    <select class="selectpicker" multiple id="sectors_filter_combobox" onchange="filterDataForDataPerPeriodChart()" data-actions-box="true" data-size="8">
+                    </select> 
+                </div>   
+                <div class="col-md-3">
+                    <select id="power_flag_combobox_data_per_period" onchange="onDataPerPeriodComboboxChange()" class="selectpicker" width="fit">
+                        <option>Include Power installations</option>
+                        <option>Exclude Power installations</option>
+                        <option>Show only Power installations</option>
+                    </select>
+                </div>
+            </div>
+            <!-- /.row -->
             <div class="row" id="installations_row" style="display: none">
                 <div class="col-md-12" style="min-height: 100%;">
                     <div class="panel panel-default">
@@ -281,30 +303,7 @@
                     <!-- /.col-md 12 -->
                 </div>
             </div>
-            <!-- /.row -->
-
-            <div id="periods_combo_box_row" class="row" style="display: none">
-                <div class="col-md-3 " >
-                    <select id="periods_combobox" multiple data-actions-box="true" class="selectpicker" onchange="onDataPerPeriodComboboxChange()"  data-size="8">
-                    </select>
-                </div>  
-                <div class="col-md-3">
-                    <select class="selectpicker" multiple id="countries_filter_combobox" onchange="filterDataForDataPerPeriodChart()" data-actions-box="true" data-size="8">
-                    </select> 
-                </div>
-                <div class="col-md-3">
-                    <select class="selectpicker" multiple id="sectors_filter_combobox" onchange="filterDataForDataPerPeriodChart()" data-actions-box="true" data-size="8">
-                    </select> 
-                </div>   
-                <div class="col-md-3">
-                    <select id="power_flag_combobox_data_per_period" onchange="onDataPerPeriodComboboxChange()" class="selectpicker" width="fit">
-                        <option>Include Power installations</option>
-                        <option>Exclude Power installations</option>
-                        <option>Show only Power installations</option>
-                    </select>
-                </div>
-            </div>
-            <!-- /.row -->
+            <!-- /.row -->            
             <div id="stacked_bar_chart_row" class="row" style="display: none">
                 <div class="col-md-12">
                     <ul class="nav nav-tabs">
@@ -500,7 +499,9 @@
                             <input type="text" class="form-control" name="InputReal" id="InputReal" required>
                           </div>
                           <input type="submit" value="send" class="btn btn-info pull-right"> 
+                         
                       </form>
+                     
                  </div>
                 <div class="col-lg-3">
                 </div>
