@@ -594,9 +594,10 @@ function loadDataForMapView(){
     } 
 
         
-    var selectedCountry = $("#countries_combobox").selectpicker('val');
-    var selectedSector = $("#sectors_combobox").selectpicker('val');
-    var selectedPowerFlag = $("#power_flag_combobox").selectpicker('val');
+    var selectedCountry = $("#countries_filter_combobox").selectpicker('val');
+    var selectedSector = $("#sectors_filter_combobox").selectpicker('val');
+    var selectedPowerFlag = $("#power_flag_combobox_data_per_period").selectpicker('val');
+    var periodSelected = $("#periods_combobox").selectpicker('val');
     
 
     if (selectedCountry != null && selectedSector != null) {
@@ -618,7 +619,6 @@ function loadDataForMapView(){
         selectedCountrySt = selectedCountrySt.slice(0, selectedCountrySt.length - 1);
         selectedCountrySt += "]";
         
-        var periodSelected = $("#periods_combobox").selectpicker('val');
         var periodSelectedSt = "[";
 
         for (var i = 0; i < periodSelected.length; i++) {
@@ -663,12 +663,6 @@ function filterDataForEUWideChart() {
     euWideChartData = euWideChartDataBackup.filter(filterEUWideArrayBasedOnCheckboxesSelected);
     createEUWideChart(euWideChartData);
 }
-
-function filterDataForDataPerPeriodChart() {
-    dataPerPeriodChartData = dataPerPeriodChartDataBackup.filter(filterStackedBarArrayBasedOnCheckboxesSelected);
-    createDataPerPeriodChart(dataPerPeriodChartData, dataPerPeriodChartCurrentType);
-}
-
 
 function calculateSurplusWithOffsets() {
 
@@ -842,8 +836,6 @@ function onDataPerPeriodComboboxChange() {
 
         console.log("installationsMapDisplayed", installationsMapDisplayed);
 
-
-
         if(installationsMapDisplayed){
 
             loadDataForMapView();
@@ -886,8 +878,12 @@ function onDataPerPeriodComboboxChange() {
 
 function filterDataForDataPerPeriodChart(){    
     
-    dataPerPeriodChartData = dataPerPeriodChartDataBackup.filter(filterdataPerPeriodChartDataByCountry);
-    createDataPerPeriodChart(dataPerPeriodChartData, dataPerPeriodChartCurrentType);
+    if(installationsMapDisplayed){
+        onDataPerPeriodComboboxChange();
+    }else{
+        dataPerPeriodChartData = dataPerPeriodChartDataBackup.filter(filterdataPerPeriodChartDataByCountry);
+        createDataPerPeriodChart(dataPerPeriodChartData, dataPerPeriodChartCurrentType);
+    }   
     
 }
 
@@ -1935,53 +1931,6 @@ function filterArrayBasedOnCheckboxesSelected(value) {
     } else {
         return false;
     }
-}
-
-function filterStackedBarArrayBasedOnCheckboxesSelected(value) {
-        
-    var includeAviation = $('#aviation_checkbox:checked').length == 1;
-    var includeCementAndLime = $('#cement_and_lime_checkbox:checked').length == 1;
-    var includeCeramics = $('#ceramics_checkbox:checked').length == 1;
-    var includeChemicals = $('#chemicals_checkbox:checked').length == 1;
-    var includeCokeOvens = $('#coke_ovens_checkbox:checked').length == 1;
-    var includeCombustion = $('#combustion_checkbox:checked').length == 1;
-    var includeGlass = $('#glass_checkbox:checked').length == 1;
-    var includeIronAndSteel = $('#iron_and_steel_checkbox:checked').length == 1;
-    var includeMetalOreRoasting = $('#metal_ore_roasting_checkbox:checked').length == 1;
-    var includeMineralOil = $('#mineral_oil_checkbox:checked').length == 1;
-    var includeNonFerrousMetals = $('#non_ferrous_metals_checkbox:checked').length == 1;
-    var includeOther = $('#other_checkbox:checked').length == 1;
-    var includePulpAndPaper = $('#pulp_and_paper_checkbox:checked').length == 1;
-
-    var tempType = value.sector;
-    
-    if (tempType == "Aviation") {
-        return includeAviation;
-    } else if (tempType == "Cement and Lime") {
-        return includeCementAndLime;
-    } else if (tempType == "Ceramics") {
-        return includeCeramics;
-    } else if (tempType == "Chemicals") {
-        return includeChemicals;
-    } else if (tempType == "Coke ovens") {
-        return includeCokeOvens;
-    } else if (tempType == "Combustion") {
-        return includeCombustion;
-    } else if (tempType == "Glass") {
-        return includeGlass;
-    } else if (tempType == "Iron and steel") {
-        return includeIronAndSteel;
-    } else if (tempType == "Metal ore roasting") {
-        return includeMetalOreRoasting;
-    } else if (tempType == "Mineral oil") {
-        return includeMineralOil;
-    } else if (tempType == "Non ferrous metals") {
-        return includeNonFerrousMetals;
-    } else if (tempType == "Other") {
-        return includeOther;
-    } else if (tempType == "Pulp and paper") {
-        return includePulpAndPaper;
-    } 
 }
 
 function allEUWideLoaded() {
