@@ -1387,8 +1387,8 @@ function createEUWideChart(data) {
     if (!eu_wide_chart_created) {
         var svg = dimple.newSvg("#eu_wide_chart", "100%", "100%");
 
-        euWideChart = new dimple.chart(svg, data);
-
+        euWideChart = new dimple.chart(svg, data);        
+        
         // Fix the margins
         if(window.chrome){
             euWideChart.setMargins("95px", "60px", "20px", "40px");
@@ -1420,6 +1420,17 @@ function createEUWideChart(data) {
                 
         eu_wide_chart_created = true;
         
+    }
+    
+    var tempWidth = $("#eu_wide_chart").outerWidth();
+    console.log("tempWidth",tempWidth);
+    
+    if(tempWidth < 600 && tempWidth >= 410){
+        euWideChart.setMargins("60px", "80px", "20px", "50px");
+    }else if(tempWidth < 410){
+        euWideChart.setMargins("60px", "150px", "20px", "70px");
+    }else{
+        euWideChart.setMargins("60px", "60px", "20px", "50px");
     }
     
     barSeriesEUWide.data = dimple.filterData(data, "type", ["Free Allocation", "Offsets", "Auctioned", "Remaining Credit Entitlements"]);
