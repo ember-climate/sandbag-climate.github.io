@@ -491,7 +491,7 @@ function onLoad() {
 }
 
 function onResize(){
-    console.log("onResize()");
+    //console.log("onResize()");
     if(euWideChart){
         createEUWideChart(euWideChartData);
         //euWideChart.draw(1000);
@@ -1432,15 +1432,26 @@ function createEUWideChart(data) {
     }
     
     var tempWidth = $("#eu_wide_chart").outerWidth();
-    console.log("tempWidth",tempWidth);
+    //console.log("tempWidth",tempWidth);
     
     if(tempWidth < 600 && tempWidth >= 410){
         euWideChart.setMargins("60px", "80px", "20px", "50px");
     }else if(tempWidth < 410){
         euWideChart.setMargins("60px", "150px", "20px", "70px");
+        
     }else{
         euWideChart.setMargins("60px", "60px", "20px", "50px");
     }
+    
+    //-----------filter chart drop down menu alignment depending on screen size-----
+    if(tempWidth < 385){
+        $("#filter_eu_wide_chart_dropdown_div").removeClass("dropdown-menu-right");
+        $("#filter_eu_wide_chart_dropdown_div").addClass("dropdown-menu-left");
+    }else{
+        $("#filter_eu_wide_chart_dropdown_div").removeClass("dropdown-menu-left");
+        $("#filter_eu_wide_chart_dropdown_div").addClass("dropdown-menu-right");
+    }
+    //------------------------------------------------------------------------------
     
     barSeriesEUWide.data = dimple.filterData(data, "type", ["Free Allocation", "Offsets", "Auctioned", "Remaining Credit Entitlements"]);
     lineSeriesEUWide.data = dimple.filterData(data, "type", ["Verified Emissions", "Legal Cap", "Accumulated Balance","Accumulated Balance"]);   
