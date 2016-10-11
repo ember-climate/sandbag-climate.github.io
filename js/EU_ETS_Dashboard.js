@@ -19,6 +19,8 @@ var surplusAccumulatedDataArrayEUWide = [];
 var lineChartDataBackup = [];
 var lineChartData = [];
 var lineChart;
+var surplusDataArrayCountrySector = [];
+var surplusAccumulatedDataArrayCountrySector = [];
 
 var totalOffsetEntitlements = 0;
 var totalOffsetsSoFar = 0;
@@ -230,11 +232,19 @@ function initMainPage(argument) {
 }
 
 function initializeSurplusDataArrayEUWide() {
-    //------INITIALIZING SURPLUS DATA ARRAY------
+    //------INITIALIZING SURPLUS DATA ARRAY EU WIDE------
     for (var i = 2005; i <= 2015; i++) {
         surplusDataArrayEUWide[i] = 0;
     }
-    //-------------------------------------------
+    //---------------------------------------------------
+}
+
+function initializeSurplusDataArrayCountrySector(){
+    //------INITIALIZING SURPLUS DATA ARRAY COUNTRY SECTOR------
+    for (var i = 2005; i <= 2015; i++) {
+        surplusDataArrayCountrySector[i] = 0;
+    }
+    //--------------------------------------------------------
 }
 
 function updateWelcomeDialogCookie(){
@@ -306,6 +316,7 @@ function loadCountrySectorsView(){
 
     countrySectorChartDisplayed = true;
     installationsMapDisplayed = false;
+    initializeSurplusDataArrayCountrySector();
     loadCountrySectorChart();
 }
 
@@ -673,42 +684,22 @@ function filterDataForEUWideChart() {
     createEUWideChart(euWideChartData);
 }
 
-function calculateSurplusWithOffsets() {
-
-    var offsetsSurplusDataArray = [];
-    for (var i = 2008; i <= 2012; i++) {
-        offsetsSurplusDataArray[i] = 0;
-    }
-
-    for (var i = 0; i < lineChartDataBackup.length; i++) {
-        var period = lineChartDataBackup[i].period;
-        var tCO2e = lineChartDataBackup[i].tCO2e;
-        var type = lineChartDataBackup[i].type;
-
-        if (period >= 2008 && period <= 2012) {
-
-            console.log("\noffsetsSurplusDataArray[period](before)", offsetsSurplusDataArray[period]);
-            console.log(period, tCO2e, type);
-
-            if (type == "Verified_Emissions") {
-                offsetsSurplusDataArray[period] -= tCO2e;
-            } else if (type == "Free_Allocation" || type == "Offsets") {
-                offsetsSurplusDataArray[period] += tCO2e;
-            }
-
-            console.log("offsetsSurplusDataArray[period](after)", offsetsSurplusDataArray[period]);
-        }
-
-
-    };
-
-    for (var i = 2008; i <= 2012; i++) {
+function calculateCumulativeSurplusCountrySector() {
+    
+    console.log("calculateCumulativeSurplusCountrySector");
+    
+    var accumulatedAmount = 0;
+    
+    for (i = 2008; i <= 2015; i++) {
+        accumulatedAmount += surplusDataArrayCountrySector[i];
+        surplusAccumulatedDataArrayCountrySector[i] = accumulatedAmount;
+        
         lineChartDataBackup.push({
-            "tCO2e": offsetsSurplusDataArray[i],
-            "lines": "Surplus_With_Offsets",
+            "tCO2e": surplusAccumulatedDataArrayCountrySector[i],
+            "type": "Cumulative_Surplus",
             "period": i
-        });
-    }
+        });        
+    }    
 
 }
 
@@ -1514,7 +1505,7 @@ function createLineChart(data) {
 
     }
     barSeries.data = dimple.filterData(data, "type", ["Free_Allocation", "Offsets (2008-2012)"]);
-    lineSeries.data = dimple.filterData(data, "type", "Verified_Emissions");
+    lineSeries.data = dimple.filterData(data, "type", ["Verified_Emissions", "Cumulative_Surplus"]);
     lineChart.draw(1000);
     
 
@@ -1556,6 +1547,7 @@ function onComboBoxChange() {
         $("#spinner_div_country_sector").show();
             
         resetCountrySectorDataLoadedText();
+        initializeSurplusDataArrayCountrySector();
             
         lineChartDataBackup = [];
 
@@ -1572,6 +1564,7 @@ function onComboBoxChange() {
 }
 
 function dataForLineChartLoaded() {
+    calculateCumulativeSurplusCountrySector();
     filterDataForLineChart();
     $("#line_chart").removeClass("grey_background");
     $("#spinner_div_country_sector").hide();
@@ -1782,12 +1775,19 @@ function onGetVerifiedEmissionsForCountryAndSector() {
 
         var tempData = results[0].data;
         for (var i = 0; i < tempData.length; i++) {
+            
             var rows = tempData[i].row;
+            var tempPeriod = rows[1];
+            var tempEmissions = rows[0];            
+            
             lineChartDataBackup.push({
-                "tCO2e": rows[0],
+                "tCO2e": tempEmissions,
                 "type": "Verified_Emissions",
-                "period": rows[1]
+                "period": tempPeriod
             });
+            
+            surplusDataArrayCountrySector[tempPeriod] -= tempEmissions;
+            
         };        
 
         updateCountrySectorDataLoadedText("Verified Emissions");
@@ -1818,11 +1818,16 @@ function onGetOffsetsForCountryAndSector() {
 
         for (var i = 0; i < tempData.length; i++) {
             var rows = tempData[i].row;
+            var tempPeriod = rows[1];
+            var tempOffsets = rows[0];
+            
             lineChartDataBackup.push({
-                "tCO2e": rows[0],
+                "tCO2e": tempOffsets,
                 "type": "Offsets (2008-2012)",
-                "period": rows[1]
+                "period": tempPeriod
             });
+            
+            surplusDataArrayCountrySector[tempPeriod] += tempOffsets;
         };
         
         updateCountrySectorDataLoadedText("Offsets");
@@ -1852,11 +1857,16 @@ function onGetFreeAllocationForCountryAndSector() {
 
         for (var i = 0; i < tempData.length; i++) {
             var rows = tempData[i].row;
+            var tempPeriod = rows[1];
+            var tempAllocation = rows[0];
+            
             lineChartDataBackup.push({
-                "tCO2e": rows[0],
+                "tCO2e": tempAllocation,
                 "type": "Free_Allocation",
-                "period": rows[1]
+                "period": tempPeriod
             });
+            
+            surplusDataArrayCountrySector[tempPeriod] += tempAllocation;
         };
         
         updateCountrySectorDataLoadedText("Free Allocation");
@@ -1946,6 +1956,7 @@ function filterArrayBasedOnCheckboxesSelected(value) {
     var includeVerifiedEmissions = $('#verified_emissions_checkbox:checked').length == 1;
     var includeOffsets = $('#offsets_checkbox:checked').length == 1;
     var includeFreeAllocation = $('#free_allocation_checkbox:checked').length == 1;
+    var includeCumulativeSurplus = $('#cumulative_surplus_checkbox:checked').length == 1;
 
     var tempType = value.type;
 
@@ -1955,7 +1966,9 @@ function filterArrayBasedOnCheckboxesSelected(value) {
         return includeFreeAllocation;
     } else if (tempType == "Offsets (2008-2012)") {
         return includeOffsets;
-    } else {
+    } else if (tempType == "Cumulative_Surplus") {
+        return includeCumulativeSurplus;
+    }else {
         return false;
     }
 }
