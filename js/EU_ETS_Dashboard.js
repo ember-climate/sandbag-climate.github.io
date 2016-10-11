@@ -1487,9 +1487,7 @@ function createLineChart(data) {
         };
 
         lineSeries = lineChart.addSeries("type", dimple.plot.line);
-        lineSeries.getTooltipText = function (e) {   
-            console.log("e: ");
-            console.log(e);
+        lineSeries.getTooltipText = function (e) {               
             return ["Type: " + e.aggField[0], "Period: " + e.x , "tCO2e: " +  formatNumberCountrySector(e.yValue)];
         };
 
