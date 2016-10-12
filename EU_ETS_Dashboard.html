@@ -107,7 +107,7 @@
                 <div class="col-md-4 col-xs-12">
                     <select id="power_flag_combobox" onchange="onComboBoxChange()" class="selectpicker" width="fit">
                         <option>Include Power installations</option>
-                        <option>Exclude Power installations</option>
+                        <option selected="selected">Exclude Power installations</option>
                         <option>Show only Power installations</option>
                     </select>
                 </div>
@@ -272,7 +272,7 @@
                 <div class="col-md-3">
                     <select id="power_flag_combobox_data_per_period" onchange="onDataPerPeriodComboboxChange()" class="selectpicker" width="fit">
                         <option>Include Power installations</option>
-                        <option>Exclude Power installations</option>
+                        <option selected="selected">Exclude Power installations</option>
                         <option>Show only Power installations</option>
                     </select>
                 </div>
@@ -283,16 +283,28 @@
                     <div class="panel panel-default">
                         <div class="panel-heading">
                             <i class="fa fa-bar-chart-o fa-fw"></i><label id="country_sector_chart_header_label">Installations Map View</label> 
-                            <!--
+                            
                             <div class="pull-right">
+                                <!--
                                 <div class="btn-group">
                                     <button id="export_installations_button" type="button" class="btn btn-default btn-xs " 
                                             onclick="onExportInstallationsButtonClick()" title="Export installations data to TSV file">
                                         Export
                                     </button>                                     
-                                </div>                                
+                                </div> 
+                                -->                            
+                                <div class="btn-group">
+                                    <div class="btn-group">
+                                        <label id="surplus_radio_button_label" class="radio-inline">
+                                            <input name="map_radio_group" id="emissions_radio_button" type="radio" checked onclick="loadDataForMapView()">Emissions
+                                        </label>
+                                        <label id="surplus_radio_button_label" class="radio-inline">
+                                            <input name="map_radio_group" id="surplus_radio_button" type="radio" onclick="loadDataForMapView()">Surplus
+                                        </label>  
+                                    </div>
+                                </div>
                             </div>
-                            -->
+                            
                         </div>
                         <!-- /.panel-heading -->
                         <div id="installations_panel_body" class="panel-body">

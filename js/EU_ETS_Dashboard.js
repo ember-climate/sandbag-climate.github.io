@@ -107,9 +107,17 @@ var map_size_scale;
 var map_opened_for_the_first_time = true;
 var euWideLegendTip;
 var map_legend;
+var map_menu;
+var map_surplus_selected = false;
+var map_emissions_and_allocations_loaded = false;
+var map_offsets_loaded = false;
+var map_emissions_and_allocations_temp_data;
+var map_offsets_temp_data;
+var map_offsets_per_installation_array = [];
 
 var firstSectionToLoad = "euwide";
 var loadFirstSectionFlag = false;
+
 
 function loadFirstSection(){
     
@@ -604,7 +612,8 @@ function loadDataForMapView(){
             maxZoom: 18,
             id: 'pablopareja.0e3lnp48',
             accessToken: 'pk.eyJ1IjoicGFibG9wYXJlamEiLCJhIjoiY2lwamxuaHY4MDA2M3Z4a3d4emRhMG00eCJ9.gKyvi9hMyE6wxa0o4-GDgQ'
-        }).addTo(installations_map);           
+        }).addTo(installations_map);    
+        
     } 
 
         
@@ -613,7 +622,8 @@ function loadDataForMapView(){
     var selectedPowerFlag = $("#power_flag_combobox_data_per_period").selectpicker('val');
     var periodSelected = $("#periods_combobox").selectpicker('val');
     
-
+    map_surplus_selected = $('#surplus_radio_button:checked').length == 1;
+    
     if (selectedCountry != null && selectedSector != null) {
 
         var selectedSectorSt = "[";
@@ -642,14 +652,35 @@ function loadDataForMapView(){
 
         periodSelectedSt = periodSelectedSt.slice(0, periodSelectedSt.length - 1);
         periodSelectedSt += "]";
+        
+        map_emissions_and_allocations_loaded = false;
+        map_offsets_loaded = false;
+        
+        //console.log("map_surplus_selected", map_surplus_selected);
 
         getInstallationsForCountryAndSector(server_url,selectedCountrySt,selectedSectorSt, true, selectedPowerFlag, periodSelectedSt, onGetInstallationsForCountryAndSector);
-            
+        
+        if(map_surplus_selected){
+            getInstallationsForCountryAndSectorOffsets(server_url,selectedCountrySt,selectedSectorSt, true, selectedPowerFlag, periodSelectedSt, onGetInstallationsForCountryAndSectorOffsets);
+        }
+        
+        disableMapRadioButtons();    
         $("#map_div").addClass("grey_background");
         $("#spinner_div_installations").show();
 
     }    
     
+}
+
+function disableMapRadioButtons(){  
+    console.log("disableMapRadioButtons");
+    $("#emissions_radio_button_label").addClass("disabled");
+    $("#surplus_radio_button_label").addClass("disabled");    
+}
+function enableMapRadioButtons(){
+    console.log("enableMapRadioButtons");
+    $("#emissions_radio_button_label").removeClass("disabled");
+    $("#surplus_radio_button_label").removeClass("disabled");
 }
 
 function onInstallationsMapClick(){
@@ -1573,9 +1604,9 @@ function dataForLineChartLoaded() {
 }
 
 
-function onGetInstallationsForCountryAndSector(){
+function onGetInstallationsForCountryAndSectorOffsets(){
     
-    console.log("onGetInstallationsForCountryAndSector");
+    console.log("onGetInstallationsForCountryAndSectorOffsets");
     
     var responseSt = this.responseText;
     
@@ -1586,40 +1617,70 @@ function onGetInstallationsForCountryAndSector(){
         var errors = resultsJSON.errors;
         //console.log("errors", errors);
         var tempData = results[0].data;
-
-        //-----remove previous layers----
-        if(markers){
-            installations_map.removeLayer(markers);
-        }    
-        //-------------------------------
-
-        //----Creating markers cluster-----
-        markers = L.markerClusterGroup({
-                maxClusterRadius: 40,
-                spiderfyOnMaxZoom: true,
-                iconCreateFunction: function (cluster) {
-                    var markers = cluster.getAllChildMarkers();
-                    var total_emissions = 0;
-                    for (var i = 0; i < markers.length; i++) {
-                        total_emissions += markers[i].emissions;
-                    }                
-                    var totalNumber = formatNumber(total_emissions);
-
-                    var tempSize = map_size_scale(total_emissions);
-                    var tempColor = map_color_scale(total_emissions);
-                    var tempPaddingTop = tempSize/2 - 10;
-                                        
-                    var tempHTML = '<div class="mapcluster" style="border-radius: ' + tempSize + 'px; width: ' + tempSize + 'px; height: ' + tempSize + 'px; background-color: ' + tempColor + '; padding-top: ' + tempPaddingTop +  'px;"><strong>' + totalNumber + "</strong></div>"; 
-                    return L.divIcon({html: tempHTML, className: 'mapcluster', iconSize: L.point(45, 45) });
-                }
-            });
         
-        var min_emissions = 9999999999;
-        var aggregated_emissions = 0;
-        
-        for (var i = 0; i < tempData.length; i++) {
+        map_offsets_temp_data = tempData;
+    }    
+    
+    map_offsets_loaded = true;
+    
+    if(map_emissions_and_allocations_loaded){
+        loadInstallationsMap();
+    }
+}
 
-            var rows = tempData[i].row;
+function loadInstallationsMap(){
+    
+    //-----remove previous layers----
+    if(markers){
+        installations_map.removeLayer(markers);
+    }    
+    //-------------------------------
+    
+    //----Creating markers cluster-----
+    markers = L.markerClusterGroup({
+        maxClusterRadius: 40,
+        spiderfyOnMaxZoom: true,
+        iconCreateFunction: function (cluster) {
+            var markers = cluster.getAllChildMarkers();
+            var total_value = 0;
+            for (var i = 0; i < markers.length; i++) {
+                total_value += markers[i].value;
+            }                
+            var totalNumber = formatNumber(total_value);
+            var tempSize = map_size_scale(total_value);
+            var tempColor = map_color_scale(total_value);
+            var tempPaddingTop = tempSize/2 - 10;
+                                    
+            var tempHTML = '<div class="mapcluster" style="border-radius: ' + tempSize + 'px; width: ' + tempSize + 'px; height: ' + tempSize + 'px; background-color: ' + tempColor + '; padding-top: ' + tempPaddingTop +  'px;"><strong>' + totalNumber + "</strong></div>"; 
+            return L.divIcon({html: tempHTML, className: 'mapcluster', iconSize: L.point(45, 45) });
+        }
+    });
+    //-------------------------------------------------------
+    
+    if(map_surplus_selected){
+                
+        for (var i = 0; i < map_offsets_temp_data.length; i++) {
+
+            var rows = map_offsets_temp_data[i].row;
+            var installationId = rows[0];
+            var installationName = rows[1];
+            var latitude = rows[2];
+            var longitude = rows[3];
+            var sector = rows[4];
+            var city = rows[5];
+            var address = rows[6];
+            var offsetsValue = rows[7];
+            
+            map_offsets_per_installation_array[installationId] = offsetsValue;            
+        }
+        
+        
+        var min_surplus = 0;
+        var max_surplus = 0;
+        
+        for (var i = 0; i < map_emissions_and_allocations_temp_data.length; i++) {
+
+            var rows = map_emissions_and_allocations_temp_data[i].row;
             var installationId = rows[0];
             var installationName = rows[1];
             var latitude = rows[2];
@@ -1628,12 +1689,104 @@ function onGetInstallationsForCountryAndSector(){
             var city = rows[5];
             var address = rows[6];
             var emissionsValue = rows[7];
+            var allocationValue = rows[8];
+            
+            var offsetsValue = 0;
+            if(map_offsets_per_installation_array[installationId]){
+                offsetsValue = map_offsets_per_installation_array[installationId];
+            }
+            var surplusValue = allocationValue + offsetsValue - emissionsValue;
+            
+            if(surplusValue < 0){
+                min_surplus += surplusValue;
+            }
+            if(surplusValue > 0){
+                max_surplus += surplusValue;
+            }           
+
+            var locationArray = [latitude, longitude];
+
+            marker_popups_ids.push(installationId);
+
+            var marker = L.marker(locationArray); 
+
+            var etsURL = "http://ec.europa.eu/environment/ets/ohaDetails.do?buttonAction=all&permitIdentifier=&languageCode=en&form=oha&installationName=&accountHolder=&installationIdentifier=" + installationId.substring(2) + "&account.registryCodes=" + installationId.substring(0,2) +  "&searchType=oha&mainActivityType=-1&currentSortSettings=";
+            
+            marker.bindPopup("<div id=\"" + installationId + "\"><strong>Name:</strong> " + installationName + "<br><strong>ID:<a target='_blank' href='" + etsURL + "'></strong> " + installationId + "<br><strong></a>Address:</strong> " + address + "<br><strong>City:</strong> " + city + "<br><strong>Sector:</strong> " + sector + "<br><strong>Surplus</strong>: " + formatNumberAddCommas(surplusValue) + " tCO2e</div>");
+            //"<br><button class=\"pull-right\" onclick=\"onDownloadInstallationButtonClick(this)\">Download</button><br></div>");
+
+            
+            marker.setIcon(getIconForSector(sector));          
+            
+            marker.on("click", onMarkerClick);
+            marker.installationId = installationId;
+            marker.value = surplusValue;        
+            markers.addLayer(marker);         
+
+        };
+        
+        console.log("min_surplus", min_surplus);
+        console.log("max_surplus", max_surplus);
+        
+        map_size_scale = d3.scale.linear().domain([min_surplus, max_surplus]).range(MARKERS_SIZE_RANGE);
+        map_color_scale = d3.scale.linear().domain([min_surplus, 0,  max_surplus]).range(['green', 'beige' , 'red']);
+
+        //-----------------------------------------------------------
+        //--------------------MAP LEGEND-----------------------------
+        
+        if(map_legend){
+            map_legend.removeFrom(installations_map);
+        }
+        map_legend = L.control({position: 'bottomright'});        
+        
+		map_legend.onAdd = function (map) {
+
+			var div = L.DomUtil.create('div', 'info legend'),
+				grades = [max_surplus*0.2, max_surplus*0.4, max_surplus*0.6, 
+                          max_surplus*0.8,max_surplus],
+				labels = [],
+				from, to;
+                        
+            labels.push(
+					'<i style="background:' + map_color_scale(min_surplus) + '"></i> ' +
+					formatNumber(min_surplus) + ( formatNumber(grades[0]) ? ' &ndash; ' + formatNumber(grades[0]) : '+') + " tCO2e");
+
+			for (var i = 0; i < grades.length -1; i++) {
+				from = grades[i];
+				to = grades[i + 1];
+
+				labels.push(
+					'<i style="background:' + map_color_scale(grades[i]) + '"></i> ' +
+					formatNumber(from) + ( formatNumber(to) ? ' &ndash; ' + formatNumber(to) : '+') + " tCO2e");
+			}
+
+			div.innerHTML = labels.join('<br>');
+			return div;
+		};
+        
+        
+    }else{
+                
+        var min_emissions = 9999999999;
+        var aggregated_emissions = 0;
+        
+        for (var i = 0; i < map_emissions_and_allocations_temp_data.length; i++) {
+
+            var rows = map_emissions_and_allocations_temp_data[i].row;
+            var installationId = rows[0];
+            var installationName = rows[1];
+            var latitude = rows[2];
+            var longitude = rows[3];
+            var sector = rows[4];
+            var city = rows[5];
+            var address = rows[6];
+            var emissionsValue = rows[7];
+            //var allocationValue = rows[8];
             
             if(emissionsValue < min_emissions){
                 min_emissions = emissionsValue;
             }
-            aggregated_emissions += emissionsValue;
-            
+            aggregated_emissions += emissionsValue;            
 
             var locationArray = [latitude, longitude];
 
@@ -1646,37 +1799,12 @@ function onGetInstallationsForCountryAndSector(){
             marker.bindPopup("<div id=\"" + installationId + "\"><strong>Name:</strong> " + installationName + "<br><strong>ID:<a target='_blank' href='" + etsURL + "'></strong> " + installationId + "<br><strong></a>Address:</strong> " + address + "<br><strong>City:</strong> " + city + "<br><strong>Sector:</strong> " + sector + "<br><strong>Emissions</strong>: " + formatNumberAddCommas(emissionsValue) + " tCO2e</div>");
             //"<br><button class=\"pull-right\" onclick=\"onDownloadInstallationButtonClick(this)\">Download</button><br></div>");
 
-            if(sector == "Cement and Lime"){
-                marker.setIcon(cement_and_lime_icon);
-            }else if(sector == "Aviation"){
-                marker.setIcon(aviation_icon);
-            }else if(sector == "Ceramics"){
-                marker.setIcon(ceramics_icon);
-            }else if(sector == "Chemicals"){
-                marker.setIcon(chemicals_icon);
-            }else if(sector == "Coke ovens"){
-                marker.setIcon(coke_ovens_icon);
-            }else if(sector == "Combustion"){
-                marker.setIcon(combustion_icon);
-            }else if(sector == "Glass"){
-                marker.setIcon(glass_icon);
-            }else if(sector == "Iron and steel"){
-                marker.setIcon(iron_and_steel_icon);
-            }else if(sector == "Metal ore roasting"){
-                marker.setIcon(metal_ore_roasting_icon);
-            }else if(sector == "Mineral oil"){
-                marker.setIcon(mineral_oil_icon);
-            }else if(sector == "Non ferrous metals"){
-                marker.setIcon(non_ferrous_metals_icon);
-            }else if(sector == "Other"){
-                marker.setIcon(other_icon);
-            }else if(sector == "Pulp and paper"){
-                marker.setIcon(pulp_and_paper_icon);
-            }
-
+            
+            marker.setIcon(getIconForSector(sector));          
+            
             marker.on("click", onMarkerClick);
             marker.installationId = installationId;
-            marker.emissions = emissionsValue;        
+            marker.value = emissionsValue;        
             markers.addLayer(marker);         
 
         };
@@ -1717,30 +1845,99 @@ function onGetInstallationsForCountryAndSector(){
 			return div;
 		};
 
-		map_legend.addTo(installations_map);        
+    }    
+    
+    console.log("lalalala");
+    
+    map_legend.addTo(installations_map); 
         
-        installations_map.addLayer(markers);
+    installations_map.addLayer(markers);
 
-        installations_map.setZoom(INSTALLATIONS_MAP_INITIAL_ZOOM);
+    installations_map.setZoom(INSTALLATIONS_MAP_INITIAL_ZOOM);
+    
+    createMapWelcomeDialog();
+    
+    enableMapRadioButtons();
+    $("#map_div").removeClass("grey_background");
+    $("#spinner_div_installations").hide();
+    enableCountrySectorDropDowns();
+}
 
-        if(map_opened_for_the_first_time){
-            map_opened_for_the_first_time = false;
+function getIconForSector(sector){
+    if(sector == "Cement and Lime"){
+        return cement_and_lime_icon;
+    }else if(sector == "Aviation"){
+        return aviation_icon;
+    }else if(sector == "Ceramics"){
+        return ceramics_icon;
+    }else if(sector == "Chemicals"){
+        return chemicals_icon;
+    }else if(sector == "Coke ovens"){
+        return coke_ovens_icon;
+    }else if(sector == "Combustion"){
+        return combustion_icon;
+    }else if(sector == "Glass"){
+        return glass_icon;
+    }else if(sector == "Iron and steel"){
+        return iron_and_steel_icon;
+    }else if(sector == "Metal ore roasting"){
+        return metal_ore_roasting_icon;
+    }else if(sector == "Mineral oil"){
+        return mineral_oil_icon;
+    }else if(sector == "Non ferrous metals"){
+        return non_ferrous_metals_icon;
+    }else if(sector == "Other"){
+        return other_icon;
+    }else if(sector == "Pulp and paper"){
+        return pulp_and_paper_icon;
+    }
+}
 
-            var outerWidth = $('#map_div').outerWidth();
-            var leftPadding = outerWidth / 5;
-
-            //creating welcome dialog
-            welcomeMapViewDialog = L.control.dialog({size: [300,180], anchor: [80,leftPadding]}).setContent("<h4>Welcome to the Map View!</h4><p>Values displayed in circles correspond to the <strong>aggregation of emissions</strong> generated by the installations included in the circle for the <strong>year selected in the drop down menu</strong></p><p>Hover your mouse pointer over a circle to see the area aggregated. Single installations are indicated by an icon for their main activity sector.</p>").addTo(installations_map);
-                        
+function onGetInstallationsForCountryAndSector(){
+    
+    console.log("onGetInstallationsForCountryAndSector");
+    
+    var responseSt = this.responseText;
+    
+    if(responseSt && responseSt.length > 0){
+        
+        var resultsJSON = JSON.parse(responseSt);
+        var results = resultsJSON.results;
+        var errors = resultsJSON.errors;
+        //console.log("errors", errors);
+        var tempData = results[0].data;
+        map_emissions_and_allocations_temp_data = tempData;    
+        
+        map_emissions_and_allocations_loaded = true;
+        
+        if(map_surplus_selected){
+            if(map_offsets_loaded){
+                loadInstallationsMap(); 
+            }
+        }else{
+            loadInstallationsMap(); 
         }
-
-        $("#map_div").removeClass("grey_background");
-        $("#spinner_div_installations").hide();
-        enableCountrySectorDropDowns();
+                
         
     }else{
         problemWithRequests();
     }
+}
+
+//-------------------------------------------
+//---------------MAP-WELCOME-DIALOG----------
+//-------------------------------------------
+function createMapWelcomeDialog(leftPadding){    
+    
+    if(map_opened_for_the_first_time){
+        map_opened_for_the_first_time = false;
+
+        var outerWidth = $('#map_div').outerWidth();
+        var leftPadding = outerWidth / 5;
+
+        //creating welcome dialog
+        welcomeMapViewDialog = L.control.dialog({size: [300,180], anchor: [80,leftPadding]}).setContent("<h4>Welcome to the Map View!</h4><p>Values displayed in circles correspond to the <strong>aggregation of emissions/surpluses</strong> generated by the installations included in the circle for the <strong>year selected in the drop down menu</strong></p><p>Hover your mouse pointer over a circle to see the area aggregated. Single installations are indicated by an icon for their main activity sector.</p>").addTo(installations_map);                   
+    } 
 }
 
 function onDownloadInstallationButtonClick(value){

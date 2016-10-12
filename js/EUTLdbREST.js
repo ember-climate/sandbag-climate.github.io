@@ -699,6 +699,50 @@ function getInstallationData(serverURL, installationID, onLoadEnd){
 	xhr.send(JSON.stringify(query));
 }
 
+function getInstallationsForCountryAndSectorOffsets(serverURL, countryNames, sectorNames, isSandbagSector, powerFlag, periodNames,  onLoadEnd){
+    var query = {
+	    "statements" : [ ]
+	};
+    
+    var statementSt;
+    
+    if(isSandbagSector){
+        
+        if(powerFlag == "Include Power installations"){
+            
+            statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR), (node)-[off:OFFSETS]->(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +  
+                "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.latitude <> '0' AND node.latitude <> '' AND node.longitude <> '0' AND node.longitude <> '' AND p.name IN " + periodNames + " AND (o.unit_type = 'ERU' OR o.unit_type = 'CER')" +
+					   " RETURN node.id, node.name, node.latitude, node.longitude, ss.name, node.city, node.address, sum(o.amount)";
+            
+        }else if(powerFlag == "Exclude Power installations"){
+            
+            statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR), (node)-[off:OFFSETS]->(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD)" +  
+                "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.latitude <> '0' AND node.latitude <> '' AND node.longitude <> '0' AND node.longitude <> '' AND p.name IN " + periodNames + " AND node.power_flag <> 'true'" +
+                " AND (o.unit_type = 'ERU' OR o.unit_type = 'CER')" +
+					   "RETURN node.id, node.name, node.latitude, node.longitude, ss.name, node.city, node.address, sum(o.amount)";
+            
+        }else if(powerFlag == "Show only Power installations"){            
+            
+            statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR), (node)-[off:OFFSETS]->(o:OFFSET)-[:OFFSET_PERIOD]->(p:PERIOD) " +  
+                "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.latitude <> '0' AND node.latitude <> '' AND node.longitude <> '0' AND node.longitude <> '' AND p.name IN " + periodNames +   " AND node.power_flag = 'true'" +
+                " AND (o.unit_type = 'ERU' OR o.unit_type = 'CER')" +
+                "RETURN node.id, node.name, node.latitude, node.longitude, ss.name, node.city, node.address, sum(o.amount)";
+        }        
+        
+    }	
+
+	//console.log(statementSt);
+
+	query.statements.push({"statement":statementSt});
+
+	var xhr = new XMLHttpRequest();    
+	xhr.onloadend = onLoadEnd;
+	xhr.open("POST", serverURL, true);
+    xhr.setRequestHeader('Content-Type', 'application/json');
+    xhr.setRequestHeader('Accept', 'application/json; charset=UTF-8');
+	xhr.send(JSON.stringify(query));
+}
+
 function getInstallationsForCountryAndSector(serverURL, countryNames, sectorNames, isSandbagSector, powerFlag, periodNames,  onLoadEnd){
     var query = {
 	    "statements" : [ ]
@@ -710,21 +754,21 @@ function getInstallationsForCountryAndSector(serverURL, countryNames, sectorName
         
         if(powerFlag == "Include Power installations"){
             
-            statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR), (node)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD) " +  
+            statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR), (node)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD), (node)-[aa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +  
                 "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.latitude <> '0' AND node.latitude <> '' AND node.longitude <> '0' AND node.longitude <> '' AND p.name IN " + periodNames + 
-					   " RETURN node.id, node.name, node.latitude, node.longitude, ss.name, node.city, node.address, sum(ve.value)";
+					   " RETURN node.id, node.name, node.latitude, node.longitude, ss.name, node.city, node.address, sum(ve.value), sum(aa.value)";
             
         }else if(powerFlag == "Exclude Power installations"){
             
-            statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR), (node)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD) " +  
+            statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR), (node)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD), (node)-[aa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD)" +  
                 "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.latitude <> '0' AND node.latitude <> '' AND node.longitude <> '0' AND node.longitude <> '' AND p.name IN " + periodNames + " AND node.power_flag <> 'true'" +
-					   "RETURN node.id, node.name, node.latitude, node.longitude, ss.name, node.city, node.address, sum(ve.value)";
+					   "RETURN node.id, node.name, node.latitude, node.longitude, ss.name, node.city, node.address, sum(ve.value), sum(aa.value)";
             
         }else if(powerFlag == "Show only Power installations"){            
             
-            statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR), (node)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD) " +  
+            statementSt = "MATCH (c:COUNTRY)<-[:INSTALLATION_COUNTRY|AIRCRAFT_OPERATOR_COUNTRY]-(node)-[:INSTALLATION_SECTOR|AIRCRAFT_OPERATOR_SECTOR]->(s:SECTOR)<-[:AGGREGATES_SECTOR]-(ss:SANDBAG_SECTOR), (node)-[ve:VERIFIED_EMISSIONS]->(p:PERIOD), (node)-[aa:ALLOWANCES_IN_ALLOCATION]->(p:PERIOD) " +  
                 "WHERE c.name IN " + countryNames + " AND ss.name IN " + sectorNames + " AND (node:INSTALLATION OR node:AIRCRAFT_OPERATOR) AND node.latitude <> '0' AND node.latitude <> '' AND node.longitude <> '0' AND node.longitude <> '' AND p.name IN " + periodNames +   " AND node.power_flag = 'true'" +
-					   "RETURN node.id, node.name, node.latitude, node.longitude, ss.name, node.city, node.address, sum(ve.value)";
+					   "RETURN node.id, node.name, node.latitude, node.longitude, ss.name, node.city, node.address, sum(ve.value), sum(aa.value)";
         }        
         
     }	
