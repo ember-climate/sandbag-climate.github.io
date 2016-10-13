@@ -399,7 +399,7 @@ function loadDataPerPeriodView(){
         
     countrySectorChartDisplayed = false; 
     installationsMapDisplayed = false;
-    $("#periods_combobox").selectpicker('val', '2008');
+    $("#periods_combobox").selectpicker('val', ALL_PERIODS_ARRAY);
     onDataPerPeriodComboboxChange();
     onResize();
 }
