@@ -298,8 +298,8 @@
                                         <label id="surplus_radio_button_label" class="radio-inline">
                                             <input name="map_radio_group" id="emissions_radio_button" type="radio" checked onclick="loadDataForMapView()">Emissions
                                         </label>
-                                        <label id="surplus_radio_button_label" class="radio-inline">
-                                            <input name="map_radio_group" id="surplus_radio_button" type="radio" onclick="loadDataForMapView()">Surplus
+                                        <label id="surplus_radio_button_label" data-toggle="tooltip" class="radio-inline" title="Free Allocation + Offsets(2008-2012) - Emissions">
+                                            <input name="map_radio_group" id="surplus_radio_button" type="radio" onclick="loadDataForMapView()" >Surplus
                                         </label>  
                                     </div>
                                 </div>
@@ -326,6 +326,7 @@
                       <li role="presentation" class="active"><a data-toggle="tab" onclick="return changeStackedBarChart('verified emissions')">Verified Emissions</a></li>
                       <li role="presentation"><a data-toggle="tab" onclick="return changeStackedBarChart('free allocation')">Free Allocation</a></li>
                       <li role="presentation"><a data-toggle="tab" onclick="return changeStackedBarChart('offsets')">Offsets</a></li>
+                      <li role="presentation"><a data-toggle="tab tooltip" onclick="return changeStackedBarChart('surplus')" title="Free Allocation + Offsets(2008-2012) - Emissions">Surplus</a></li>
                     </ul>
                     <div class="panel panel-default">
                         <div id="stackedBarChartPerPeriod" class="panel-heading">
