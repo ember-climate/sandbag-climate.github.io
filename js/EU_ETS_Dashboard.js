@@ -2076,13 +2076,13 @@ function createSurplusMapWelcomeDialog(){
 //-----------IRON-AND-STEEL-DIALOG-----------
 //-------------------------------------------
 function createIronAndSteelWarningDialog(){ 
-    ironAndSteelWarningDialog = L.control.dialog({size: [260,180], anchor: [40,80]}).setContent("<h4>Warning</h4><p>Please be aware that the surplus values for the sector <strong>'Iron and Steel'</strong> are just approximate since we are not taking into account transfers of allowances into its calculation.</strong>").addTo(installations_map); 
+    ironAndSteelWarningDialog = L.control.dialog({size: [260,180], anchor: [40,80]}).setContent("<h4>Warning</h4><p>Please be aware that the surplus values for the sector <strong>'Iron and Steel'</strong> are just approximate since we are not taking into account transfers of allowances for its calculation.</strong>").addTo(installations_map); 
 }
 //-------------------------------------------
 //-----------PULP-AND-PAPER-DIALOG-----------
 //-------------------------------------------
 function createPulpAndPaperWarningDialog(){ 
-    pulpAndPaperWarningDialog = L.control.dialog({size: [260,180], anchor: [40,80]}).setContent("<h4>Warning</h4><p>Please be aware that the surplus values for the sector <strong>'Pulp and Paper'</strong> are just approximate since we are not taking into account transfers of allowances into its calculation.</strong>").addTo(installations_map); 
+    pulpAndPaperWarningDialog = L.control.dialog({size: [260,180], anchor: [40,80]}).setContent("<h4>Warning</h4><p>Please be aware that the surplus values for the sector <strong>'Pulp and Paper'</strong> are just approximate since we are not taking into account transfers of allowances for its calculation.</strong>").addTo(installations_map); 
 }
 
 function onDownloadInstallationButtonClick(value){
