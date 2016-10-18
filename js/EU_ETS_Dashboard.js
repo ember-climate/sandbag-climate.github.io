@@ -1,4 +1,4 @@
-var server_url = "http://52.208.154.95:7474/db/data/transaction/commit";
+var server_url = "http://52.208.154.95:80/db/data/transaction/commit";
 //var server_url = "http://localhost:7474/db/data/transaction/commit";
 
 var doNotShowWelcomeDialogAgainCookieName = "no_welcome_dialog";
