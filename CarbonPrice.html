@@ -1,0 +1,142 @@
+<!DOCTYPE HTML>
+<html>
+	<head>
+		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+		<title>Carbon Price</title>
+
+		<!-- jQuery -->
+	    <script src="./js/jquery-1.9.1.min.js"></script>
+        <script src="./js/Highstock-5.0.5/code/highstock.js"></script>
+        <script src="./js/Highstock-5.0.5/code/modules/exporting.js"></script>
+        <script src="./js/export-csv-master/export-csv.js"></script>
+		<script type="text/javascript">
+            
+            
+            var chart;
+            var dataArray = [];
+             
+                
+            var request = new XMLHttpRequest();
+            request.open('GET', 'https://www.quandl.com/api/v3/datasets/CHRIS/ICE_C1.csv?api_key=-q3ecFz_jdpZBNM73ozq', true);
+            request.send(null);
+            request.onreadystatechange = function () {
+                if (request.readyState === 4 && request.status === 200) {
+                    var type = request.getResponseHeader('Content-Type');
+                    if (type.indexOf("text") !== 1) {
+                        initializeChart(request.responseText);                            
+                    }
+                }
+            }
+               
+                    
+  
+            
+            function initializeChart(responseText){
+                //console.log(responseText);
+
+                var lines = responseText.split('\n');
+
+                var datesSet = new Set();
+                $.each(lines, function(lineNo, line) {
+
+                    if(lineNo > 0){
+                        var items = line.split(',');
+
+                        var dateValues = items[0].split('-');
+                        var year = parseFloat(dateValues[0]);
+                        var month = parseFloat(dateValues[1]) -1 ;
+                        var day = parseFloat(dateValues[2]);
+                        //console.log("lineNo", lineNo);
+                        //console.log("line",line);                        
+
+                        var date = Date.UTC(year, month, day);
+                        var value = parseFloat(items[3]);
+
+                        //console.log("date", date);
+
+                        if(!isNaN(date)){
+                            if(!datesSet.has(date)){                                    
+                                if(year && month && day){
+                                    datesSet.add(date);
+                                    dataArray.push({x: date, y: value});
+                                    //console.log("year", year, "month", month, "day", day);
+                                }                            
+                            }
+                        }                      
+
+                    }
+
+                });
+
+                dataArray.sort(sortfunction);
+                console.log("dataArray.length",dataArray.length);                
+
+                chart = Highcharts.stockChart('container', {
+
+                    rangeSelector : {
+                        selected : 5
+                    },
+
+                    title : {
+                        text : 'EUA Price'
+                    },
+
+                    series : [{
+                        name : 'Price',
+                        turboThreshold: 100000,
+                        data : dataArray,
+                        tooltip: {
+                            valueDecimals: 2
+                        }
+
+                    }],
+
+                    xAxis: {
+                        title: {
+                            text: 'Date'
+                        },
+                        type: 'datetime'
+                    },
+
+                    yAxis: {
+                        title: {
+                            text: 'Price'
+                        },
+                        min: 0
+                    },
+
+                    navigator: {
+                        series: {
+                            includeInCSVExport: false
+                        }
+                    },
+                });
+            }
+
+            function exportCSV(){
+
+                var csvContent = "data:text/csv;charset=utf-8,";
+                csvContent+= chart.getCSV();
+                var encodedUri = encodeURI(csvContent);
+
+                var link = document.createElement("a");
+                link.setAttribute("href", encodedUri);
+                link.setAttribute("download", "carbon_price.csv");
+                document.body.appendChild(link); // Required for FF
+
+                link.click(); // This will download the data file named "my_data.csv".
+
+            }
+
+            function sortfunction(a, b){ //causes an array to be sorted numerically and ascending
+                return (a.x - b.x) 
+            }
+
+		</script>
+	</head>
+	<body>
+
+
+<div id="container" style="height: 400px; min-width: 310px"></div>
+	</body>
+</html>
