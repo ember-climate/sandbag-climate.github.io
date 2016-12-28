@@ -1,6 +1,4 @@
-/** 
-* @var Countries array 
-*/
+/** Countries array */
 var countries = [];
 /** Sectors array */
 var sectors = [];
