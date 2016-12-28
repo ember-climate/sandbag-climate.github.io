@@ -12,7 +12,7 @@ This software is 100% open source and released under AGPLv3 license.
 
 ### Developers
 
-This tool was developed by the following Sandbag team members:
+This tool was developed by:
 
 * Pablo Pareja - Main developer and project leader.
 
