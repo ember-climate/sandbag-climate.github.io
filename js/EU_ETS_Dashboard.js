@@ -1,12 +1,11 @@
-var server_url = "http://52.208.154.95:80/db/data/transaction/commit";
-//var server_url = "http://localhost:7474/db/data/transaction/commit";
-
-var doNotShowWelcomeDialogAgainCookieName = "no_welcome_dialog";
-
+/** Countries array */
 var countries = [];
+/** Sectors array */
 var sectors = [];
+/** Periods array */
 var periods = [];
 
+//+++++++++++++ EU WIDE CHART VARS +++++++++++++++++++++
 var euWideChartData = [];
 var euWideChartDataBackup = [];
 var euWideChart;
@@ -15,18 +14,22 @@ var barSeriesEUWide;
 var lineSeriesEUWide;
 var surplusDataArrayEUWide = [];
 var surplusAccumulatedDataArrayEUWide = [];
+var totalOffsetEntitlements = 0;
+var totalOffsetsSoFar = 0;
+var euWideLegendTip;
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+//+++++++++++++ COUNTRY SECTOR CHART VARS +++++++++++++++++++++
 var lineChartDataBackup = [];
 var lineChartData = [];
 var lineChart;
 var surplusDataArrayCountrySector = [];
 var surplusAccumulatedDataArrayCountrySector = [];
-
-var totalOffsetEntitlements = 0;
-var totalOffsetsSoFar = 0;
-
 var barSeries;
 var lineSeries;
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+//+++++++++++++ DATA PER PERIOD CHART VARS +++++++++++++++++++++
 var dataPerPeriodChart;
 var dataPerPeriodChartSvg;
 var dataPerPeriodChartCategoryAxis;
@@ -38,25 +41,37 @@ var dataPerPeriodSurplusSelected = false;
 var dataPerPeriodFreeAllocationLoaded = false;
 var dataPerPeriodEmissionsLoaded = false;
 var dataPerPeriodOffsetsLoaded = false;
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++
+
+/** Sectors loaded flag */
 var sectorsLoaded = false;
+/** Countries loaded flag */
 var countriesLoaded = false;
+/** Periods loaded flag */
 var periodsLoaded = false;
 
+//++++++++++++ EU WIDE DATA LOADED FLAGS +++++++++++++++++++
 var verified_emissions_eu_wide_loaded = false;
 var free_allocation_eu_wide_loaded = false;
 var offsets_eu_wide_loaded = false;
 var auctioned_eu_wide_loaded = false;
 var legal_cap_eu_wide_loaded = false;
 var offset_entitlements_eu_wide_loaded = false;
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+//++++++++++++ COUNTRY/SECTOR DATA LOADED FLAGS +++++++++++++
 var verified_emissions_loaded = false;
 var free_allocation_loaded = false;
 var offsets_loaded = false;
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+//++++++++++++ COUNTRY/SECTOR DATA LOADED FLAGS +++++++++++++
 var line_chart_created = false;
 var data_per_period_chart_created = false;
 var eu_wide_chart_created = false;
+//++++++++++++++++++++++++++++++++++++++++++++++++++++++++++
 
+/** Array including all country names */
 var EU_COUNTRIES_ARRAY = ["Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus", "Czech Republic",
     "Denmark", "Estonia", "Finland", "France", "Germany", "Greece", "Hungary",
     "Iceland", "Ireland", "Italy", "Latvia", "Lithuania", "Liechtenstein",
@@ -64,29 +79,51 @@ var EU_COUNTRIES_ARRAY = ["Austria", "Belgium", "Bulgaria", "Croatia", "Cyprus",
     "Romania", "Slovakia", "Slovenia", "Spain", "Sweden", "United Kingdom"
 ];
 
+/** Array including all sector names */
 var SECTORS_ARRAY = ["Aviation", "Cement and Lime", "Ceramics", "Chemicals", "Coke ovens", "Combustion",
                     "Glass", "Iron and steel", "Metal ore roasting", "Mineral oil", "Non ferrous metals",
                     "Other", "Pulp and paper"];
 
+/** Values used in the legend of the EU wide chart */
 var  EU_WIDE_LEGEND_VALUES = {"Free Allocation": "Permits issued by the European Commission every<br> year to each stationary installation and aircraft operator.", "Auctioned": "Auctioned", "Offsets": "Offsets", "Remaining Credit Entitlements": "This series represents an estimation of<br> how the remaining credit entitlements could be<br> distributed across the years", "Verified Emissions": "Tones of carbon emitted by the <br>different stationary installations and <br>aircraft operators", "Accumulated Balance":"Accumulated surplus calculated as follows: <br>Accumulated Verified Emissions - ( Accumulated Auctioned <br>+ Accumulated Offsets + Accumulated Free Allocation)", "Legal Cap": "Legal Cap stated by the European Commission"};
 
+/** Array including all periods used in the Dashboard */
 var ALL_PERIODS_ARRAY = ['2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015'];
-
-var INSTALLATIONS_MAP_INITIAL_ZOOM = 3;
-
-var installations_map;
-var marker_popups_ids = [];
-var markers;
-var welcomeMapViewDialog;
-var surplusMapViewDialog;
-var ironAndSteelWarningDialog;
-var pulpAndPaperWarningDialog;
 
 var countrySectorChartDisplayed = false;
 var installationsMapDisplayed = false;
 var noInternetConnection = false;
 
-//-----------MAP ICONS----
+//-----Formatting functions for the different views/sections---
+var formatNumber = d3.format(".4s");
+var formatNumberEUWideChart = d3.format(".5s");
+var formatNumberDataPerPeriod = d3.format(".5s");
+var formatNumberCountrySector = d3.format(".5s");
+var formatNumberAddCommas = d3.format(",");
+//-------------------------------------------------------------
+
+//===========================================================
+//================= INSTALLATIONS MAP VARS ==================
+
+/** Initial zoom value for the installations map*/
+var INSTALLATIONS_MAP_INITIAL_ZOOM = 3;
+/** Installations map var */
+var installations_map;
+var marker_popups_ids = [];
+var markers;
+/** Dialog shown when the map is opened for the first time */
+var welcomeMapViewDialog; 
+/** Dialog shown whenever the surplus view is selected on the 
+installations map*/
+var surplusMapViewDialog;
+/** Dialog shown whenever the sector 'Iron and Steel' is selected on the 
+installations map view*/
+var ironAndSteelWarningDialog;
+/** Dialog shown whenever the sector 'Pulp and Paper' is selected on the 
+installations map view*/
+var pulpAndPaperWarningDialog;
+
+//-----------MAP SECTOR ICONS----
 var ceramics_icon;
 var aviation_icon;
 var cement_and_lime_icon;
@@ -102,38 +139,54 @@ var other_icon;
 var pulp_and_paper_icon;
 //-------------------------
 
-var formatNumber = d3.format(".4s");
-var formatNumberEUWideChart = d3.format(".5s");
-var formatNumberDataPerPeriod = d3.format(".5s");
-var formatNumberCountrySector = d3.format(".5s");
-var formatNumberAddCommas = d3.format(",");
-
+/** Size range used for markers on the map */
 var MARKERS_SIZE_RANGE = [40,80];
-
+/** Color scale used in the installations map */
 var map_color_scale;
+/** Size scale used in the installations map */
 var map_size_scale;
                                                      
-
+/** Flag indicating if the map view is going to be opened for the first time 
+since the application started*/
 var map_opened_for_the_first_time = true;
+/** Flag indicating if the surplus option from the map view is going to be opened
+for the first time since the application started*/
 var surplus_map_opened_for_the_first_time = true;
-var euWideLegendTip;
+
 var map_legend;
 var map_menu;
+/** Flag indicating if the surplus option in the map view is currently selected*/
+
+//----------Data loaded flags for the map view----------------
 var map_surplus_selected = false;
 var map_emissions_and_allocations_loaded = false;
 var map_offsets_loaded = false;
+//------------------------------------------------------------
+
 var map_emissions_and_allocations_temp_data;
 var map_offsets_temp_data;
 var map_offsets_per_installation_array = [];
 
+//===========================================================
+//===========================================================
+
+
+/** This var indicates the first section that should be loaded and displayed
+when the application is opened for the first time */
 var firstSectionToLoad = "euwide";
 var loadFirstSectionFlag = false;
 
+var server_url = "http://52.208.154.95:80/db/data/transaction/commit";
+//var server_url = "http://localhost:7474/db/data/transaction/commit";
 
+/** Cookie used to store whether the user wants to show the welcome dialog or not */
+var doNotShowWelcomeDialogAgainCookieName = "no_welcome_dialog";
+
+/** Loads the first section of the application */
 function loadFirstSection(){
     
-    console.log("loadFirstSection");
-    console.log("firstSectionToLoad",firstSectionToLoad);
+    //console.log("loadFirstSection");
+    //console.log("firstSectionToLoad",firstSectionToLoad);
     
     if(firstSectionToLoad == "map"){
         loadMapView();
@@ -147,14 +200,16 @@ function loadFirstSection(){
     
 }
 
-
+/**
+Initializes the Dashboard
+@param {string} argument - View to be loaded and displayed when the app is opened
+*/
 function initMainPage(argument) {
     
     firstSectionToLoad = argument;
     
     console.log("init main page...");
-    
-    
+        
     //Welcome dialog
     
     if(Cookies.get(doNotShowWelcomeDialogAgainCookieName) != "true"){
@@ -250,6 +305,9 @@ function initMainPage(argument) {
     
 }
 
+/**
+Initializes the surplus data array for the EU wide view.
+*/
 function initializeSurplusDataArrayEUWide() {
     //------INITIALIZING SURPLUS DATA ARRAY EU WIDE------
     for (var i = 2005; i <= 2015; i++) {
@@ -257,7 +315,9 @@ function initializeSurplusDataArrayEUWide() {
     }
     //---------------------------------------------------
 }
-
+/**
+Initializes the surplus data array for the Country/Sector view.
+*/
 function initializeSurplusDataArrayCountrySector(){
     //------INITIALIZING SURPLUS DATA ARRAY COUNTRY SECTOR------
     for (var i = 2005; i <= 2015; i++) {
@@ -266,6 +326,9 @@ function initializeSurplusDataArrayCountrySector(){
     //--------------------------------------------------------
 }
 
+/**
+Updates the welcome dialog cookie based on the user selection
+*/
 function updateWelcomeDialogCookie(){
     var notShowAgain = $('#do_not_show_welcome_dialog_again_checkbox:checked').length == 1;
     console.log("setting cookie value...");
@@ -277,10 +340,14 @@ function updateWelcomeDialogCookie(){
     console.log("getting cookie value...", Cookies.get(doNotShowWelcomeDialogAgainCookieName));
 }
 
+/**
+Loads the data used in the EU wide view
+@param {String} includeAviation Flag indicating if aviation should be included or not.
+*/
 function loadEUWideData(includeAviation) {
     
-    console.log("loadEUWideData");
-    console.log("includeAviation",includeAviation);
+    //console.log("loadEUWideData");
+    //console.log("includeAviation",includeAviation);
 
     initializeSurplusDataArrayEUWide();
     resetEUWideDataLoadedText();
@@ -311,14 +378,16 @@ function loadEUWideData(includeAviation) {
     getOffsetEntitlementsEUWide(server_url, includeAviation, onGetOffsetEntitlementsEUWide);
 }
 
-function noValueSelectedForCountriesOrSectors() {
-
-}
-
+/**
+Loads the Country/Sector chart
+*/
 function loadCountrySectorChart() {
     onComboBoxChange();
 }
 
+/**
+Loads the Country/Sector view
+*/
 function loadCountrySectorsView(){
     $('#multi_line_chart_row').show();
     $('#countries_sectors_row').show();
@@ -339,12 +408,18 @@ function loadCountrySectorsView(){
     loadCountrySectorChart();
 }
 
+/**
+Loads the Error view
+*/
 function loadErrorView(){
     $('#error_row').show();
     $('#about_row').hide();
     $('#contact_us_row').hide();
 }
 
+/**
+Loads the Installations Map view
+*/
 function loadMapView(){
     $('#multi_line_chart_row').hide();            
     $('#about_row').hide();    
@@ -367,6 +442,9 @@ function loadMapView(){
     loadDataForMapView();
 }
 
+/**
+Loads the About view
+*/
 function loadAboutView(){
     $('#multi_line_chart_row').hide();
     $('#countries_sectors_row').hide();
@@ -386,6 +464,9 @@ function loadAboutView(){
     installationsMapDisplayed = false;
 }
 
+/**
+Loads the Data per period view
+*/
 function loadDataPerPeriodView(){
     console.log("loadDataPerPeriodView");
     $('#multi_line_chart_row').hide();
@@ -408,6 +489,9 @@ function loadDataPerPeriodView(){
     onResize();
 }
 
+/**
+Loads the EU wide view
+*/
 function loadEUWideView(){
     $('#multi_line_chart_row').hide();
     $('#countries_sectors_row').hide();
@@ -429,6 +513,9 @@ function loadEUWideView(){
     onResize();
 }
 
+/**
+Loads the 'Contact us' view
+*/
 function loadContactUsView(){
     $('#multi_line_chart_row').hide();
     $('#countries_sectors_row').hide();
@@ -448,6 +535,9 @@ function loadContactUsView(){
     installationsMapDisplayed = false;
 }
 
+/**
+Initializes the menus (buttons) from the header
+*/
 function initMenus() {
     
     $('.nav li a').click(function(e) {
@@ -518,11 +608,16 @@ function initMenus() {
     });
 }
 
-
+/** 
+On body load listener
+*/
 function onLoad() {
     $('.selectpicker').selectpicker();
 }
 
+/**
+Window onResize() listener
+*/
 function onResize(){
     //console.log("onResize()");
     if(euWideChart){
@@ -538,7 +633,9 @@ function onResize(){
     }
 }
 
-
+/**
+Disables the drop down menus from the Country/Sector view
+*/
 function disableCountrySectorDropDowns() {    
 
     $("#sectors_combobox").prop("disabled", true);
@@ -548,6 +645,9 @@ function disableCountrySectorDropDowns() {
     $("#power_flag_combobox").prop("disabled", true);
     $("#power_flag_combobox").selectpicker('refresh');
 }
+/**
+Enables the drop down menus from the Country/Sector view
+*/
 function enableCountrySectorDropDowns(){
     
     $("#sectors_combobox").prop("disabled", false);
@@ -558,6 +658,11 @@ function enableCountrySectorDropDowns(){
     $("#power_flag_combobox").selectpicker('refresh');
 }
 
+/**
+Changes the data shown in the Data per period view.
+@param {string} typeSt - New data type to be displayed. One of the following:
+["free allocation","offsets","verified emissions","surplus"]
+*/
 function changeStackedBarChart(typeSt) {
     
         
@@ -590,11 +695,16 @@ function changeStackedBarChart(typeSt) {
     onDataPerPeriodComboboxChange();
 }
 
+/**
+Listener for EU wide include aviation selector
+*/
 function onIncludeAviationComboboxChange() {
     var includeAviation = $('#include_aviation_combobox').selectpicker('val');
     loadEUWideData(includeAviation);
 }
-
+/**
+Exports the data shown in the EU wide view
+*/
 function onExportEUWideButtonClick() {
     var dataString = "data:text/csv;charset=utf-8,Period,tCO2e,type\n";
 
@@ -607,6 +717,9 @@ function onExportEUWideButtonClick() {
     window.open(encodedUri);
 }
 
+/**
+Exports the data shown on the Country/Sector view
+*/
 function onExportLineChartButtonClick() {
 
     var dataString = "data:text/csv;charset=utf-8,Period,tCO2e,type\n";
@@ -620,7 +733,9 @@ function onExportLineChartButtonClick() {
     window.open(encodedUri);
 }
 
-
+/**
+Loads the data needed for the Installations map view
+*/
 function loadDataForMapView(){
     
     console.log("loadDataForMapView");
@@ -693,17 +808,26 @@ function loadDataForMapView(){
     
 }
 
+/**
+Disables the Installations Map view radio buttons
+*/
 function disableMapRadioButtons(){  
     console.log("disableMapRadioButtons");
     $("#emissions_radio_button_label").addClass("disabled");
     $("#surplus_radio_button_label").addClass("disabled");    
 }
+/**
+Enables the Installations Map view radio buttons
+*/
 function enableMapRadioButtons(){
     console.log("enableMapRadioButtons");
     $("#emissions_radio_button_label").removeClass("disabled");
     $("#surplus_radio_button_label").removeClass("disabled");
 }
 
+/**
+Listener for clicks on the installations map
+*/
 function onInstallationsMapClick(){
     if(welcomeMapViewDialog){
         welcomeMapViewDialog.close();
@@ -718,7 +842,9 @@ function onInstallationsMapClick(){
         ironAndSteelWarningDialog.close();
     }
 }
-
+/**
+Exports the data from the Verified Emissions chart
+*/
 function onExportVerifiedEmissionsChartButtonClick() {
 
     var dataString = "data:text/tsv;charset=utf-8,Verified Emissions\tCountry\tSector\n";
@@ -733,18 +859,26 @@ function onExportVerifiedEmissionsChartButtonClick() {
 
 }
 
-
+/**
+Filters the data shown in the Country/sector view depending on the values
+chosen in the different selectors
+*/
 function filterDataForLineChart() {
     lineChartData = lineChartDataBackup.filter(filterArrayBasedOnCheckboxesSelected);
     createLineChart(lineChartData);
-
 }
-
+/**
+Filters the data shown in the EU wide view depending on the values
+chosen in the different selectors
+*/
 function filterDataForEUWideChart() {
     euWideChartData = euWideChartDataBackup.filter(filterEUWideArrayBasedOnCheckboxesSelected);
     createEUWideChart(euWideChartData);
 }
 
+/**
+Calculate the values for the cumulative surplus in the Country/Sector view
+*/
 function calculateCumulativeSurplusCountrySector() {
     
     console.log("calculateCumulativeSurplusCountrySector");
@@ -764,7 +898,9 @@ function calculateCumulativeSurplusCountrySector() {
 
 }
 
-
+/**
+Initializes the different country selectors available in the various views of the Dashboard
+*/
 function initCountries() {
 
 
@@ -802,6 +938,9 @@ function initCountries() {
 
 }
 
+/**
+Sectors data received from the Server
+*/
 function onGetSectors() {
 
     console.log("onGetSectors");
@@ -854,6 +993,9 @@ function onGetSectors() {
 
 }
 
+/**
+Handler for problems with requests
+*/
 function problemWithRequests(){
     $('#error_row').show();
     $('#multi_line_chart_row').hide();
@@ -868,6 +1010,9 @@ function problemWithRequests(){
     noInternetConnection = true;
 }
 
+/**
+Listener for changes in the Data per period selectors
+*/
 function onDataPerPeriodComboboxChange() {
     
     $('#offsets_warning_div').hide();    
@@ -947,7 +1092,10 @@ function onDataPerPeriodComboboxChange() {
 
 }
 
-
+/**
+Filters the data shown in the Data per period view depending on the values
+chosen in the different selectors
+*/
 function filterDataForDataPerPeriodChart(){    
     
     if(installationsMapDisplayed){
@@ -958,6 +1106,7 @@ function filterDataForDataPerPeriodChart(){
     }   
     
 }
+
 
 function filterdataPerPeriodChartDataByCountry(value){
         
@@ -977,7 +1126,9 @@ function filterdataPerPeriodChartDataByCountry(value){
         
 }
 
-
+/**
+Periods data recieved from the server
+*/
 function onGetPeriods() {
 
     console.log("onGetPeriods");
@@ -1022,6 +1173,11 @@ function onGetPeriods() {
     
 }
 
+/**
+Data per period received from the server
+@param {string} responseText - Text of the server response
+@param {string} dataType - Type of the data, one of the following: ["offsets","emissions","allocations"]
+*/
 function dataForPeriod(responseText, dataType) {
     
     var responseSt = responseText;
@@ -1126,6 +1282,9 @@ function dataForPeriod(responseText, dataType) {
 
 }
 
+/**
+Free allocation data for the EU wide view received form the server
+*/
 function onGetFreeAllocationEUWide() {
     console.log("onGetFreeAllocationEUWide");
     
@@ -1173,6 +1332,9 @@ function onGetFreeAllocationEUWide() {
     
 }
 
+/**
+Offset entitlements data for the EU wide view received from the server
+*/
 function onGetOffsetEntitlementsEUWide() {
     console.log("onGetOffsetEntitlementsEUwide");
     
@@ -1202,7 +1364,9 @@ function onGetOffsetEntitlementsEUWide() {
     }   
 
 }
-
+/**
+Legal cap data for the EU wide view received from the server
+*/
 function onGetLegalCapEUWide() {
     console.log("onGetLegalCapEUWide");
     
@@ -1251,7 +1415,9 @@ function onGetLegalCapEUWide() {
     }  
     
 }
-
+/**
+Verified Emissions data for the EU wide view received from the server
+*/
 function onGetVerifiedEmissionsEUWide() {
     console.log("onGetVerifiedEmissionsEUwide");
     
@@ -1301,7 +1467,9 @@ function onGetVerifiedEmissionsEUWide() {
     }   
 
 }
-
+/**
+Auctioned data for the EU wide view received from the server
+*/
 function onGetAuctionedEUWide() {
     console.log("onGetAuctionedEUWide");
     
@@ -1348,7 +1516,9 @@ function onGetAuctionedEUWide() {
         problemWithRequests();
     }
 }
-
+/**
+Offsets data for the EU wide view received from the server
+*/
 function onGetOffsetsEUWide() {
     console.log("onGetOffsetsEUWide");
     
@@ -1400,26 +1570,34 @@ function onGetOffsetsEUWide() {
     }   
     
 }
-
+/**
+Verified emissions data for the Data per period view received from the server
+*/
 function onGetVerifiedEmissionsForPeriod() {
     console.log("onGetVerifiedEmissionsForPeriod");
     dataPerPeriodEmissionsLoaded = true;
     dataForPeriod(this.responseText, 'emissions');
 }
-
+/**
+Free allocation data for the Data per period view received from the server
+*/
 function onGetFreeAllocationForPeriod() {
     console.log("onGetFreeAllocationForPeriod");
     dataPerPeriodFreeAllocationLoaded = true;
     dataForPeriod(this.responseText, 'allocations');
 }
-
+/**
+Offsets data for the Data per period view received from the server
+*/
 function onGetOffsetsForPeriod() {
     console.log("onGetOffsetsForPeriod");
     dataPerPeriodOffsetsLoaded = true;
     dataForPeriod(this.responseText, 'offsets');
 }
 
-
+/**
+Creates the Data period chart
+*/
 function createDataPerPeriodChart(data, type) {
     
     dataPerPeriodChartData = data;        
@@ -1515,7 +1693,9 @@ function createDataPerPeriodChart(data, type) {
 
 }
 
-
+/**
+Creates the EU wide chart
+*/
 function createEUWideChart(data) {
 
     $("#eu_wide_chart").removeClass("grey_background");
@@ -1589,7 +1769,9 @@ function createEUWideChart(data) {
     
       
 }
-
+/**
+Initializes the legend tooltips for the EU wide view
+*/
 function initEUWideLegendTooltips(){    
     
     euWideChartLegend.shapes.selectAll("*").call(euWideLegendTip);
@@ -1600,7 +1782,9 @@ function initEUWideLegendTooltips(){
                 on('mouseover', euWideLegendTip.show)
                 .on('mouseout', euWideLegendTip.hide);
 }
-
+/**
+Creates the Country/sector view chart
+*/
 function createLineChart(data) {
     lineChartData = data;
 
@@ -1656,6 +1840,9 @@ function createLineChart(data) {
 
 }
 
+/**
+Listener for changes in the selectors of the Country/Sector view
+*/
 function onComboBoxChange() {
 
     var selectedCountry = $("#countries_combobox").selectpicker('val');
@@ -1707,7 +1894,9 @@ function onComboBoxChange() {
         getFreeAllocationForCountryAndSector(server_url, selectedCountrySt, selectedSectorSt, true, selectedPowerFlag, 2008,  onGetFreeAllocationForCountryAndSector);         
     }
 }
-
+/**
+Method called when the data for the Country/sector view has already been loaded
+*/
 function dataForLineChartLoaded() {
     calculateCumulativeSurplusCountrySector();
     filterDataForLineChart();
@@ -1717,7 +1906,9 @@ function dataForLineChartLoaded() {
     lineChart.draw(1000);
 }
 
-
+/**
+Offsets data for the map view received from the server
+*/
 function onGetInstallationsForCountryAndSectorOffsets(){
     
     console.log("onGetInstallationsForCountryAndSectorOffsets");
@@ -1741,7 +1932,9 @@ function onGetInstallationsForCountryAndSectorOffsets(){
         loadInstallationsMap();
     }
 }
-
+/**
+Loads the installations map 
+*/
 function loadInstallationsMap(){
     
     //-----remove previous layers----
@@ -1981,7 +2174,10 @@ function loadInstallationsMap(){
     $("#spinner_div_installations").hide();
     enableCountrySectorDropDowns();
 }
-
+/**
+Returns the icon that corresponds to the sector provided
+@param {string} sector - Sector name
+*/
 function getIconForSector(sector){
     if(sector == "Cement and Lime"){
         return cement_and_lime_icon;
@@ -2011,12 +2207,17 @@ function getIconForSector(sector){
         return pulp_and_paper_icon;
     }
 }
-
+/**
+Returns whether the sector provided is currently selected in the installations map view
+@param {string} sector - Sector name
+*/
 function isSectorSelectedInMapView(sectorName){
     var selectedSectors = $("#sectors_filter_combobox").selectpicker('val');
     return $.inArray(sectorName, selectedSectors) > -1;
 }
-
+/**
+Data for the installations map received from the server
+*/
 function onGetInstallationsForCountryAndSector(){
     
     console.log("onGetInstallationsForCountryAndSector");
@@ -2090,6 +2291,7 @@ function onDownloadInstallationButtonClick(value){
     getInstallationData(server_url, tempID, onGetInstallationData);
 }
 
+
 function onGetInstallationData(){
     console.log("onGetInstallationData");
     
@@ -2102,6 +2304,9 @@ function onGetInstallationData(){
 function onMarkerClick(){   
 }
 
+/**
+Verified emissions data for the Country/Sector view received from the server
+*/
 function onGetVerifiedEmissionsForCountryAndSector() {
 
     console.log("onGetVerifiedEmissionsForCountryAndSector");
@@ -2145,6 +2350,9 @@ function onGetVerifiedEmissionsForCountryAndSector() {
     
 }
 
+/**
+Offsets data for the Country/Sector view received from the server
+*/
 function onGetOffsetsForCountryAndSector() {
 
     console.log("onGetOffsetsForCountryAndSector");
@@ -2183,7 +2391,9 @@ function onGetOffsetsForCountryAndSector() {
         problemWithRequests();
     }       
 }
-
+/**
+Free allocation data for the Country/Sector view received from the server
+*/
 function onGetFreeAllocationForCountryAndSector() {
 
     console.log("onGetFreeAllocationForCountryAndSector");
@@ -2222,7 +2432,9 @@ function onGetFreeAllocationForCountryAndSector() {
     }
     
 }
-
+/**
+Calculates the cumulative surplus for the data from the EU wide view
+*/
 function calculateCumulativeSurplusEUWide() {
 
     var accumulatedAmount = 0;
@@ -2242,7 +2454,9 @@ function calculateCumulativeSurplusEUWide() {
         
     }     
 }
-
+/**
+Calculates the remaining credit entitlements for the data from the EU wide view
+*/
 function calculateRemainingCreditEntitlement() {
     
     var annualValue = (totalOffsetEntitlements - totalOffsetsSoFar) / 5; //2016 - 2020
@@ -2262,7 +2476,9 @@ function calculateRemainingCreditEntitlement() {
     }
 }
 
-
+/**
+Function used to filter the EU wide data array based on the checkboxes selected by the user
+*/
 function filterEUWideArrayBasedOnCheckboxesSelected(value) {
     var includeVerifiedEmissions = $('#verified_emissions_eu_wide_checkbox:checked').length == 1;
     var includeOffsets = $('#offsets_eu_wide_checkbox:checked').length == 1;
@@ -2293,7 +2509,9 @@ function filterEUWideArrayBasedOnCheckboxesSelected(value) {
     }
 }
 
-//array filtering functions
+/**
+Function used to filter the Country/Sector data array based on the checkboxes selected by the user
+*/
 function filterArrayBasedOnCheckboxesSelected(value) {
     var includeVerifiedEmissions = $('#verified_emissions_checkbox:checked').length == 1;
     var includeOffsets = $('#offsets_checkbox:checked').length == 1;
@@ -2315,6 +2533,9 @@ function filterArrayBasedOnCheckboxesSelected(value) {
     }
 }
 
+/**
+Returns whether all the data needed for the EU wide chart has been loaded
+*/
 function allEUWideLoaded() {
 
     return everythingLoaded = verified_emissions_eu_wide_loaded == true && free_allocation_eu_wide_loaded == true &&
@@ -2322,7 +2543,9 @@ function allEUWideLoaded() {
         offset_entitlements_eu_wide_loaded == true;
 }
 
-
+/**
+Initializer for the map sector icons
+*/
 function initializeMapIcons(){
     
     aviation_icon = L.icon({
@@ -2418,7 +2641,9 @@ function initializeMapIcons(){
     
     
   }
-
+/**
+Validator for the contact form
+*/
 function validateForm(){
     var spamCheckerVal = $('#InputReal').val();
     
