@@ -14,7 +14,7 @@ This software is 100% open source and released under AGPLv3 license.
 
 This tool was developed by:
 
-* Pablo Pareja - Main developer and project leader.
+* [Pablo Pareja](http://www.pablo-pareja.com) - Main developer and project leader.
 
 ### Contributors
 
