@@ -2,7 +2,7 @@
 
 The EU ETS dashboard provides a user-friendly access to emission trading data extracted from the European Union Transaction Log (EUTL) together with other data integrated by Sandbag's team such as NACE codes and a more meaningful sectors aggregation.
 
-* The ETS data shown in this tool was extracted from the European Commission’s [EUTL](http://ec.europa.eu/environment/ets/) on **June 20th 2016**. Such data is put in the public domain by the European Commission according to the Article 109 of the Commission Regulation 389/2013, which prescribes that the data defined in Annex XIV of the Regulation should be made public (points 1-4 and 7 of the Annex).
+* The ETS data shown in this tool was extracted from the European Commission’s [EUTL](http://ec.europa.eu/environment/ets/) on **January 9th 2017**. Such data is put in the public domain by the European Commission according to the Article 109 of the Commission Regulation 389/2013, which prescribes that the data defined in Annex XIV of the Regulation should be made public (points 1-4 and 7 of the Annex).
 * Offsets data for periods 2013 onwards is not available with sectors granularity since the European Commission stopped sharing such information after 2012.
 * When calculating offset values only those with unit types CER or ERU are used.
 
