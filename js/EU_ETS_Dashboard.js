@@ -88,7 +88,7 @@ var SECTORS_ARRAY = ["Aviation", "Cement and Lime", "Ceramics", "Chemicals", "Co
 var  EU_WIDE_LEGEND_VALUES = {"Free Allocation": "Permits issued by the European Commission every<br> year to each stationary installation and aircraft operator.", "Auctioned": "Auctioned", "Offsets": "Offsets", "Remaining Credit Entitlements": "This series represents an estimation of<br> how the remaining credit entitlements could be<br> distributed across the years", "Verified Emissions": "Tones of carbon emitted by the <br>different stationary installations and <br>aircraft operators", "Accumulated Balance":"Accumulated surplus calculated as follows: <br>Accumulated Verified Emissions - ( Accumulated Auctioned <br>+ Accumulated Offsets + Accumulated Free Allocation)", "Legal Cap": "Legal Cap stated by the European Commission"};
 
 /** Array including all periods used in the Dashboard */
-var ALL_PERIODS_ARRAY = ['2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015'];
+var ALL_PERIODS_ARRAY = ['2008', '2009', '2010', '2011', '2012', '2013', '2014', '2015','2016','2017','2018'];
 
 var countrySectorChartDisplayed = false;
 var installationsMapDisplayed = false;
