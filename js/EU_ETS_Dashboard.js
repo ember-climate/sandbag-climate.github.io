@@ -310,7 +310,7 @@ Initializes the surplus data array for the EU wide view.
 */
 function initializeSurplusDataArrayEUWide() {
     //------INITIALIZING SURPLUS DATA ARRAY EU WIDE------
-    for (var i = 2005; i <= 2015; i++) {
+    for (var i = 2005; i <= 2016; i++) {
         surplusDataArrayEUWide[i] = 0;
     }
     //---------------------------------------------------
