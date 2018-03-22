@@ -1144,7 +1144,7 @@ function onGetPeriods() {
 
         for (var i = 0; i < periodsData.length; i++) {
             var periodName = periodsData[i].row[0];
-            if (periodName != "2008to2020" && periodName >= 2008 && periodName <= 2015) {
+            if (periodName != "2008to2020" && periodName >= 2008 && periodName <= 2017) {
                 periods.push(periodName);
 
                 var option = document.createElement("option");
