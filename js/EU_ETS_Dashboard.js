@@ -2441,7 +2441,7 @@ function calculateCumulativeSurplusEUWide() {
     
     console.log("calculateCumulativeSurplusEUWide");
     
-    for (i = 2008; i <= 2015; i++) {
+    for (i = 2008; i <= 2016; i++) {
         accumulatedAmount += surplusDataArrayEUWide[i];
         surplusAccumulatedDataArrayEUWide[i] = accumulatedAmount;
         
