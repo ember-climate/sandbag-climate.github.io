@@ -891,7 +891,7 @@ function calculateCumulativeSurplusCountrySector() {
         
         lineChartDataBackup.push({
             "tCO2e": surplusAccumulatedDataArrayCountrySector[i],
-            "type": "Cumulative_Surplus = [Allocations + Offsets(2008-2012) - Emissions])",
+            "type": "Cumulative_Surplus = Allocations + Offsets(2008-2012) - Emissions",
             "period": i
         });        
     }    
@@ -1834,7 +1834,7 @@ function createLineChart(data) {
     }
     
     barSeries.data = dimple.filterData(data, "type", ["Free_Allocation", "Offsets (2008-2012)"]);
-    lineSeries.data = dimple.filterData(data, "type", ["Verified_Emissions", "Cumulative_Surplus = [Allocations + Offsets(2008-2012) - Emissions])"]);
+    lineSeries.data = dimple.filterData(data, "type", ["Verified_Emissions", "Cumulative_Surplus = Allocations + Offsets(2008-2012) - Emissions"]);
     lineChart.draw(1000);
     
 
@@ -2526,7 +2526,7 @@ function filterArrayBasedOnCheckboxesSelected(value) {
         return includeFreeAllocation;
     } else if (tempType == "Offsets (2008-2012)") {
         return includeOffsets;
-    } else if (tempType == "Cumulative_Surplus = [Allocations + Offsets(2008-2012) - Emissions])") {
+    } else if (tempType == "Cumulative_Surplus = Allocations + Offsets(2008-2012) - Emissions") {
         return includeCumulativeSurplus;
     }else {
         return false;
@@ -2710,13 +2710,13 @@ function resetEUWideDataLoadedText(){
 function onSwitchChartDataPerPeriod(value){
     var buttonText = $('#swith_chart_data_per_period_button').html();
         
-    if(buttonText == "Switch to line chart"){
+    if(buttonText == "Switch to line chart per year per country"){
         createDataPerPeriodChart(dataPerPeriodChartData, "line");
-        $('#swith_chart_data_per_period_button').html("Switch to bar chart");
+        $('#swith_chart_data_per_period_button').html("Switch to bar chart total all years per country");
         
-    }else if(buttonText == "Switch to bar chart"){
+    }else if(buttonText == "Switch to bar chart total all years per country"){
         createDataPerPeriodChart(dataPerPeriodChartData, "bar");
-        $('#swith_chart_data_per_period_button').html("Switch to line chart");
+        $('#swith_chart_data_per_period_button').html("Switch to line chart per year per country");
     }
 }
 
