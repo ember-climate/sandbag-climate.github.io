@@ -320,7 +320,7 @@ Initializes the surplus data array for the Country/Sector view.
 */
 function initializeSurplusDataArrayCountrySector(){
     //------INITIALIZING SURPLUS DATA ARRAY COUNTRY SECTOR------
-    for (var i = 2005; i <= 2015; i++) {
+    for (var i = 2005; i <= 2016; i++) {
         surplusDataArrayCountrySector[i] = 0;
     }
     //--------------------------------------------------------
@@ -885,7 +885,7 @@ function calculateCumulativeSurplusCountrySector() {
     
     var accumulatedAmount = 0;
     
-    for (i = 2008; i <= 2015; i++) {
+    for (i = 2008; i <= 2016; i++) {
         accumulatedAmount += surplusDataArrayCountrySector[i];
         surplusAccumulatedDataArrayCountrySector[i] = accumulatedAmount;
         
