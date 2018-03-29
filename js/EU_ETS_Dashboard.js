@@ -159,13 +159,16 @@ var map_menu;
 
 //----------Data loaded flags for the map view----------------
 var map_surplus_selected = false;
-var map_emissions_and_allocations_loaded = false;
+var map_emissions_loaded = false;
 var map_offsets_loaded = false;
+var map_allocations_loaded = false;
 //------------------------------------------------------------
 
-var map_emissions_and_allocations_temp_data;
+var map_emissions_temp_data;
 var map_offsets_temp_data;
+var map_allocations_temp_data;
 var map_offsets_per_installation_array = [];
+var map_emissions_per_installation_array = [];
 
 //===========================================================
 //===========================================================
@@ -791,12 +794,14 @@ function loadDataForMapView(){
         periodSelectedSt = periodSelectedSt.slice(0, periodSelectedSt.length - 1);
         periodSelectedSt += "]";
         
-        map_emissions_and_allocations_loaded = false;
+        map_emissions_loaded = false;
         map_offsets_loaded = false;
+        map_allocations_loaded = false;
         
         getInstallationsForCountryAndSector(server_url,selectedCountrySt,selectedSectorSt, true, selectedPowerFlag, periodSelectedSt, onGetInstallationsForCountryAndSector);
         
         if(map_surplus_selected){
+            getInstallationsForCountryAndSectorAllocations(server_url,selectedCountrySt,selectedSectorSt, true, selectedPowerFlag, periodSelectedSt, onGetInstallationsForCountryAndSectorAllocations);
             getInstallationsForCountryAndSectorOffsets(server_url,selectedCountrySt,selectedSectorSt, true, selectedPowerFlag, periodSelectedSt, onGetInstallationsForCountryAndSectorOffsets);
         }
         
@@ -1928,7 +1933,7 @@ function onGetInstallationsForCountryAndSectorOffsets(){
     
     map_offsets_loaded = true;
     
-    if(map_emissions_and_allocations_loaded){
+    if(map_emissions_loaded && map_allocations_loaded){
         loadInstallationsMap();
     }
 }
@@ -1981,13 +1986,9 @@ function loadInstallationsMap(){
             map_offsets_per_installation_array[installationId] = offsetsValue;            
         }
         
-        
-        var min_surplus = 0;
-        var max_surplus = 0;
-        
-        for (var i = 0; i < map_emissions_and_allocations_temp_data.length; i++) {
+        for (var i = 0; i < map_emissions_temp_data.length; i++) {
 
-            var rows = map_emissions_and_allocations_temp_data[i].row;
+            var rows = map_emissions_temp_data[i].row;
             var installationId = rows[0];
             var installationName = rows[1];
             var latitude = rows[2];
@@ -1996,11 +1997,32 @@ function loadInstallationsMap(){
             var city = rows[5];
             var address = rows[6];
             var emissionsValue = rows[7];
-            var allocationValue = rows[8];
+            
+            map_emissions_per_installation_array[installationId] = emissionsValue;            
+        }
+        
+        var min_surplus = 0;
+        var max_surplus = 0;
+        
+        for (var i = 0; i < map_allocations_temp_data.length; i++) {
+
+            var rows = map_allocations_temp_data[i].row;
+            var installationId = rows[0];
+            var installationName = rows[1];
+            var latitude = rows[2];
+            var longitude = rows[3];
+            var sector = rows[4];
+            var city = rows[5];
+            var address = rows[6];
+            var allocationValue = rows[7];
             
             var offsetsValue = 0;
             if(map_offsets_per_installation_array[installationId]){
                 offsetsValue = map_offsets_per_installation_array[installationId];
+            }
+            var emissionsValue = 0;
+            if(map_emissions_per_installation_array[installationId]){
+                emissionsValue = map_emissions_per_installation_array[installationId];
             }
             var surplusValue = allocationValue + offsetsValue - emissionsValue;
             
@@ -2074,9 +2096,9 @@ function loadInstallationsMap(){
         var min_emissions = 9999999999;
         var aggregated_emissions = 0;
         
-        for (var i = 0; i < map_emissions_and_allocations_temp_data.length; i++) {
+        for (var i = 0; i < map_emissions_temp_data.length; i++) {
 
-            var rows = map_emissions_and_allocations_temp_data[i].row;
+            var rows = map_emissions_temp_data[i].row;
             var installationId = rows[0];
             var installationName = rows[1];
             var latitude = rows[2];
@@ -2231,18 +2253,44 @@ function onGetInstallationsForCountryAndSector(){
         var errors = resultsJSON.errors;
         //console.log("errors", errors);
         var tempData = results[0].data;
-        map_emissions_and_allocations_temp_data = tempData;    
+        map_emissions_temp_data = tempData;    
         
-        map_emissions_and_allocations_loaded = true;
+        map_emissions_loaded = true;
         
         if(map_surplus_selected){
-            if(map_offsets_loaded){
+            if(map_offsets_loaded && map_allocations_loaded){
                 loadInstallationsMap(); 
             }
         }else{
             loadInstallationsMap(); 
         }
                 
+        
+    }else{
+        problemWithRequests();
+    }
+}
+
+function onGetInstallationsForCountryAndSectorAllocations(){
+    
+    console.log("onGetInstallationsForCountryAndSectorAllocations");
+    
+    var responseSt = this.responseText;
+    
+    if(responseSt && responseSt.length > 0){
+        
+        var resultsJSON = JSON.parse(responseSt);
+        var results = resultsJSON.results;
+        var errors = resultsJSON.errors;
+        //console.log("errors", errors);
+        var tempData = results[0].data;
+        map_allocations_temp_data = tempData;    
+        
+        map_allocations_loaded = true;
+        
+        if(map_offsets_loaded && map_emissions_loaded){
+            loadInstallationsMap(); 
+        }               
         
     }else{
         problemWithRequests();
