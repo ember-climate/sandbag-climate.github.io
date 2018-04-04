@@ -313,7 +313,7 @@ Initializes the surplus data array for the EU wide view.
 */
 function initializeSurplusDataArrayEUWide() {
     //------INITIALIZING SURPLUS DATA ARRAY EU WIDE------
-    for (var i = 2005; i <= 2016; i++) {
+    for (var i = 2005; i <= 2017; i++) {
         surplusDataArrayEUWide[i] = 0;
     }
     //---------------------------------------------------
@@ -323,7 +323,7 @@ Initializes the surplus data array for the Country/Sector view.
 */
 function initializeSurplusDataArrayCountrySector(){
     //------INITIALIZING SURPLUS DATA ARRAY COUNTRY SECTOR------
-    for (var i = 2005; i <= 2016; i++) {
+    for (var i = 2005; i <= 2017; i++) {
         surplusDataArrayCountrySector[i] = 0;
     }
     //--------------------------------------------------------
@@ -890,7 +890,7 @@ function calculateCumulativeSurplusCountrySector() {
     
     var accumulatedAmount = 0;
     
-    for (i = 2008; i <= 2016; i++) {
+    for (i = 2008; i <= 2017; i++) {
         accumulatedAmount += surplusDataArrayCountrySector[i];
         surplusAccumulatedDataArrayCountrySector[i] = accumulatedAmount;
         
@@ -2489,7 +2489,7 @@ function calculateCumulativeSurplusEUWide() {
     
     console.log("calculateCumulativeSurplusEUWide");
     
-    for (i = 2008; i <= 2016; i++) {
+    for (i = 2008; i <= 2017; i++) {
         accumulatedAmount += surplusDataArrayEUWide[i];
         surplusAccumulatedDataArrayEUWide[i] = accumulatedAmount;
         
