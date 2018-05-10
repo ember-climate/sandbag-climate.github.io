@@ -2507,13 +2507,13 @@ Calculates the remaining credit entitlements for the data from the EU wide view
 */
 function calculateRemainingCreditEntitlement() {
     
-    var annualValue = (totalOffsetEntitlements - totalOffsetsSoFar) / 4; //2016 - 2020
+    var annualValue = (totalOffsetEntitlements - totalOffsetsSoFar) / 3; //2016 - 2020
     
     if(annualValue < 0){
         annualValue = 0;
     }
     
-    for (i = 2017; i <= 2020; i++) {
+    for (i = 2018; i <= 2020; i++) {
 
         var tempArray = [];
         tempArray["tCO2e"] = annualValue;
