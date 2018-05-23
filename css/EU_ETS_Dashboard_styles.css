@@ -19,7 +19,7 @@
 }
 
 #map_div {
-    height: 400px;
+    min-height: 580px;
 }
 
 .info {
@@ -52,7 +52,7 @@ html,
 body {
   height: 100%;
   /* The html and body elements cannot have any padding or margin. */
-  background-color: #f8f8f8;    
+  background-color: #f8f8f8;
 }
 
 body{
@@ -64,9 +64,9 @@ body{
 #wrapper {
     min-height: 100%;
     height: auto;
-    /* Negative indent footer by its height 
+    /* Negative indent footer by its height
     margin: 0 auto -60px;*/
-    /* Pad bottom by footer height 
+    /* Pad bottom by footer height
     padding: 0 0 60px;*/
     overflow-x: hidden;
 }
@@ -80,10 +80,10 @@ body{
     padding-bottom: 40px;
 }
 
-.mapcluster {  
+.mapcluster {
   text-align: center;
   font-size: 12px;
-  box-sizing: border-box;  
+  box-sizing: border-box;
 }
 
 footer {
