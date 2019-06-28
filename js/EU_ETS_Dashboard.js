@@ -2513,7 +2513,7 @@ function calculateRemainingCreditEntitlement() {
         annualValue = 0;
     }
 
-    for (i = 2018; i <= 2020; i++) {
+    for (i = 2019; i <= 2020; i++) {
 
         var tempArray = [];
         tempArray["tCO2e"] = annualValue;
